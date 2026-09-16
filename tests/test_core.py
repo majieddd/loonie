@@ -1565,3 +1565,89 @@ def test_all_registry_methods_are_distinct_and_applicable():
 
     assert applied["novelty_search"]["evolve"]["fitness_mode"] == "novelty"
     assert applied["mdl_parsimony"]["evolve"]["parsimony_mode"] == "bic"
+
+
+# =============================================================================
+#  Peer-relative features
+# =============================================================================
+def test_peer_features_are_causal():
+    """A peer set must be chosen from data strictly before the block it scores.
+
+    This is the subtlest lookahead available here: picking a stock's peers
+    using the very returns they are about to be measured against would be a
+    beautifully disguised way of reading the answer, and it would not show up
+    in any other test.
+    """
+    from loonie import peers as pm
+
+    full = synthetic_panel(T=1200, N=40, seed=151)
+    cut = 900
+    trunc = Panel(dates=full.dates[:cut], tickers=full.tickers,
+                  bars={k: v[:cut] for k, v in full.bars.items()},
+                  member=full.member[:cut], tradable=full.tradable[:cut],
+                  coverage=full.coverage)
+
+    a = pm.build(full, m=8, lookback=252, refresh=63)
+    b = pm.build(trunc, m=8, lookback=252, refresh=63)
+
+    offenders = []
+    for k in a:
+        x, y = a[k][:cut], b[k]
+        both = np.isfinite(x) & np.isfinite(y)
+        if both.sum() == 0:
+            continue
+        if not np.allclose(x[both], y[both], rtol=1e-4, atol=1e-6):
+            offenders.append(k)
+    assert not offenders, "peer features peek at the future: %s" % offenders
+
+
+def test_peer_relative_is_not_market_relative():
+    """Peer-relative must carry information market-relative does not.
+
+    If subtracting the peer mean were the same as subtracting the market mean,
+    the whole module would be an expensive way to recompute a feature that
+    already exists.
+    """
+    from loonie import features as F
+    from loonie import peers as pm
+
+    p = synthetic_panel(T=900, N=40, seed=152)
+    # Give half the names a shared factor so genuine cohorts exist to find.
+    rng = np.random.default_rng(7)
+    factor = rng.normal(0, 0.02, p.close.shape[0])
+    c = p.bars["close"].copy()
+    for j in range(0, 40, 2):
+        c[:, j] *= np.cumprod(1 + factor).astype(np.float32)
+    p.bars["close"] = c
+
+    pf = pm.build(p, m=8, lookback=252, refresh=63)
+    mom21 = F.pct_change(p.bars["close"], 21)
+    market_rel = mom21 - np.nanmean(np.where(p.tradable, mom21, np.nan),
+                                    axis=1, keepdims=True)
+
+    peer_rel = pf["peer_rel_mom_21"]
+    both = np.isfinite(peer_rel) & np.isfinite(market_rel)
+    assert both.sum() > 1000, "not enough overlap to compare"
+    r = np.corrcoef(peer_rel[both], market_rel[both])[0, 1]
+    assert abs(r) < 0.97, (
+        "peer-relative is %.3f correlated with market-relative — it is not "
+        "adding an axis" % r)
+
+
+def test_peer_rank_is_bounded_and_peer_corr_is_a_correlation():
+    from loonie import peers as pm
+
+    p = synthetic_panel(T=900, N=30, seed=153)
+    pf = pm.build(p, m=8, lookback=252, refresh=63)
+
+    rank = pf["peer_rank_mom_21"]
+    rank = rank[np.isfinite(rank)]
+    assert rank.size and rank.min() >= 0.0 and rank.max() <= 1.0
+
+    pc = pf["peer_corr"]
+    pc = pc[np.isfinite(pc)]
+    assert pc.size and pc.min() >= -1.001 and pc.max() <= 1.001
+
+    assert pm.PEER_NAMES and all(n.startswith("peer_") for n in pm.PEER_NAMES)
+    from loonie.features import family_of
+    assert family_of("peer_rel_mom_21") == "peer"

@@ -54,12 +54,12 @@
   "qd_consistency": 1,
   "elitist_ir": 6,
   "parsimony_hard": 0,
-  "low_turnover": 3,
+  "low_turnover": 4,
   "novelty_search": 1,
   "mdl_parsimony": 1,
   "wide_explore": 3
  },
- "updated": "2026-09-16T16:04:29+00:00",
+ "updated": "2026-09-16T16:06:49+00:00",
  "table": [
   {
    "id": "mdl_parsimony",
@@ -128,7 +128,7 @@
    "forward_rate": null,
    "mean_fwd_alpha": null,
    "labelled": 0,
-   "cycles": 3,
+   "cycles": 4,
    "established": false
   },
   {

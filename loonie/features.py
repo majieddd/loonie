@@ -150,7 +150,7 @@ def cs_demean(a: np.ndarray, mask: np.ndarray | None = None) -> np.ndarray:
 # =============================================================================
 #  The feature set
 # =============================================================================
-def build(panel, macro: bool = True) -> dict:
+def build(panel, macro: bool = True, peers: bool = True) -> dict:
     """Compute the terminal feature dictionary from a Panel. All causal.
 
     `macro=True` appends the regime series from macro.py -- (T,) vectors
@@ -232,6 +232,17 @@ def build(panel, macro: bool = True) -> dict:
     for k in f:
         f[k] = np.where(np.isfinite(f[k]), f[k], np.nan).astype(np.float32)
 
+    # Peer-relative: how this stock compares to the names that move like it.
+    # Everything above is either self-referential or measured against the whole
+    # universe; nothing asked the question an analyst asks first.
+    if peers:
+        try:
+            from . import peers as peer_mod
+            f.update(peer_mod.build(panel))
+        except Exception as e:
+            print("[features] peer-relative unavailable (%s: %s); continuing"
+                  % (type(e).__name__, e))
+
     if macro:
         try:
             from . import macro as macro_mod
@@ -302,6 +313,7 @@ FAMILIES = {
     "microstructure": ("clv", "gap", "intraday_range", "close_strength"),
     "market_relative": ("beta_", "idio_vol"),
     "macro": ("m_",),
+    "peer": ("peer_",),
 }
 
 
