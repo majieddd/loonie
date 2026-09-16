@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T16:55:40+00:00",
+ "generated_at": "2026-09-16T17:11:40+00:00",
  "workers": {
   "workers": [
    {
@@ -8,27 +8,27 @@
     "label": "genetic program",
     "started_at": "2026-09-16T16:09:48+00:00",
     "status": "running",
-    "detail": "gen 226 | fit +34.925 | IR -4.08 | alpha t -9.51",
+    "detail": "gen 260 | fit +34.925 | IR -4.08 | alpha t -9.51",
     "progress": null,
     "metrics": {
-     "generation": 226,
-     "trials": 40320,
-     "trials_effective": 7128,
+     "generation": 260,
+     "trials": 46187,
+     "trials_effective": 8426,
      "best_fitness": 34.9252,
      "best_alpha_t": -9.512,
      "best_dsr": 0.0,
-     "archive_cells": 101,
+     "archive_cells": 106,
      "promoted": 0,
      "demoted": 0,
-     "seconds_per_gen": 28.05
+     "seconds_per_gen": 27.62
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T16:55:36+00:00",
-    "heartbeat_epoch": 1789577736.5423746,
-    "uptime_s": 2747.8,
-    "heartbeat_age_s": 3.5,
+    "heartbeat": "2026-09-16T17:11:35+00:00",
+    "heartbeat_epoch": 1789578695.9144187,
+    "uptime_s": 3707.2,
+    "heartbeat_age_s": 4.6,
     "liveness": "live"
    },
    {
@@ -47,9 +47,9 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T16:55:39+00:00",
-    "heartbeat_epoch": 1789577739.827821,
-    "uptime_s": 5042.7,
+    "heartbeat": "2026-09-16T17:11:40+00:00",
+    "heartbeat_epoch": 1789578700.2809672,
+    "uptime_s": 6003.2,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -68,7 +68,7 @@
     "heartbeat": "2026-09-16T16:01:38+00:00",
     "heartbeat_epoch": 1789574498.790694,
     "uptime_s": 0.5,
-    "heartbeat_age_s": 3241.2,
+    "heartbeat_age_s": 4201.7,
     "liveness": "finished"
    },
    {
@@ -89,27 +89,27 @@
     "heartbeat": "2026-09-16T15:50:00+00:00",
     "heartbeat_epoch": 1789573800.946725,
     "uptime_s": 192.6,
-    "heartbeat_age_s": 3939.1,
+    "heartbeat_age_s": 4899.5,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-16T16:55:40+00:00"
+  "updated": "2026-09-16T17:11:40+00:00"
  },
  "experience": {
-  "rows": 185,
-  "labelled": 185,
+  "rows": 215,
+  "labelled": 215,
   "distinct_strategies": 27,
   "runs": 6,
   "methods": 6,
   "promoted": 0,
   "first": "2026-09-16T15:28:11+00:00",
-  "last": "2026-09-16T16:54:41+00:00",
-  "bytes": 41533,
-  "fwd_alpha_mean": -0.09574540803383758,
-  "fwd_positive_rate": 0.06486486486486487
+  "last": "2026-09-16T17:08:55+00:00",
+  "bytes": 42721,
+  "fwd_alpha_mean": -0.10823542897556379,
+  "fwd_positive_rate": 0.05581395348837209
  },
  "family_forward_rates": {
   "volume": {
@@ -123,17 +123,17 @@
    "rate": 0.3333333333333333
   },
   "macro": {
-   "seen": 101,
+   "seen": 131,
    "survived": 5,
-   "rate": 0.04950495049504951
+   "rate": 0.03816793893129771
   },
   "reversal": {
-   "seen": 173,
+   "seen": 203,
    "survived": 6,
-   "rate": 0.03468208092485549
+   "rate": 0.029556650246305417
   },
   "microstructure": {
-   "seen": 92,
+   "seen": 122,
    "survived": 0,
    "rate": 0.0
   }
@@ -277,101 +277,101 @@
   }
  ],
  "search": {
-  "generation": 226,
-  "trials": 40320,
-  "trials_effective": 7128,
-  "independence": 0.17677946097897426,
-  "archive_cells": 101,
+  "generation": 260,
+  "trials": 46187,
+  "trials_effective": 8426,
+  "independence": 0.18242629784512207,
+  "archive_cells": 106,
   "explore": 0.85,
   "best_fitness": 34.92523450968585,
   "best_ir": -4.083535680612897,
   "best_alpha_t": -9.512336417745528,
-  "best_dsr": 2.982269372931689e-38,
-  "best_pbo": 0.14285714285714285,
+  "best_dsr": 1.740275885628651e-38,
+  "best_pbo": 0.24285714285714285,
   "best_corr": 0.9486406435678663,
-  "best_null_pct": 0.9996152366294728,
-  "seconds_per_gen": 28.05,
+  "best_null_pct": 0.9996666666666667,
+  "seconds_per_gen": 27.62,
   "promoted_count": 0,
   "demoted_count": 0,
   "null_summary": {
-   "n": 2599,
-   "mean_fitness": -0.39614048913641076,
-   "p95_fitness": 2.2229772667426637,
-   "p99_fitness": 3.2150277579062116,
+   "n": 3000,
+   "mean_fitness": -0.22356329162851316,
+   "p95_fitness": 2.1947260729987526,
+   "p99_fitness": 3.0797874480710496,
    "max_fitness": 35.71486964677873,
-   "p95_alpha_t": 1.2715796845046556
+   "p95_alpha_t": 1.2511194438755089
   },
   "operators": {
    "point": {
-    "rate": 0.06048387096774194,
-    "tried": 248,
+    "rate": 0.051194539249146756,
+    "tried": 293,
     "won": 15,
-    "posterior_mean": 0.05918109010356579
+    "posterior_mean": 0.04490686848621572
    },
    "subtree": {
-    "rate": 0.07386363636363637,
-    "tried": 352,
+    "rate": 0.06598984771573604,
+    "tried": 394,
     "won": 26,
-    "posterior_mean": 0.058747162683245084
+    "posterior_mean": 0.04769400357275479
    },
    "hoist": {
-    "rate": 0.12841115827774408,
-    "tried": 6596,
-    "won": 847,
-    "posterior_mean": 0.10625618780642349
+    "rate": 0.11729383506805445,
+    "tried": 7494,
+    "won": 879,
+    "posterior_mean": 0.08942777061775425
    },
    "shrink": {
-    "rate": 0.11409395973154363,
-    "tried": 1788,
-    "won": 204,
-    "posterior_mean": 0.09593286338673934
+    "rate": 0.10230053842388644,
+    "tried": 2043,
+    "won": 209,
+    "posterior_mean": 0.08018793056174722
    },
    "wrap": {
-    "rate": 0.05405405405405406,
-    "tried": 222,
+    "rate": 0.046875,
+    "tried": 256,
     "won": 12,
-    "posterior_mean": 0.04777701829184304
+    "posterior_mean": 0.03727135608221469
    },
    "jitter": {
-    "rate": 0.12524500196001567,
-    "tried": 5102,
+    "rate": 0.1155724362452523,
+    "tried": 5529,
     "won": 639,
-    "posterior_mean": 0.10704743094321212
+    "posterior_mean": 0.08920320815777816
    },
    "crossover": {
-    "rate": 0.1285125669550886,
-    "tried": 24270,
-    "won": 3119,
-    "posterior_mean": 0.11092523623569667
+    "rate": 0.11479701621001291,
+    "tried": 27884,
+    "won": 3201,
+    "posterior_mean": 0.09349291331061535
    },
    "params": {
-    "rate": 0.09272467902995721,
-    "tried": 701,
-    "won": 65,
-    "posterior_mean": 0.07912913344745906
+    "rate": 0.08271604938271605,
+    "tried": 810,
+    "won": 67,
+    "posterior_mean": 0.06456924901525726
    }
   },
   "features": {
    "macro": {
-    "posterior_mean": 0.4589881265496185,
+    "posterior_mean": 0.4608877785640528,
     "seen": 4,
     "survived": 2,
     "rate": 0.5
    },
    "market_relative": {
-    "posterior_mean": 0.37946553458021354,
+    "posterior_mean": 0.3885617390284472,
     "seen": 1,
     "survived": 0,
     "rate": 0.0
    },
    "microstructure": {
-    "posterior_mean": 0.25411023972687047,
+    "posterior_mean": 0.26685416948997964,
     "seen": 3,
     "survived": 0,
     "rate": 0.0
    },
    "momentum": {
-    "posterior_mean": 0.37946553458021354,
+    "posterior_mean": 0.3885617390284472,
     "seen": 1,
     "survived": 0,
     "rate": 0.0
@@ -389,7 +389,7 @@
     "rate": 0.0
    },
    "reversal": {
-    "posterior_mean": 0.29866990892990636,
+    "posterior_mean": 0.30086743755285544,
     "seen": 30,
     "survived": 8,
     "rate": 0.26666666666666666
@@ -401,7 +401,7 @@
     "rate": 0.0
    },
    "volume": {
-    "posterior_mean": 0.7038738225080947,
+    "posterior_mean": 0.6957032892030002,
     "seen": 5,
     "survived": 4,
     "rate": 0.8
@@ -446,14 +446,14 @@
   },
   {
    "name": "deflated_sharpe",
-   "value": 2.982269372931689e-38,
+   "value": 1.740275885628651e-38,
    "op": ">=",
    "threshold": 0.5,
    "pass": false
   },
   {
    "name": "pbo",
-   "value": 0.14285714285714285,
+   "value": 0.24285714285714285,
    "op": "<=",
    "threshold": 0.4,
    "pass": true
@@ -469,8 +469,8 @@
   "alpha_t": -9.512336417745528,
   "folds_positive": 0.0,
   "worst_fold": -0.44904120267844744,
-  "dsr": 2.982269372931689e-38,
-  "pbo": 0.14285714285714285,
+  "dsr": 1.740275885628651e-38,
+  "pbo": 0.24285714285714285,
   "corr": 0.9486406435678663,
   "turnover": 466.23480397175354,
   "trades": 61501,
@@ -492,8 +492,8 @@
    "alpha_t": -9.512336417745528,
    "folds_positive": 0.0,
    "worst_fold": -0.44904120267844744,
-   "dsr": 2.982269372931689e-38,
-   "pbo": 0.14285714285714285,
+   "dsr": 1.740275885628651e-38,
+   "pbo": 0.24285714285714285,
    "corr": 0.9486406435678663,
    "turnover": 466.23480397175354,
    "trades": 61501,
