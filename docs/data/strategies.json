@@ -1,12 +1,12 @@
 {
- "updated": "2026-09-16T08:24:50+00:00",
- "generation": 837,
- "trials": 100848,
+ "updated": "2026-09-16T08:40:50+00:00",
+ "generation": 936,
+ "trials": 109422,
  "promoted": false,
  "strategies": [
   {
-   "fingerprint": "0e5a966e73a67b14",
-   "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.2833)), sub(rev_21, -0.2798)), add(vol_21, vol_21))|k=20|rb=10|w=equal",
+   "fingerprint": "192bd9b88c349e69",
+   "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.2667)), sub(rev_21, -0.2797)), add(vol_21, vol_21))|k=20|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
@@ -31,7 +31,7 @@
         },
         "right": {
          "t": "const",
-         "value": -0.2833
+         "value": -0.2667
         }
        }
       },
@@ -44,7 +44,7 @@
        },
        "right": {
         "t": "const",
-        "value": -0.2798
+        "value": -0.2797
        }
       }
      },
@@ -64,34 +64,34 @@
     "n_positions": 20,
     "rebalance_days": 10,
     "weighting": "equal",
-    "born": 818,
+    "born": 923,
     "parents": [
-     "507aec212aaddeff",
-     "76d0bd37fd60677c"
+     "0b6d02994c1d40ce",
+     "856bec21f0477000"
     ],
     "operator": "crossover",
     "meta": {},
-    "fingerprint": "0e5a966e73a67b14",
-    "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.2833)), sub(rev_21, -0.2798)), add(vol_21, vol_21))|k=20|rb=10|w=equal"
+    "fingerprint": "192bd9b88c349e69",
+    "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.2667)), sub(rev_21, -0.2797)), add(vol_21, vol_21))|k=20|rb=10|w=equal"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.15023171821107656,
+    "mean_alpha": 0.15117659948556658,
     "median_alpha": 0.11875957402125434,
-    "mean_ir": 1.8062545780978532,
+    "mean_ir": 1.807664543185708,
     "worst_fold_alpha": 0.04707625253202297,
-    "alpha_tstat": 3.8101629745786973,
-    "total_trades": 4794,
-    "ann_turnover": 26.402848407900326,
-    "corr_bench": 0.9011729389178478,
+    "alpha_tstat": 3.8433562931467,
+    "total_trades": 4795,
+    "ann_turnover": 26.41783934490936,
+    "corr_bench": 0.901119983348508,
     "n_folds": 8,
     "ok": true,
-    "dsr": 0.3609031001970868,
-    "sr_ann_excess": 1.3834742047796529,
-    "sr_star_ann": 1.5237996448060964,
-    "trials_total": 100848,
-    "trials_effective": 10234,
-    "independence": 0.10147576383273571,
+    "dsr": 0.3588626734597398,
+    "sr_ann_excess": 1.3925870965208484,
+    "sr_star_ann": 1.5351075018142168,
+    "trials_total": 109422,
+    "trials_effective": 11456,
+    "independence": 0.10469824331933683,
     "pbo": 0.4857142857142857
    }
   },
