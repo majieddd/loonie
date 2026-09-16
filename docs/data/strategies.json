@@ -1,12 +1,12 @@
 {
- "updated": "2026-09-16T08:56:50+00:00",
- "generation": 1033,
- "trials": 118506,
+ "updated": "2026-09-16T09:12:50+00:00",
+ "generation": 1132,
+ "trials": 127497,
  "promoted": false,
  "strategies": [
   {
-   "fingerprint": "192bd9b88c349e69",
-   "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.2667)), sub(rev_21, -0.2797)), add(vol_21, vol_21))|k=20|rb=10|w=equal",
+   "fingerprint": "5aad0372ccf9aad2",
+   "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.1873)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
@@ -31,84 +31,9 @@
         },
         "right": {
          "t": "const",
-         "value": -0.2667
+         "value": -0.1873
         }
        }
-      },
-      "right": {
-       "t": "bin",
-       "op": "sub",
-       "left": {
-        "t": "feat",
-        "name": "rev_21"
-       },
-       "right": {
-        "t": "const",
-        "value": -0.2797
-       }
-      }
-     },
-     "right": {
-      "t": "bin",
-      "op": "add",
-      "left": {
-       "t": "feat",
-       "name": "vol_21"
-      },
-      "right": {
-       "t": "feat",
-       "name": "vol_21"
-      }
-     }
-    },
-    "n_positions": 20,
-    "rebalance_days": 10,
-    "weighting": "equal",
-    "born": 923,
-    "parents": [
-     "0b6d02994c1d40ce",
-     "856bec21f0477000"
-    ],
-    "operator": "crossover",
-    "meta": {},
-    "fingerprint": "192bd9b88c349e69",
-    "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.2667)), sub(rev_21, -0.2797)), add(vol_21, vol_21))|k=20|rb=10|w=equal"
-   },
-   "cv": {
-    "frac_positive": 1.0,
-    "mean_alpha": 0.15117659948556658,
-    "median_alpha": 0.11875957402125434,
-    "mean_ir": 1.807664543185708,
-    "worst_fold_alpha": 0.04707625253202297,
-    "alpha_tstat": 3.8433562931467,
-    "total_trades": 4795,
-    "ann_turnover": 26.41783934490936,
-    "corr_bench": 0.901119983348508,
-    "n_folds": 8,
-    "ok": true,
-    "dsr": 0.35394533969855746,
-    "sr_ann_excess": 1.3925870965208484,
-    "sr_star_ann": 1.5403076141184153,
-    "trials_total": 118506,
-    "trials_effective": 12097,
-    "independence": 0.10207729063027124,
-    "pbo": 0.5
-   }
-  },
-  {
-   "fingerprint": "76d0bd37fd60677c",
-   "canonical": "min(min(m_breadth, sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal",
-   "promoted": false,
-   "genome": {
-    "expr": {
-     "t": "bin",
-     "op": "min",
-     "left": {
-      "t": "bin",
-      "op": "min",
-      "left": {
-       "t": "feat",
-       "name": "m_breadth"
       },
       "right": {
        "t": "bin",
@@ -139,26 +64,101 @@
     "n_positions": 20,
     "rebalance_days": 10,
     "weighting": "equal",
-    "born": 244,
+    "born": 1088,
     "parents": [
-     "a32adc27398c4874",
-     "99c4533a50e16453"
+     "9c04f574e80e9a7f",
+     "10e565087b4198d4"
     ],
-    "operator": "crossover",
+    "operator": "jitter",
     "meta": {},
-    "fingerprint": "76d0bd37fd60677c",
-    "canonical": "min(min(m_breadth, sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal"
+    "fingerprint": "5aad0372ccf9aad2",
+    "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.1873)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.1467575580574155,
-    "median_alpha": 0.11880402740023355,
-    "mean_ir": 1.7255039239342755,
-    "worst_fold_alpha": 0.043583699280301424,
-    "alpha_tstat": 3.486986253983556,
-    "total_trades": 4786,
-    "ann_turnover": 26.28135939817507,
-    "corr_bench": 0.8938949187924455,
+    "mean_alpha": 0.14680135707721725,
+    "median_alpha": 0.122333207883314,
+    "mean_ir": 1.8133664168244712,
+    "worst_fold_alpha": 0.03233188168551337,
+    "alpha_tstat": 3.5766314545337945,
+    "total_trades": 4778,
+    "ann_turnover": 26.153624217382998,
+    "corr_bench": 0.8933827900756062,
+    "n_folds": 8,
+    "ok": true,
+    "dsr": 0.2918435932841212,
+    "sr_ann_excess": 1.3085824289191674,
+    "sr_star_ann": 1.520361661901117,
+    "trials_total": 127497,
+    "trials_effective": 13540,
+    "independence": 0.10619899506709876,
+    "pbo": 0.4857142857142857
+   }
+  },
+  {
+   "fingerprint": "07d53c58b987ad2d",
+   "canonical": "min(min(m_breadth, sub(rev_21, -0.2798)), add(vol_21, vol_21))|k=20|rb=10|w=equal",
+   "promoted": false,
+   "genome": {
+    "expr": {
+     "t": "bin",
+     "op": "min",
+     "left": {
+      "t": "bin",
+      "op": "min",
+      "left": {
+       "t": "feat",
+       "name": "m_breadth"
+      },
+      "right": {
+       "t": "bin",
+       "op": "sub",
+       "left": {
+        "t": "feat",
+        "name": "rev_21"
+       },
+       "right": {
+        "t": "const",
+        "value": -0.2798
+       }
+      }
+     },
+     "right": {
+      "t": "bin",
+      "op": "add",
+      "left": {
+       "t": "feat",
+       "name": "vol_21"
+      },
+      "right": {
+       "t": "feat",
+       "name": "vol_21"
+      }
+     }
+    },
+    "n_positions": 20,
+    "rebalance_days": 10,
+    "weighting": "equal",
+    "born": 1075,
+    "parents": [
+     "0e5a966e73a67b14",
+     "72846de1eef27cb7"
+    ],
+    "operator": "shrink",
+    "meta": {},
+    "fingerprint": "07d53c58b987ad2d",
+    "canonical": "min(min(m_breadth, sub(rev_21, -0.2798)), add(vol_21, vol_21))|k=20|rb=10|w=equal"
+   },
+   "cv": {
+    "frac_positive": 1.0,
+    "mean_alpha": 0.14915917483513397,
+    "median_alpha": 0.11875957402125434,
+    "mean_ir": 1.7278850327237918,
+    "worst_fold_alpha": 0.04707625253202297,
+    "alpha_tstat": 3.5593990726033415,
+    "total_trades": 4791,
+    "ann_turnover": 26.35667400456815,
+    "corr_bench": 0.8942588439651641,
     "n_folds": 8,
     "ok": true
    }
