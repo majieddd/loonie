@@ -48,6 +48,95 @@ def _now():
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+def _sources(ev: dict) -> list:
+    """The free data this system trains on, each declaring its own gaps.
+
+    Coverage is the binding constraint on everything here -- a flat
+    walk-forward is partly a flat walk-forward because 129 departed names are
+    invisible -- so every source reports the fraction of its subject it can
+    actually see, on one shared scale. A source with nothing missing shows a
+    full bar, which is the comparison working rather than a decoration.
+
+    Read from file metadata only. This runs on every publish and must not
+    rebuild a panel to answer.
+    """
+    cov = (ev.get("panel") or {}).get("coverage") or {}
+    panel = ev.get("panel") or {}
+    out = []
+
+    ever = int(cov.get("universe_size") or 0)
+    fetched = int(cov.get("fetched") or 0)
+    out.append({
+        "id": "prices",
+        "name": "Daily bars",
+        "origin": cov.get("provider") or "yfinance",
+        "unit": "S&P 500 members, point-in-time",
+        "have": fetched, "want": ever,
+        "coverage": (fetched / ever) if ever else None,
+        "floor": 0.80,
+        "note": ("%d names that left the index are missing, and every one is a "
+                 "loser the backtest cannot see"
+                 % int(cov.get("missing_departed") or 0)),
+    })
+
+    try:
+        from . import macro
+        n_macro = len(macro.MACRO_NAMES)
+    except Exception:
+        n_macro = 0
+    out.append({
+        "id": "macro",
+        "name": "Regime series",
+        "origin": "traded proxies",
+        "unit": "macro terminals",
+        "have": n_macro, "want": n_macro,
+        "coverage": 1.0 if n_macro else None,
+        "note": ("built from instruments that actually traded, so each value "
+                 "was knowable on its date — no revision history to leak"),
+    })
+
+    f = resolve("data/cache/factors.parquet")
+    fac = {"id": "factors", "name": "Fama-French factors",
+           "origin": "Ken French data library", "unit": "published factors",
+           "have": 0, "want": 6, "coverage": None,
+           "note": "not downloaded yet"}
+    if f.exists():
+        try:
+            import pandas as pd
+            df = pd.read_parquet(f)
+            have = [c for c in ("Mkt-RF", "SMB", "HML", "RMW", "CMA", "Mom")
+                    if c in df.columns]
+            fac.update({
+                "have": len(have), "want": 6,
+                "coverage": len(have) / 6.0,
+                "span": "%s..%s" % (df.index[0].date(), df.index[-1].date()),
+                "note": ("built on a survivorship-free universe this panel is "
+                         "not, which is what makes it a yardstick the search "
+                         "cannot bend"),
+            })
+        except Exception:
+            pass
+    out.append(fac)
+
+    sec = resolve("data/cache/sec")
+    n_files = len(list(sec.glob("*.parquet"))) if sec.exists() else 0
+    priced = fetched or int(panel.get("tickers") or 0)
+    out.append({
+        "id": "fundamentals",
+        "name": "SEC filings",
+        "origin": "EDGAR XBRL",
+        "unit": "priced names with filings",
+        "have": min(n_files, priced) if priced else n_files,
+        "want": priced,
+        "coverage": (min(n_files, priced) / priced) if priced else None,
+        "floor": 0.80,
+        "note": ("keyed to the date each figure was filed, never the period it "
+                 "describes — Apple's FY2008 balance sheet was filed ten "
+                 "months late"),
+    })
+    return out
+
+
 def build_snapshot(cfg) -> dict:
     """Assemble everything the dashboard shows, from the state files on disk."""
     ev = _read("state/evolve_state.json") or {}
@@ -253,6 +342,7 @@ def build_snapshot(cfg) -> dict:
         "seal": seal_out,
         "allocator": arms,
         "data": (ev.get("panel") or {}).get("coverage") or {},
+        "sources": _sources(ev),
         "panel": {k: v for k, v in (ev.get("panel") or {}).items()
                   if k != "coverage"},
         "config": {

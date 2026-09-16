@@ -218,6 +218,26 @@ tbody tr:hover{background:var(--panel)}
 .meter{height:6px;background:var(--line);margin-top:9px;position:relative}
 .meter i{position:absolute;left:0;top:0;bottom:0;background:var(--fg-2);display:block}
 .meter i.bad{background:var(--down)}
+/* data sources: one row per source, all bars on the same scale so the
+   shortest one is what the eye lands on first */
+.src{padding:18px 0 20px;border-bottom:1px solid var(--line)}
+.src:last-child{border-bottom:0}
+.src-h{display:flex;justify-content:space-between;align-items:baseline;gap:20px}
+.src-n{font-size:14px;letter-spacing:-.01em}
+.src-o{font:400 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+       color:var(--fg-3);margin-left:11px}
+.src-f{display:flex;align-items:baseline;gap:16px;white-space:nowrap}
+.src-c{font:400 11.5px/1 var(--mono);color:var(--fg-3)}
+.src-p{font:400 14px/1 var(--mono);font-variant-numeric:tabular-nums}
+.src-p.bad{color:var(--down)}
+.src-note{margin:11px 0 0;font-size:12.5px;line-height:1.55;color:var(--fg-2);
+          max-width:62ch;text-wrap:pretty}
+.src-note.dim{color:var(--fg-3);font-family:var(--mono);font-size:11px;
+              margin-top:7px}
+@media(max-width:560px){
+  .src-h{flex-direction:column;align-items:flex-start;gap:7px}
+  .src-o{margin-left:0;display:block}
+}
 .foot{margin-top:72px;padding-top:22px;border-top:1px solid var(--line);
       color:var(--fg-3);font:400 11.5px/1.7 var(--mono)}
 .foot b{color:var(--fg-2);font-weight:400}
@@ -916,28 +936,50 @@ function render(snap, series){
 
   /* 06 provenance */
   const D = snap.data||{};
-  const s6 = section("09","Data provenance");
-  const cov = D.coverage||0;
+  const SRC = snap.sources || [];
+  const s6 = section("09","Data provenance",
+    SRC.length ? SRC.length+" free sources" : null);
   s6.appendChild(Object.assign(el("p","lede"),{innerHTML:
-    "Point-in-time S&P 500 membership: on any date the backtest may only buy "+
-    "what was in the index that day. Free providers carry only securities that "+
-    "still exist, so <b>"+int(D.missing_departed)+"</b> names that left the "+
-    "index are missing from this cache — and every one of them is a loser the "+
-    "backtest cannot see. Results are optimistic by that much."}));
-  const pw = el("div");
-  pw.appendChild(kv("provider", D.provider||"—"));
-  pw.appendChild(kv("tickers ever in window", int(D.universe_size)));
-  pw.appendChild(kv("with usable price history", int(D.fetched)));
-  pw.appendChild(kv("departed and missing", int(D.missing_departed)));
-  const cm = el("div","meter"); const ci = el("i", cov<0.8?"bad":null);
-  ci.style.width=(cov*100).toFixed(1)+"%"; cm.appendChild(ci);
-  pw.appendChild(cm);
-  const cc = el("div","spark-x");
-  cc.appendChild(el("span",null, num(cov*100,1)+"% universe coverage"));
-  cc.appendChild(el("span",null, cov<0.8 ? "below the configured floor"
-                                         : "above the 80% floor"));
-  pw.appendChild(cc);
-  s6.appendChild(pw);
+    "Everything below is free and public. Each source reports the fraction of "+
+    "its own subject it can actually see, on one scale — because coverage, "+
+    "not cleverness, is the binding constraint here. Point-in-time S&P 500 "+
+    "membership means the backtest may only buy what was in the index that "+
+    "day, and free providers carry only securities that still exist, so "+
+    "<b>"+int(D.missing_departed)+"</b> departed names are missing — every "+
+    "one of them a loser the backtest cannot see."}));
+
+  /* One row per source. A full bar is the comparison doing its job, not a
+     decoration: it is what lets the short bar read first. */
+  const srcRow = function(r){
+    const w = el("div","src");
+    const top = el("div","src-h");
+    const lhs = el("div");
+    lhs.appendChild(el("span","src-n", r.name || r.id));
+    lhs.appendChild(el("span","src-o", r.origin || ""));
+    const rhs = el("div","src-f");
+    if (r.want) rhs.appendChild(el("span","src-c",
+      int(r.have)+" / "+int(r.want)+"  "+(r.unit||"")));
+    const c = (r.coverage == null) ? null : +r.coverage;
+    const short = c != null && r.floor != null && c < r.floor;
+    rhs.appendChild(el("span", short ? "src-p bad" : "src-p",
+      c == null ? "—" : num(c*100,1)+"%"));
+    top.appendChild(lhs); top.appendChild(rhs);
+    w.appendChild(top);
+
+    const m = el("div","meter"), i = el("i", short ? "bad" : null);
+    i.style.width = ((c == null ? 0 : c)*100).toFixed(1)+"%";
+    m.appendChild(i); w.appendChild(m);
+
+    if (r.note) w.appendChild(el("p","src-note",
+      r.note + (short ? " — below the "+num(r.floor*100,0)+"% floor." : "")));
+    if (r.span) w.appendChild(el("p","src-note dim", r.span));
+    return w;
+  };
+  const srcWrap = el("div"); srcWrap.style.marginTop = "26px";
+  SRC.forEach(r => srcWrap.appendChild(srcRow(r)));
+  if (!SRC.length) srcWrap.appendChild(el("p","src-note dim",
+    "no source manifest in this snapshot"));
+  s6.appendChild(srcWrap);
   app.appendChild(s6);
 
   /* colophon */

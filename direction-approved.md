@@ -44,3 +44,31 @@ consumer and celebratory. The graft takes Robinhood's **hierarchy** (what you
 see first, and how big) while keeping A's **palette and geometry**. Signal
 colour stays rationed to P&L direction and gate pass/fail, so the page still
 reads as an instrument rather than a brokerage app.
+
+---
+
+## Iteration · 2026-09-16 · data provenance extension
+
+Exemption #2 (iteration within an already-chosen direction). No new three-way
+gate: the shell, palette and geometry above are unchanged, and this only adds
+rows to section 09 using components that already exist (`section`, `kv`,
+`meter`, `spark-x`).
+
+**Form, derived from content — the five questions:**
+
+| question | answer |
+|---|---|
+| narrative role | disclosure. Section 09 is where the system says what it stands on and where that footing is thin. Not a hero, not a summary. |
+| viewing distance | 1m, laptop. Existing type scale holds. |
+| visual temperature | cold, authoritative. This section discloses limits; anything celebratory here would be dishonest. Signal colour only where a source falls below its floor. |
+| capacity | four sources now, not one. Four repeats of the current block would be four times too tall — so the unit has to be a compact row, not a stacked panel. |
+| **visual motif** | **every source declares its own incompleteness.** |
+
+**Where the motif comes from.** The single most-measured fact about this
+system is what fraction of reality it can see: 82.7% of the universe priced,
+129 departed names invisible, and a walk-forward that reads flat partly
+because of it. So the section becomes a column of coverage bars on one shared
+axis — four sources, same scale, weakest bar obvious at a glance. A complete
+source shows a full bar, which is the comparison doing its job rather than a
+decoration. No other subject would produce this form; it exists because
+survivorship is this project's binding constraint.
