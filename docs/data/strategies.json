@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-16T10:16:51+00:00",
- "generation": 1525,
- "trials": 163887,
+ "updated": "2026-09-16T10:32:51+00:00",
+ "generation": 1612,
+ "trials": 172944,
  "promoted": false,
  "strategies": [
   {
@@ -86,13 +86,13 @@
     "corr_bench": 0.8933960070799708,
     "n_folds": 8,
     "ok": true,
-    "dsr": 0.27502927122779713,
+    "dsr": 0.2684151299661188,
     "sr_ann_excess": 1.309164475945461,
-    "sr_star_ann": 1.540136085795447,
-    "trials_total": 163887,
-    "trials_effective": 16774,
-    "independence": 0.1023501837445447,
-    "pbo": 0.32857142857142857
+    "sr_star_ann": 1.547842291184393,
+    "trials_total": 172944,
+    "trials_effective": 18246,
+    "independence": 0.1055048024042369,
+    "pbo": 0.2714285714285714
    }
   },
   {
@@ -164,8 +164,8 @@
    }
   },
   {
-   "fingerprint": "90f1c3f20f29768e",
-   "canonical": "min(min(min(min(min(m_breadth, sub(downside_vol_63, -0.2656)), sub(rev_21, -0.2797)), add(vol_21, vol_21)), sub(rev_21, -0.2797)), add(vol_21, vol_21))|k=20|rb=10|w=equal",
+   "fingerprint": "f4bdd8550c474bc1",
+   "canonical": "min(min(min(min(min(m_breadth, sub(downside_vol_63, -0.1852)), sub(rev_21, -0.2797)), mul(0.7866, pct_52w_high)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
@@ -196,7 +196,7 @@
           },
           "right": {
            "t": "const",
-           "value": -0.2656
+           "value": -0.1852
           }
          }
         },
@@ -215,14 +215,14 @@
        },
        "right": {
         "t": "bin",
-        "op": "add",
+        "op": "mul",
         "left": {
-         "t": "feat",
-         "name": "vol_21"
+         "t": "const",
+         "value": 0.7866
         },
         "right": {
          "t": "feat",
-         "name": "vol_21"
+         "name": "pct_52w_high"
         }
        }
       },
@@ -248,33 +248,33 @@
       },
       "right": {
        "t": "feat",
-       "name": "vol_21"
+       "name": "vol_126"
       }
      }
     },
     "n_positions": 20,
     "rebalance_days": 10,
     "weighting": "equal",
-    "born": 1241,
+    "born": 1597,
     "parents": [
-     "e71a12d0e64bdd04",
-     "6a1adb1398f3c764"
+     "c898497e38900a54",
+     "0388189d033b1b96"
     ],
-    "operator": "crossover",
+    "operator": "jitter",
     "meta": {},
-    "fingerprint": "90f1c3f20f29768e",
-    "canonical": "min(min(min(min(min(m_breadth, sub(downside_vol_63, -0.2656)), sub(rev_21, -0.2797)), add(vol_21, vol_21)), sub(rev_21, -0.2797)), add(vol_21, vol_21))|k=20|rb=10|w=equal"
+    "fingerprint": "f4bdd8550c474bc1",
+    "canonical": "min(min(min(min(min(m_breadth, sub(downside_vol_63, -0.1852)), sub(rev_21, -0.2797)), mul(0.7866, pct_52w_high)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.15117659948556658,
-    "median_alpha": 0.11875957402125434,
-    "mean_ir": 1.807664543185708,
-    "worst_fold_alpha": 0.04707625253202297,
-    "alpha_tstat": 3.8433562931467,
-    "total_trades": 4795,
-    "ann_turnover": 26.41783934490936,
-    "corr_bench": 0.901119983348508,
+    "mean_alpha": 0.14942450379805053,
+    "median_alpha": 0.15299155602141049,
+    "mean_ir": 1.9126285701787467,
+    "worst_fold_alpha": 0.044149509112267935,
+    "alpha_tstat": 4.487137666297955,
+    "total_trades": 4844,
+    "ann_turnover": 26.80451463620721,
+    "corr_bench": 0.9200907793438909,
     "n_folds": 8,
     "ok": true
    }
