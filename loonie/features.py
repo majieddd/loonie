@@ -150,7 +150,8 @@ def cs_demean(a: np.ndarray, mask: np.ndarray | None = None) -> np.ndarray:
 # =============================================================================
 #  The feature set
 # =============================================================================
-def build(panel, macro: bool = True, peers: bool = True) -> dict:
+def build(panel, macro: bool = True, peers: bool = True,
+          fundamentals: bool = True) -> dict:
     """Compute the terminal feature dictionary from a Panel. All causal.
 
     `macro=True` appends the regime series from macro.py -- (T,) vectors
@@ -252,6 +253,19 @@ def build(panel, macro: bool = True, peers: bool = True) -> dict:
             print("[features] macro regime series unavailable (%s: %s); "
                   "continuing with cross-sectional features only"
                   % (type(e).__name__, e))
+
+    # Everything above is derived from price and volume. Factor attribution
+    # showed what that omission costs: the search loads -0.19 on RMW across
+    # its best candidates -- a persistent bet on weak-profitability companies
+    # placed by a process that cannot see profitability. These terminals are
+    # keyed to SEC filing dates, never to the periods they describe.
+    if fundamentals:
+        try:
+            from . import fundamentals as fund_mod
+            f.update(fund_mod.build(panel))
+        except Exception as e:
+            print("[features] fundamentals unavailable (%s: %s); continuing"
+                  % (type(e).__name__, e))
     return f
 
 
@@ -314,6 +328,7 @@ FAMILIES = {
     "market_relative": ("beta_", "idio_vol"),
     "macro": ("m_",),
     "peer": ("peer_",),
+    "fundamental": ("f_",),
 }
 
 

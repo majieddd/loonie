@@ -1843,3 +1843,156 @@ def test_attribution_never_reaches_the_strategy_search():
     for mod in SEARCH_PATH:
         assert "factors" not in _imports_of(mod), \
             "loonie/%s.py imports the factor library" % mod
+
+
+# =============================================================================
+#  Fundamentals -- the filing date is the only honest key
+# =============================================================================
+def _filings(rows) -> "pd.DataFrame":
+    """Build a facts frame from (concept, start, end, filed, val) tuples."""
+    df = pd.DataFrame(rows, columns=["concept", "start", "end", "filed", "val"])
+    for c in ("start", "end", "filed"):
+        df[c] = pd.to_datetime(df[c])
+    df["tag"] = df["concept"]
+    df["form"] = "10-Q"
+    return df.sort_values("filed")
+
+
+def test_a_fact_is_invisible_until_the_day_it_was_filed():
+    """The single most important property in this module.
+
+    Apple's FY2008 balance sheet was filed ten months after the period it
+    describes. A feature keyed to the period end would put information into a
+    backtest that nobody could have had, produce a spectacular equity curve,
+    and pass every other test in this file.
+    """
+    from loonie import fundamentals as FU
+
+    dates = pd.bdate_range("2020-01-01", periods=260)
+    df = _filings([
+        ("assets", None, "2020-03-31", "2020-11-15", 500.0),   # filed LATE
+    ])
+    s = FU._known_series(df, "assets", dates, flow=False)
+
+    before = dates < pd.Timestamp("2020-11-15")
+    assert np.all(np.isnan(s[before])), \
+        "the value leaked into dates before it was filed"
+    assert np.all(s[~before] == 500.0), \
+        "the value never appeared after its filing date"
+
+
+def test_a_restatement_lands_on_its_own_filing_date():
+    """An amended figure corrects the record going forward, not backwards.
+
+    As of a date between the two filings, a reader had the original number.
+    A panel that shows the revised one is quietly telling the strategy how
+    the correction turned out.
+    """
+    from loonie import fundamentals as FU
+
+    dates = pd.bdate_range("2021-01-01", periods=400)
+    df = _filings([
+        ("assets", None, "2021-03-31", "2021-05-01", 100.0),
+        ("assets", None, "2021-03-31", "2021-09-01", 140.0),   # restated
+    ])
+    s = FU._known_series(df, "assets", dates, flow=False)
+
+    mid = int(dates.searchsorted(pd.Timestamp("2021-07-01")))
+    end = int(dates.searchsorted(pd.Timestamp("2021-10-01")))
+    assert s[mid] == 100.0, "the restated value leaked backwards"
+    assert s[end] == 140.0, "the restatement never took effect"
+
+
+def test_flows_are_trailing_twelve_months_not_one_quarter():
+    """A single quarter is seasonal.
+
+    Comparing one company's Q4 against another's Q2 across a cross-section
+    measures the calendar, not the companies.
+    """
+    from loonie import fundamentals as FU
+
+    dates = pd.bdate_range("2022-01-01", periods=500)
+    qs = [("2021-10-01", "2021-12-31", "2022-02-01", 10.0),
+          ("2022-01-01", "2022-03-31", "2022-05-01", 20.0),
+          ("2022-04-01", "2022-06-30", "2022-08-01", 30.0),
+          ("2022-07-01", "2022-09-30", "2022-11-01", 40.0)]
+    df = _filings([("net_income", s, e, f, v) for s, e, f, v in qs])
+    s = FU._known_series(df, "net_income", dates, flow=True)
+
+    before4 = int(dates.searchsorted(pd.Timestamp("2022-10-01")))
+    after4 = int(dates.searchsorted(pd.Timestamp("2022-11-02")))
+    assert np.isnan(s[before4]), "reported a TTM from fewer than four quarters"
+    assert s[after4] == 100.0, "TTM is not the sum of the last four quarters"
+
+
+def test_fundamental_features_are_causal():
+    """Same standard the price features are held to: truncate and re-run."""
+    from loonie import fundamentals as FU
+
+    full = synthetic_panel(T=600, N=6, seed=23)
+    cut = 400
+    rng = np.random.default_rng(3)
+    facts = {}
+    for t in full.tickers:
+        rows = []
+        for q in range(8):
+            end = full.dates[min(60 * q + 55, len(full.dates) - 1)]
+            filed = full.dates[min(60 * q + 59, len(full.dates) - 1)]
+            for c in ("assets", "equity", "liabilities", "shares"):
+                rows.append((c, None, end, filed, float(rng.uniform(50, 500))))
+            for c in ("net_income", "revenue", "gross_profit"):
+                rows.append((c, full.dates[60 * q], end, filed,
+                             float(rng.uniform(1, 40))))
+        facts[t] = _filings(rows)
+
+    trunc = Panel(dates=full.dates[:cut], tickers=full.tickers,
+                  bars={k: v[:cut] for k, v in full.bars.items()},
+                  member=full.member[:cut], tradable=full.tradable[:cut],
+                  coverage=full.coverage)
+
+    a, b = FU.build(full, facts), FU.build(trunc, facts)
+    offenders = []
+    for name in a:
+        x, y = a[name][:cut], b[name]
+        both = np.isfinite(x) & np.isfinite(y)
+        if both.sum() == 0:
+            continue
+        if not np.allclose(x[both], y[both], rtol=1e-4, atol=1e-6):
+            offenders.append(name)
+    assert not offenders, "fundamentals peek at the future: %s" % offenders
+
+
+def test_missing_fundamentals_do_not_become_a_survivorship_signal():
+    """A feature that is NaN exactly for the names that later delisted is a
+    survivorship leak wearing a balance sheet.
+
+    The search would learn "avoid names with no fundamentals" and score
+    beautifully, because absence of a filing correlates with the company
+    ceasing to exist. Absence must be uninformative about the future, so the
+    features must be NaN -- never a filled sentinel the search can rank on.
+    """
+    from loonie import fundamentals as FU
+
+    panel = synthetic_panel(T=300, N=6, seed=29, kill={4: 200, 5: 220})
+    facts = {}
+    for t in panel.tickers[:4]:          # the two doomed names file nothing
+        facts[t] = _filings([
+            ("assets", None, panel.dates[50], panel.dates[55], 300.0),
+            ("net_income", panel.dates[0], panel.dates[50],
+             panel.dates[55], 12.0)])
+
+    out = FU.build(panel, facts)
+    for name, arr in out.items():
+        col = arr[:, 4:]
+        assert np.all(np.isnan(col)), \
+            "%s invented a value for a name with no filings" % name
+
+
+def test_fundamentals_never_reach_the_search_without_passing_causality():
+    """Fundamentals join the feature set through features.build, never by a
+    back door that skips the causality test the rest of the terminals face."""
+    from loonie import fundamentals as FU
+
+    assert hasattr(FU, "FUNDAMENTAL_NAMES") and FU.FUNDAMENTAL_NAMES
+    assert all(n.startswith("f_") for n in FU.FUNDAMENTAL_NAMES), \
+        "fundamental terminals must be namespaced so they are identifiable"
