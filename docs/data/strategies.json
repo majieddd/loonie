@@ -1,200 +1,204 @@
 {
- "updated": "2026-09-16T15:35:37+00:00",
- "generation": 27,
- "trials": 4130,
+ "updated": "2026-09-16T15:51:38+00:00",
+ "generation": 80,
+ "trials": 15398,
  "promoted": false,
  "strategies": [
   {
-   "fingerprint": "8a69c66b12b7ad2f",
-   "canonical": "max(rev_21, sigmoid(max(rev_21, sigmoid(max(rev_21, sigmoid(-0.5604))))))|k=15|rb=21|w=score",
+   "fingerprint": "c8d31f8ad246151d",
+   "canonical": "rank(ite(mom_1, mul(rank(ite(m_mkt_vol, idio_vol_126, mom_5)), sub(0.962, m_oil)), sigmoid(tsmean_126(beta_126))))|k=10|rb=1|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
-     "t": "bin",
-     "op": "max",
-     "left": {
-      "t": "feat",
-      "name": "rev_21"
-     },
-     "right": {
-      "t": "un",
-      "op": "sigmoid",
-      "window": 0,
-      "child": {
+     "t": "un",
+     "op": "rank",
+     "window": 0,
+     "child": {
+      "t": "ite",
+      "cond": {
+       "t": "feat",
+       "name": "mom_1"
+      },
+      "a": {
        "t": "bin",
-       "op": "max",
+       "op": "mul",
        "left": {
-        "t": "feat",
-        "name": "rev_21"
-       },
-       "right": {
         "t": "un",
-        "op": "sigmoid",
+        "op": "rank",
         "window": 0,
         "child": {
-         "t": "bin",
-         "op": "max",
-         "left": {
+         "t": "ite",
+         "cond": {
           "t": "feat",
-          "name": "rev_21"
+          "name": "m_mkt_vol"
          },
-         "right": {
-          "t": "un",
-          "op": "sigmoid",
-          "window": 0,
-          "child": {
-           "t": "const",
-           "value": -0.5604
-          }
+         "a": {
+          "t": "feat",
+          "name": "idio_vol_126"
+         },
+         "b": {
+          "t": "feat",
+          "name": "mom_5"
          }
+        }
+       },
+       "right": {
+        "t": "bin",
+        "op": "sub",
+        "left": {
+         "t": "const",
+         "value": 0.962
+        },
+        "right": {
+         "t": "feat",
+         "name": "m_oil"
+        }
+       }
+      },
+      "b": {
+       "t": "un",
+       "op": "sigmoid",
+       "window": 0,
+       "child": {
+        "t": "un",
+        "op": "tsmean",
+        "window": 126,
+        "child": {
+         "t": "feat",
+         "name": "beta_126"
         }
        }
       }
      }
     },
-    "n_positions": 15,
-    "rebalance_days": 21,
-    "weighting": "score",
-    "born": 27,
-    "parents": [
-     "b88dcee7730aaaab",
-     "06da2e2619c2991c"
-    ],
-    "operator": "params",
+    "n_positions": 10,
+    "rebalance_days": 1,
+    "weighting": "equal",
+    "born": 75,
+    "parents": [],
+    "operator": "init",
     "meta": {},
-    "fingerprint": "8a69c66b12b7ad2f",
-    "canonical": "max(rev_21, sigmoid(max(rev_21, sigmoid(max(rev_21, sigmoid(-0.5604))))))|k=15|rb=21|w=score"
+    "fingerprint": "c8d31f8ad246151d",
+    "canonical": "rank(ite(mom_1, mul(rank(ite(m_mkt_vol, idio_vol_126, mom_5)), sub(0.962, m_oil)), sigmoid(tsmean_126(beta_126))))|k=10|rb=1|w=equal"
    },
    "cv": {
-    "frac_positive": 1.0,
-    "mean_alpha": 0.2770007498130045,
-    "median_alpha": 0.17970487902865354,
-    "mean_ir": 1.5832777983136572,
-    "worst_fold_alpha": 0.03259297350015361,
-    "alpha_tstat": 2.4322406788852406,
-    "total_trades": 1375,
-    "ann_turnover": 10.48734537120859,
-    "corr_bench": 0.7061262571640642,
+    "frac_positive": 0.125,
+    "mean_alpha": -0.13994663669800722,
+    "median_alpha": -0.13425995974718,
+    "mean_ir": -0.5760105839170613,
+    "worst_fold_alpha": -0.4577286748483717,
+    "alpha_tstat": -1.6670796597808117,
+    "total_trades": 26949,
+    "ann_turnover": 347.9460531873028,
+    "corr_bench": 0.7933762085647649,
     "n_folds": 8,
     "ok": true,
-    "val_alpha": -0.04185242241231366,
-    "val_ir": -0.11835931452258833,
-    "val_t": -0.29052749000531586,
+    "val_alpha": -0.16761113226044028,
+    "val_ir": -0.5985275146297333,
+    "val_t": -1.191566405914633,
     "val_sessions": 426,
-    "dsr": 0.34172016784980797,
-    "sr_ann_excess": 1.0430426319573964,
-    "sr_star_ann": 1.1938775837831326,
-    "trials_total": 4130,
-    "trials_effective": 908,
-    "independence": 0.21988769265524447,
-    "pbo": 0.3142857142857143
+    "dsr": 2.4088616298254014e-06,
+    "sr_ann_excess": -0.4130495442079745,
+    "sr_star_ann": 1.4090550272769566,
+    "trials_total": 15398,
+    "trials_effective": 2787,
+    "independence": 0.18099266002789255,
+    "pbo": 0.14285714285714285
    }
   },
   {
-   "fingerprint": "76e73b64ea921901",
-   "canonical": "max(rev_21, sigmoid(-0.5765))|k=15|rb=21|w=score",
+   "fingerprint": "29ffcc129e424ab2",
+   "canonical": "intraday_range|k=40|rb=1|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
-     "t": "bin",
-     "op": "max",
-     "left": {
-      "t": "feat",
-      "name": "rev_21"
-     },
-     "right": {
-      "t": "un",
-      "op": "sigmoid",
-      "window": 0,
-      "child": {
-       "t": "const",
-       "value": -0.5765
-      }
-     }
+     "t": "feat",
+     "name": "intraday_range"
     },
-    "n_positions": 15,
-    "rebalance_days": 21,
-    "weighting": "score",
-    "born": 26,
-    "parents": [
-     "1c6615786975f335",
-     "1c6615786975f335"
-    ],
-    "operator": "params",
+    "n_positions": 40,
+    "rebalance_days": 1,
+    "weighting": "equal",
+    "born": 75,
+    "parents": [],
+    "operator": "init",
     "meta": {},
-    "fingerprint": "76e73b64ea921901",
-    "canonical": "max(rev_21, sigmoid(-0.5765))|k=15|rb=21|w=score"
+    "fingerprint": "29ffcc129e424ab2",
+    "canonical": "intraday_range|k=40|rb=1|w=equal"
    },
    "cv": {
-    "frac_positive": 0.875,
-    "mean_alpha": 0.2656398094635096,
-    "median_alpha": 0.1797048799530637,
-    "mean_ir": 1.5607926593490098,
-    "worst_fold_alpha": -0.05243017142841368,
-    "alpha_tstat": 2.3621459194739303,
-    "total_trades": 1378,
-    "ann_turnover": 10.456942774534191,
-    "corr_bench": 0.7099972753354783,
+    "frac_positive": 0.0,
+    "mean_alpha": -0.2612459736853642,
+    "median_alpha": -0.26798079684621845,
+    "mean_ir": -1.671939627077635,
+    "worst_fold_alpha": -0.42374605668221044,
+    "alpha_tstat": -4.660866892059056,
+    "total_trades": 105118,
+    "ann_turnover": 328.29417213646923,
+    "corr_bench": 0.894029661675861,
     "n_folds": 8,
-    "ok": true,
-    "val_alpha": -0.04236422946814063,
-    "val_ir": -0.1214701959951481,
-    "val_t": -0.2961738789014025,
-    "val_sessions": 426,
-    "dsr": 0.2837541197485707,
-    "sr_ann_excess": 1.015705968407302,
-    "sr_star_ann": 1.2279113722626855,
-    "trials_total": 3951,
-    "trials_effective": 1207,
-    "independence": 0.30541471403423215,
-    "pbo": 0.2
+    "ok": true
    }
   },
   {
-   "fingerprint": "89d7a0eae4d57fa4",
-   "canonical": "max(rev_21, sigmoid(-0.4785))|k=15|rb=21|w=score",
+   "fingerprint": "181cb90fc1fa7b9f",
+   "canonical": "rank(ite(close_strength, sigmoid(close_strength), rank(tsrank_21(-0.806))))|k=30|rb=1|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
-     "t": "bin",
-     "op": "max",
-     "left": {
-      "t": "feat",
-      "name": "rev_21"
-     },
-     "right": {
-      "t": "un",
-      "op": "sigmoid",
-      "window": 0,
-      "child": {
-       "t": "const",
-       "value": -0.4785
+     "t": "un",
+     "op": "rank",
+     "window": 0,
+     "child": {
+      "t": "ite",
+      "cond": {
+       "t": "feat",
+       "name": "close_strength"
+      },
+      "a": {
+       "t": "un",
+       "op": "sigmoid",
+       "window": 0,
+       "child": {
+        "t": "feat",
+        "name": "close_strength"
+       }
+      },
+      "b": {
+       "t": "un",
+       "op": "rank",
+       "window": 0,
+       "child": {
+        "t": "un",
+        "op": "tsrank",
+        "window": 21,
+        "child": {
+         "t": "const",
+         "value": -0.806
+        }
+       }
       }
      }
     },
-    "n_positions": 15,
-    "rebalance_days": 21,
-    "weighting": "score",
-    "born": 27,
-    "parents": [
-     "76e73b64ea921901",
-     "ff093e28a6a2d4f3"
-    ],
-    "operator": "jitter",
+    "n_positions": 30,
+    "rebalance_days": 1,
+    "weighting": "equal",
+    "born": 75,
+    "parents": [],
+    "operator": "init",
     "meta": {},
-    "fingerprint": "89d7a0eae4d57fa4",
-    "canonical": "max(rev_21, sigmoid(-0.4785))|k=15|rb=21|w=score"
+    "fingerprint": "181cb90fc1fa7b9f",
+    "canonical": "rank(ite(close_strength, sigmoid(close_strength), rank(tsrank_21(-0.806))))|k=30|rb=1|w=equal"
    },
    "cv": {
-    "frac_positive": 0.875,
-    "mean_alpha": 0.27323362506372506,
-    "median_alpha": 0.19629281792840947,
-    "mean_ir": 1.560082800920721,
-    "worst_fold_alpha": -0.06783405822455685,
-    "alpha_tstat": 2.323821722234139,
-    "total_trades": 1363,
-    "ann_turnover": 10.465518991401847,
-    "corr_bench": 0.683065603654213,
+    "frac_positive": 0.0,
+    "mean_alpha": -0.18629327304643153,
+    "median_alpha": -0.17253729791473493,
+    "mean_ir": -2.600105536661162,
+    "worst_fold_alpha": -0.37399544612024804,
+    "alpha_tstat": -6.365310532314452,
+    "total_trades": 77978,
+    "ann_turnover": 318.48706814961423,
+    "corr_bench": 0.9445656070696941,
     "n_folds": 8,
     "ok": true
    }
