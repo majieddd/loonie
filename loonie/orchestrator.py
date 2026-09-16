@@ -82,6 +82,9 @@ class Job:
     last_detail: str = ""
     weekday_only: bool = False
     proc: object = None
+    # Set when WE stop a worker deliberately (a source-change reload), so the
+    # reaper does not record our own restart as a crash.
+    terminating: bool = False
     enabled: bool = True
     meta: dict = field(default_factory=dict)
 
@@ -171,10 +174,20 @@ class Orchestrator:
         rc = job.proc.poll()
         if rc is None:
             return
-        job.last_status = "ok" if rc == 0 else "failed"
-        if rc != 0:
-            job.failures += 1
-            job.last_detail = "exit %d" % rc
+        if job.terminating:
+            # We asked it to stop. On Windows terminate() surfaces as a
+            # non-zero exit, and counting that as a failure both corrupted the
+            # failure statistics and drove the restart backoff up (80s, 100s,
+            # ...) -- so every code edit made the next reload slower than the
+            # last. A deliberate stop is not a crash.
+            job.last_status = "reloaded"
+            job.last_detail = "stopped for reload"
+            job.terminating = False
+        else:
+            job.last_status = "ok" if rc == 0 else "failed"
+            if rc != 0:
+                job.failures += 1
+                job.last_detail = "exit %d" % rc
         job.proc = None
         fh = self.children.pop(job.name, None)
         if fh:
@@ -184,7 +197,9 @@ class Orchestrator:
                 pass
         if job.name == "validate" and rc == 0:
             self._record_validation()
-        self._log("%s finished rc=%d" % (job.name, rc))
+        self._log("%s %s (rc=%d)" % (
+            job.name, "stopped for reload" if job.last_status == "reloaded"
+            else "finished", rc))
 
     # ---------------------------------------------------------- validation
     def _record_validation(self):
@@ -264,6 +279,7 @@ class Orchestrator:
                   "(reload #%d)" % self.reloads)
         for job in self.jobs.values():
             if job.continuous and job.proc is not None:
+                job.terminating = True
                 try:
                     job.proc.terminate()
                 except Exception:
@@ -282,12 +298,13 @@ class Orchestrator:
                 # Restart a dead continuous worker, but back off so a job that
                 # crashes on startup does not spin the CPU respawning forever.
                 if job.proc is None:
-                    backoff = min(300.0, 10.0 * (1 + job.failures))
+                    # A reload restarts immediately; only genuine crashes back off.
+                    reloaded = job.last_status == "reloaded"
+                    backoff = 0.0 if reloaded else min(300.0, 10.0 * (1 + job.failures))
                     if now - job.last_run >= backoff:
-                        if job.runs:
-                            job.failures += 1
-                            self._log("%s died; restarting after %.0fs backoff"
-                                      % (job.name, backoff))
+                        if job.runs and not reloaded:
+                            self._log("%s died unexpectedly; restarting after "
+                                      "%.0fs backoff" % (job.name, backoff))
                         self._spawn(job)
                 continue
 

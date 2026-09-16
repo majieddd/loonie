@@ -6,7 +6,7 @@
   "parsimony_hard": 2.0,
   "low_turnover": 1.0,
   "novelty_search": 1.0,
-  "mdl_parsimony": 1.0,
+  "mdl_parsimony": 4.0,
   "wide_explore": 3.0
  },
  "b": {
@@ -16,7 +16,7 @@
   "parsimony_hard": 2.0,
   "low_turnover": 1.0,
   "novelty_search": 1.0,
-  "mdl_parsimony": 1.0,
+  "mdl_parsimony": 2.0,
   "wide_explore": 12.0
  },
  "seen": {
@@ -26,7 +26,7 @@
   "parsimony_hard": 2,
   "low_turnover": 0,
   "novelty_search": 0,
-  "mdl_parsimony": 0,
+  "mdl_parsimony": 4,
   "wide_explore": 13
  },
  "survived": {
@@ -36,7 +36,7 @@
   "parsimony_hard": 1,
   "low_turnover": 0,
   "novelty_search": 0,
-  "mdl_parsimony": 0,
+  "mdl_parsimony": 3,
   "wide_explore": 2
  },
  "fwd_alpha": {
@@ -46,21 +46,31 @@
   "parsimony_hard": 0.01147264874643906,
   "low_turnover": 0.0,
   "novelty_search": 0.0,
-  "mdl_parsimony": 0.0,
+  "mdl_parsimony": 0.6820187408643944,
   "wide_explore": -0.3197515428720526
  },
  "cycles": {
   "qd_ir": 1,
   "qd_consistency": 1,
-  "elitist_ir": 5,
+  "elitist_ir": 6,
   "parsimony_hard": 0,
   "low_turnover": 3,
   "novelty_search": 1,
-  "mdl_parsimony": 0,
+  "mdl_parsimony": 1,
   "wide_explore": 3
  },
- "updated": "2026-09-16T15:54:14+00:00",
+ "updated": "2026-09-16T16:04:29+00:00",
  "table": [
+  {
+   "id": "mdl_parsimony",
+   "summary": "description-length complexity penalty",
+   "posterior": 0.6666666666666666,
+   "forward_rate": 0.75,
+   "mean_fwd_alpha": 0.1705046852160986,
+   "labelled": 4,
+   "cycles": 1,
+   "established": false
+  },
   {
    "id": "qd_ir",
    "summary": "MAP-Elites + information-ratio fitness",
@@ -108,7 +118,7 @@
    "forward_rate": null,
    "mean_fwd_alpha": null,
    "labelled": 0,
-   "cycles": 5,
+   "cycles": 6,
    "established": false
   },
   {
@@ -129,16 +139,6 @@
    "mean_fwd_alpha": null,
    "labelled": 0,
    "cycles": 1,
-   "established": false
-  },
-  {
-   "id": "mdl_parsimony",
-   "summary": "description-length complexity penalty",
-   "posterior": 0.5,
-   "forward_rate": null,
-   "mean_fwd_alpha": null,
-   "labelled": 0,
-   "cycles": 0,
    "established": false
   }
  ]
