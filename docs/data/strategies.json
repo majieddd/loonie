@@ -1,12 +1,12 @@
 {
- "updated": "2026-09-16T09:44:51+00:00",
- "generation": 1332,
- "trials": 145697,
+ "updated": "2026-09-16T10:00:51+00:00",
+ "generation": 1427,
+ "trials": 154639,
  "promoted": false,
  "strategies": [
   {
-   "fingerprint": "5aad0372ccf9aad2",
-   "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.1873)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal",
+   "fingerprint": "0ec17acd8acab1ee",
+   "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.1871)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
@@ -31,7 +31,7 @@
         },
         "right": {
          "t": "const",
-         "value": -0.1873
+         "value": -0.1871
         }
        }
       },
@@ -64,35 +64,35 @@
     "n_positions": 20,
     "rebalance_days": 10,
     "weighting": "equal",
-    "born": 1088,
+    "born": 1421,
     "parents": [
-     "9c04f574e80e9a7f",
-     "10e565087b4198d4"
+     "37b3e3b739b22588",
+     "3ea91c2cf4be643b"
     ],
     "operator": "jitter",
     "meta": {},
-    "fingerprint": "5aad0372ccf9aad2",
-    "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.1873)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal"
+    "fingerprint": "0ec17acd8acab1ee",
+    "canonical": "min(min(min(m_breadth, sub(downside_vol_63, -0.1871)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.14680135707721725,
+    "mean_alpha": 0.14685657204593727,
     "median_alpha": 0.122333207883314,
-    "mean_ir": 1.8133664168244712,
-    "worst_fold_alpha": 0.03233188168551337,
-    "alpha_tstat": 3.5766314545337945,
-    "total_trades": 4778,
-    "ann_turnover": 26.153624217382998,
-    "corr_bench": 0.8933827900756062,
+    "mean_ir": 1.8140302330137381,
+    "worst_fold_alpha": 0.03277360143527329,
+    "alpha_tstat": 3.5787879821056783,
+    "total_trades": 4777,
+    "ann_turnover": 26.13774343641928,
+    "corr_bench": 0.8933960070799708,
     "n_folds": 8,
     "ok": true,
-    "dsr": 0.2847698903569218,
-    "sr_ann_excess": 1.3085824289191674,
-    "sr_star_ann": 1.52836996580436,
-    "trials_total": 145697,
-    "trials_effective": 14762,
-    "independence": 0.10131887078137895,
-    "pbo": 0.42857142857142855
+    "dsr": 0.2826145592311019,
+    "sr_ann_excess": 1.309164475945461,
+    "sr_star_ann": 1.5314098237994016,
+    "trials_total": 154639,
+    "trials_effective": 15257,
+    "independence": 0.09866286101080576,
+    "pbo": 0.32857142857142857
    }
   },
   {
