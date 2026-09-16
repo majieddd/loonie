@@ -23,6 +23,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+# The Windows console defaults to cp1252, which cannot encode the arrows and
+# dashes used below; without this every run dies on a UnicodeEncodeError in a
+# print statement rather than in anything that matters.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
 import numpy as np  # noqa: E402
 
 from loonie import (backtest as bt, config, data, evolve, features,  # noqa: E402

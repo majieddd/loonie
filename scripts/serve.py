@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import functools
+import os
 import http.server
 import shutil
 import socket
@@ -28,6 +29,14 @@ import webbrowser
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# The Windows console defaults to cp1252, which cannot encode the arrows and
+# dashes used below; without this every run dies on a UnicodeEncodeError in a
+# print statement rather than in anything that matters.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 
 from loonie.config import ROOT  # noqa: E402
 
@@ -78,11 +87,18 @@ def start_tunnel(port: int):
     repo. The URL is random and changes on every restart -- fine for checking
     from a phone, not something to hand out.
     """
+    # PATH first, then the vendored copy in tools/ (gitignored, 52 MB).
     exe = shutil.which("cloudflared")
     if not exe:
-        print("[tunnel] cloudflared not found. Install with:")
+        local = ROOT / "tools" / ("cloudflared.exe" if os.name == "nt"
+                                  else "cloudflared")
+        if local.exists():
+            exe = str(local)
+    if not exe:
+        print("[tunnel] cloudflared not found. Either:")
         print("           winget install --id Cloudflare.cloudflared")
-        print("         then re-run with --tunnel")
+        print("         or drop the binary at tools/cloudflared.exe:")
+        print("           https://github.com/cloudflare/cloudflared/releases/latest")
         return None
 
     proc = subprocess.Popen(

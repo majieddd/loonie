@@ -150,8 +150,13 @@ def cs_demean(a: np.ndarray, mask: np.ndarray | None = None) -> np.ndarray:
 # =============================================================================
 #  The feature set
 # =============================================================================
-def build(panel) -> dict:
-    """Compute the terminal feature dictionary from a Panel. All causal."""
+def build(panel, macro: bool = True) -> dict:
+    """Compute the terminal feature dictionary from a Panel. All causal.
+
+    `macro=True` appends the regime series from macro.py -- (T,) vectors
+    broadcast across tickers, so the search can condition a cross-sectional
+    idea on the economic environment it is running in.
+    """
     c = panel.bars["close"].astype(np.float32)
     h = panel.bars["high"].astype(np.float32)
     lo = panel.bars["low"].astype(np.float32)
@@ -226,6 +231,16 @@ def build(panel) -> dict:
 
     for k in f:
         f[k] = np.where(np.isfinite(f[k]), f[k], np.nan).astype(np.float32)
+
+    if macro:
+        try:
+            from . import macro as macro_mod
+            m = macro_mod.build(panel.dates)
+            f.update(macro_mod.broadcast(m, len(panel.tickers)))
+        except Exception as e:
+            print("[features] macro regime series unavailable (%s: %s); "
+                  "continuing with cross-sectional features only"
+                  % (type(e).__name__, e))
     return f
 
 

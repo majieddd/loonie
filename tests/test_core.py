@@ -815,3 +815,157 @@ def test_dedupe_keeps_genuinely_different_strategies():
 
     assert ev._dedupe_by_behaviour() == []
     assert len(ev.hall_of_fame) == 2
+
+
+# =============================================================================
+#  Macro regime features
+# =============================================================================
+def test_macro_features_are_causal():
+    """A regime value at time t must not change when later data is removed.
+
+    Forward-filling onto the equity calendar is causal (it carries the last
+    known close). Back-filling would not be, and would be invisible in every
+    other test — the series would simply look prescient.
+    """
+    from loonie import macro
+
+    try:
+        raw = macro.fetch()
+    except Exception as e:
+        pytest.skip("macro cache unavailable: %s" % e)
+
+    dates = pd.DatetimeIndex(raw.index[-900:])
+    cut = 600
+    full = macro.build(dates)
+    trunc = macro.build(dates[:cut])
+
+    offenders = []
+    for k in full:
+        a, b = full[k][:cut], trunc[k]
+        both = np.isfinite(a) & np.isfinite(b)
+        if both.sum() == 0:
+            continue
+        if not np.allclose(a[both], b[both], rtol=1e-4, atol=1e-6):
+            offenders.append(k)
+    assert not offenders, "macro features peek at the future: %s" % offenders
+
+
+def test_macro_features_actually_switch_regime():
+    """The `ite` branch test is `> 0`, so a condition must cross zero.
+
+    The property that matters is not the fraction of time above zero — a real
+    regime is persistent, and credit conditions genuinely sat on one side for
+    most of 2021-2026. What matters is whether the condition ever *flips*: one
+    that never crosses zero makes its branch dead code, and the search would
+    spend generations breeding around a switch that cannot move.
+
+    Measured over the full available history, not a recent slice. An earlier
+    version of this test used the last 1,200 sessions and failed on m_credit at
+    88% — which was a true fact about that window, not a defect in the feature.
+    """
+    from loonie import macro
+
+    try:
+        raw = macro.fetch()
+    except Exception as e:
+        pytest.skip("macro cache unavailable: %s" % e)
+
+    m = macro.build(pd.DatetimeIndex(raw.index))
+    for k, v in m.items():
+        fin = v[np.isfinite(v)]
+        if len(fin) < 250:
+            continue
+        pos = float(np.mean(fin > 0))
+        assert 0.05 < pos < 0.95, (
+            "%s is above zero %.0f%% of the time over the full history" % (k, 100 * pos))
+        flips = int(np.sum(np.diff(np.sign(fin)) != 0))
+        assert flips >= 10, (
+            "%s crosses zero only %d times in %d sessions — its branch is "
+            "effectively dead" % (k, flips, len(fin)))
+        assert abs(float(np.mean(fin))) < 1.2, "%s is not centred (mean %.2f)" % (
+            k, float(np.mean(fin)))
+
+
+def test_macro_alone_carries_no_cross_sectional_signal():
+    """A macro series scores every stock identically, by construction.
+
+    This is the property that makes them safe to add as terminals: used alone
+    a genome gets a flat cross-section and selects arbitrarily, so fitness
+    will reject it. Their value is as `ite` conditions and as multipliers.
+    """
+    from loonie import macro
+
+    try:
+        raw = macro.fetch()
+    except Exception as e:
+        pytest.skip("macro cache unavailable: %s" % e)
+
+    m = macro.build(pd.DatetimeIndex(raw.index[-400:]))
+    wide = macro.broadcast(m, 12)
+    for k, v in wide.items():
+        assert v.shape == (400, 12)
+        row = v[-1]
+        fin = row[np.isfinite(row)]
+        if len(fin) > 1:
+            assert np.allclose(fin, fin[0]), "%s varies across tickers" % k
+
+
+# =============================================================================
+#  Walk-forward
+# =============================================================================
+def test_walkforward_segments_are_embargoed_and_ordered():
+    """Test segments must follow their training data with a gap, never overlap."""
+    import numpy as _np
+
+    T, segs, emb = 2180, 8, 10
+    edges = _np.linspace(0, T, segs + 1).astype(int)
+    prev_hi = -1
+    for s in range(1, segs):
+        train_hi = edges[s]
+        test_lo = edges[s] + emb
+        test_hi = edges[s + 1]
+        if test_hi - test_lo < 40 or train_hi < 300:
+            continue
+        assert test_lo > train_hi, "test segment must start after training ends"
+        assert test_lo - train_hi >= emb, "embargo gap missing"
+        assert test_lo > prev_hi, "segments overlap"
+        prev_hi = test_hi
+
+
+def test_honest_walkforward_searcher_cannot_see_its_test_segment():
+    """The whole point of --honest: the searcher is handed only past data.
+
+    The fast path re-ranks an archive built from the entire training window,
+    so its pool was selected knowing the forward segments. Measured, that
+    inflated one segment from -0.58% to +75.55% against the same 6.00%
+    benchmark. This asserts the honest path cannot do that.
+    """
+    from loonie import cv as cvmod
+    from loonie import evolve
+
+    p = synthetic_panel(T=900, N=25, seed=81)
+    f = features.build(p, macro=False)
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+
+    train_hi, emb = 500, 10
+    past = cvmod._slice_panel(p, 0, train_hi)
+    past_feats = {k: v[:train_hi] for k, v in f.items()}
+
+    assert past.shape[0] == train_hi
+    for k, v in past_feats.items():
+        assert v.shape[0] == train_hi, "%s leaked rows past the boundary" % k
+
+    ev = evolve.Evolver(c, past, past_feats, seed=9, verbose=False)
+    ev.seed_population(8)
+    assert ev.population
+
+    # Every fold the searcher used must lie strictly inside the past window.
+    for fold in ev.folds:
+        assert fold.stop <= train_hi, "a CV fold reached into the test segment"
+
+    # And the winner must still evaluate on the full panel afterwards.
+    winner = ev.population[0].genome
+    assert winner.score(f, p.tradable).shape == p.close.shape
+    assert train_hi + emb < p.shape[0], "fixture leaves no test segment"

@@ -1,0 +1,21 @@
+==================================================================
+  loonie dashboard
+==================================================================
+  serving   D:\trader\docs
+  local     http://localhost:8902/
+  this LAN  http://192.168.1.15:8902/   (phone, same wifi)
+==================================================================
+  Ctrl-C to stop
+
+
+  PUBLIC URL  https://mag-refrigerator-diamonds-psp.trycloudflare.com
+  (random, changes on restart; anyone with it can view)
+
+[serve] 404 /.env
+[serve] 404 /.env
+[serve] 404 /.env
+[serve] 404 /.env
+[serve] 404 /config.yaml
+[serve] 404 /config.yaml
+[serve] 404 /state/evolve_state.json
+[serve] 404 /state/evolve_state.json

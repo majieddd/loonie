@@ -186,6 +186,57 @@ weaker optimiser would never have found -3e-08.
 
 ---
 
+## The leak that survives a correct walk-forward
+
+Walk-forward validation is the standard answer to "did you overfit". Chop the
+history into segments, fit on the past, test on the next block, chain the
+results. Everyone knows to do it and it feels airtight.
+
+It is not, and the way it fails is worth spelling out because the failure
+produces a *spectacular* number rather than an obviously broken one.
+
+The first implementation here re-ranked the existing archive at each segment
+boundary — rank the candidates on segments 1..k, trade the winner on segment
+k+1. Every individual step is honest. The result:
+
+```
+strategy    45.04% annualised
+benchmark   12.92%
+alpha t      3.21
+```
+
+A 32-point annual excess with a t-statistic that clears every bar in this
+repository. It is entirely an artifact.
+
+The leak is one level up from the walk-forward itself. **The candidate pool was
+selected by a search that saw the whole training window**, forward segments
+included. A strategy only appears in that archive because it scored well across
+2016–2024 — which includes the very segment being "blindly" tested. Ranking on
+the past does not undo a pool chosen knowing the future. The walk-forward
+mechanics were correct; the population handed to them was already contaminated.
+
+Re-running with a fresh search per segment, trained strictly on prior data:
+
+| segment | contaminated | honest | benchmark |
+|---|---:|---:|---:|
+| 2018-03 → 2019-04 | **+75.55%** | **−0.58%** | +6.00% |
+| 2019-04 → 2020-05 | **+22.41%** | **−17.64%** | −10.01% |
+
+Seventy-six points of difference on one segment, from a change that touches
+nothing about the strategy and everything about who was allowed to see what.
+
+The general form: **any validation scheme inherits the leakage of whatever
+produced its candidates.** Purged CV, embargoes and walk-forward splits all
+police the boundary between train and test *within* one evaluation. None of
+them police the provenance of the thing being evaluated. If your candidate
+list was distilled from the full history, every downstream test is measuring a
+survivor, and it will tell you so in the most flattering possible terms.
+
+`scripts/walkforward.py` keeps both modes. The fast one prints
+`*** CONTAMINATED POOL ***` above its own output.
+
+---
+
 ## The correlated-trials problem
 
 A subtlety that took a revision to get right. Charging the deflation for every

@@ -180,11 +180,13 @@ loonie/
   allocator.py   Thompson sampling over live strategies
   portfolio.py   target book -> orders, position caps, no-trade band
   risk.py        latching kill switches
+  macro.py       16 causal regime series (VIX, curve, credit, breadth)
   publish.py     JSON snapshot the dashboard reads
   broker/        paper (local) + Alpaca (paper/live)
 scripts/
   fetch_data.py  run_evolve.py  run_trade.py
   evaluate_holdout.py  status.py  clear_halt.py
+  walkforward.py serve.py
   publish_dashboard.py  setup_pages.sh  install_scheduler.ps1
 docs/
   index.html     the dashboard (static; GitHub Pages)
@@ -209,6 +211,66 @@ count written down, instead of once at the end.
 
 Not investment advice. Backtested results are hypothetical. Paper trade for a
 long time.
+
+---
+
+## Macro regime features
+
+41 cross-sectional features compare stocks to each other. None of them knows
+whether the day is March 2020 or a quiet Tuesday in 2017, so a strategy can
+only express one idea and apply it identically in every environment.
+
+`loonie/macro.py` adds 16 regime series — VIX, the MOVE index, the 3m/5y/10y
+curve, HYG-over-LQD credit, the dollar, copper/gold, oil, utilities-over-
+discretionary rotation, small-over-large breadth, market drawdown and realised
+vol. All are **market-traded proxies, deliberately**: a yield or the VIX is
+priced continuously and revised never, whereas CPI and payrolls are published
+with a lag and then *restated*. A backtest reading the current value of a
+revised series is reading a number nobody had on the day.
+
+Two properties make them safe to hand to the search:
+
+- **Causal** — forward-filled from the last known close, then trailing
+  z-scored. Verified by `test_macro_features_are_causal`.
+- **Centred** — the grammar's branch test is `> 0`, and raw VIX is always
+  positive, so an un-centred series would send every branch the same way
+  forever. Z-scored, `ite(m_vix, A, B)` reads as *"if volatility is above its
+  own recent normal, do A, else B"* — the regime switch the `ite` node existed
+  for and never previously had anything to condition on.
+
+Adding them took effective independent hypotheses from **15,018 to 54,127** at
+a similar raw trial count, which says the new axis genuinely diversified the
+search rather than padding it.
+
+## Blind testing without spending the seal
+
+The sealed holdout answers *"is the strategy I picked any good?"* exactly once.
+`scripts/walkforward.py` answers a more useful question as often as you like:
+
+> If I had been running this system for the last eight years — picking the best
+> strategy from what I knew at the time and trading it forward — would I have
+> made money?
+
+That is the question that matters, because you will never trade "the strategy
+the search settled on in September 2026". You will trade whatever it thinks is
+best on each future day, and that changes.
+
+```bash
+python scripts/walkforward.py --honest      # the version whose number means something
+python scripts/walkforward.py               # fast, contaminated, upper bound only
+```
+
+**Use `--honest`.** The fast path re-ranks the existing archive at each segment
+boundary, and the archive is the problem: every strategy in it earned its place
+by scoring well across the *entire* training window, forward segments included.
+Ranking on the past does not undo a pool picked knowing the future. On its
+first run that flattered the procedure to **45% annualised against a 12.9%
+universe** — which is not a result, it is a leak, and the script now says so in
+capitals before printing the number.
+
+`--honest` runs a fresh search per segment on data strictly before it, so the
+searcher never sees the segment it is tested on. Roughly N times slower, and
+the only version worth quoting.
 
 ---
 

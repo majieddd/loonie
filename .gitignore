@@ -21,6 +21,9 @@ reports/
 # Design exploration drafts. Kept out of the published site.
 design-demos/
 
+# Vendored binaries (cloudflared is 52 MB and comes from upstream releases).
+tools/
+
 # These ARE committed on purpose:
 #   state/paper_account.json   the book, ~11 KB, changes only on a trade
 #   state/risk_state.json      kill-switch state and breach log
