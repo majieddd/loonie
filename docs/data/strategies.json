@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-16T21:59:48+00:00",
- "generation": 1551,
- "trials": 181751,
+ "updated": "2026-09-16T22:14:50+00:00",
+ "generation": 1586,
+ "trials": 186088,
  "promoted": true,
  "strategies": [
   {
@@ -125,13 +125,13 @@
     "corr_bench": 0.7534603616571842,
     "n_folds": 8,
     "ok": true,
-    "dsr": 0.8153525097858438,
+    "dsr": 0.8241932466299433,
     "sr_ann_excess": 1.8484882961168698,
-    "sr_star_ann": 1.5192831824481692,
-    "trials_total": 181751,
-    "trials_effective": 33008,
-    "independence": 0.18160851662351205,
-    "pbo": 0.04285714285714286,
+    "sr_star_ann": 1.5069372144957018,
+    "trials_total": 186088,
+    "trials_effective": 28517,
+    "independence": 0.15324532144149633,
+    "pbo": 0.18571428571428572,
     "stress_alpha": 0.30465579001088827,
     "stress_ir": 1.8608169080699153,
     "stress_multiplier": 3.0,
@@ -140,8 +140,8 @@
     "val_t": 0.013912429515992137,
     "val_sessions": 426,
     "null_percentile": 1.0,
-    "null_mean_ir": -0.03544270134324356,
-    "null_p95_ir": 0.5507396193362006,
+    "null_mean_ir": 0.18273159562513894,
+    "null_p95_ir": 0.645289860543299,
     "real_ir": 1.9684593043439373,
     "n": 24
    }
