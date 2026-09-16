@@ -1,0 +1,371 @@
+{
+ "generation": 1530,
+ "trials": 177773,
+ "panel": {
+  "start": "2016-01-04",
+  "end": "2026-09-16",
+  "names": 616
+ },
+ "rows": [
+  {
+   "fingerprint": "4fdec98bb58e226e",
+   "source": "archive",
+   "canonical": "sqrt_abs(ite(add(sigmoid(sub(m_oil, peer_beta)), demean(intraday_range)), log1p(0.4179), downside_vol_63))|k=40|rb=10|w=score",
+   "fitness": 1.5937585543523536,
+   "bench_alpha_ann": 0.05895049342744173,
+   "bench_alpha_t": 1.389101100894862,
+   "ir": 0.5012413678567578,
+   "factor": {
+    "ok": true,
+    "n": 2659,
+    "span": "2016-01-04..2026-07-31",
+    "alpha_daily": 0.00024893897890585604,
+    "alpha_ann": 0.06273262268427572,
+    "alpha_tstat": 1.4583850472957223,
+    "betas": {
+     "Mkt-RF": 0.039218782832698904,
+     "SMB": -0.05702400403396748,
+     "HML": -0.013549112354262142,
+     "RMW": -0.09624035736515532,
+     "CMA": 0.03276640727755756,
+     "Mom": -0.04245999356771876
+    },
+    "beta_tstats": {
+     "Mkt-RF": 1.6893896308146292,
+     "SMB": -1.8984410802777887,
+     "HML": -0.39799185318997043,
+     "RMW": -2.2580896133201405,
+     "CMA": 0.5955729935206099,
+     "Mom": -1.849645526146739
+    },
+    "r2": 0.01050661491076954,
+    "resid_vol_ann": 0.12717668055750114,
+    "factors_used": [
+     "Mkt-RF",
+     "SMB",
+     "HML",
+     "RMW",
+     "CMA",
+     "Mom"
+    ],
+    "nw_lags": 9
+   },
+   "verdict": "inconclusive"
+  },
+  {
+   "fingerprint": "4ae18252e23ad180",
+   "source": "archive",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, tsrank_126(peer_beta))), neg(intraday_range)), div(m_credit_chg, -0.16",
+   "fitness": 1.5264373847978732,
+   "bench_alpha_ann": 0.1530821752679255,
+   "bench_alpha_t": 2.373634226100141,
+   "ir": 0.7965397863537239,
+   "factor": {
+    "ok": true,
+    "n": 2659,
+    "span": "2016-01-04..2026-07-31",
+    "alpha_daily": 0.0006308843993924845,
+    "alpha_ann": 0.1589828686469061,
+    "alpha_tstat": 2.414059049775884,
+    "betas": {
+     "Mkt-RF": 0.031785847772938275,
+     "SMB": -0.03249979087237298,
+     "HML": -0.0018310095213727173,
+     "RMW": -0.2536882529459207,
+     "CMA": -0.045250625304913306,
+     "Mom": -0.03499057713627302
+    },
+    "beta_tstats": {
+     "Mkt-RF": 1.0667508129540961,
+     "SMB": -0.7496912974311789,
+     "HML": -0.024966101440079786,
+     "RMW": -3.923761164696841,
+     "CMA": -0.47157596797062973,
+     "Mom": -0.7818433677350263
+    },
+    "r2": 0.017503074429097487,
+    "resid_vol_ann": 0.19530044196182172,
+    "factors_used": [
+     "Mkt-RF",
+     "SMB",
+     "HML",
+     "RMW",
+     "CMA",
+     "Mom"
+    ],
+    "nw_lags": 9
+   },
+   "verdict": "survives factors"
+  },
+  {
+   "fingerprint": "5031fbc5fbebeb7e",
+   "source": "archive",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.3767), rank(downside_vol_63))|k=30|rb=21|w=score",
+   "fitness": 1.5236324056922734,
+   "bench_alpha_ann": 0.0780182766378145,
+   "bench_alpha_t": 1.1296965644219616,
+   "ir": 0.41891329568169605,
+   "factor": {
+    "ok": true,
+    "n": 2659,
+    "span": "2016-01-04..2026-07-31",
+    "alpha_daily": 0.000309712892323821,
+    "alpha_ann": 0.07804764886560289,
+    "alpha_tstat": 1.11572176817763,
+    "betas": {
+     "Mkt-RF": 0.04667739446618307,
+     "SMB": -0.059009222612310605,
+     "HML": -0.008604326002517898,
+     "RMW": -0.33294380509272964,
+     "CMA": -0.05964778571291801,
+     "Mom": -0.03499232369217978
+    },
+    "beta_tstats": {
+     "Mkt-RF": 1.4670785242821383,
+     "SMB": -1.1440456923594455,
+     "HML": -0.09787717700887867,
+     "RMW": -3.668021618562039,
+     "CMA": -0.5062544616923278,
+     "Mom": -0.6742670793761409
+    },
+    "r2": 0.029349941904702526,
+    "resid_vol_ann": 0.19866695177785926,
+    "factors_used": [
+     "Mkt-RF",
+     "SMB",
+     "HML",
+     "RMW",
+     "CMA",
+     "Mom"
+    ],
+    "nw_lags": 9
+   },
+   "verdict": "inconclusive"
+  },
+  {
+   "fingerprint": "c4f8cfd0d5939b06",
+   "source": "archive",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.491), ite(add(sigmoid(peer_beta), m_credit_chg), div(m_credit_chg, ite(add(0.",
+   "fitness": 1.450234758448411,
+   "bench_alpha_ann": 0.13275656542013045,
+   "bench_alpha_t": 1.7668646895540088,
+   "ir": 0.6151062200832804,
+   "factor": {
+    "ok": true,
+    "n": 2659,
+    "span": "2016-01-04..2026-07-31",
+    "alpha_daily": 0.0005453789546557776,
+    "alpha_ann": 0.13743549657325596,
+    "alpha_tstat": 1.8243587313375578,
+    "betas": {
+     "Mkt-RF": 0.06960061838386167,
+     "SMB": -0.006586523375289727,
+     "HML": -0.06361708198316487,
+     "RMW": -0.18436493430493808,
+     "CMA": 0.004894175963641417,
+     "Mom": -0.020145511080321324
+    },
+    "beta_tstats": {
+     "Mkt-RF": 2.0055397000612816,
+     "SMB": -0.11300521012141776,
+     "HML": -0.6957560801080773,
+     "RMW": -1.5208790261351228,
+     "CMA": 0.04552706351761948,
+     "Mom": -0.3236814576174936
+    },
+    "r2": 0.01369677276957304,
+    "resid_vol_ann": 0.22919844362064223,
+    "factors_used": [
+     "Mkt-RF",
+     "SMB",
+     "HML",
+     "RMW",
+     "CMA",
+     "Mom"
+    ],
+    "nw_lags": 9
+   },
+   "verdict": "inconclusive"
+  },
+  {
+   "fingerprint": "93ec9f0aa8e79479",
+   "source": "archive",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, tsrank_126(peer_beta))), neg(intraday_range)), div(m_credit_chg, -0.16",
+   "fitness": 1.4287696808457782,
+   "bench_alpha_ann": 0.16304938769238211,
+   "bench_alpha_t": 2.3947508916383295,
+   "ir": 0.8030792681341018,
+   "factor": {
+    "ok": true,
+    "n": 2659,
+    "span": "2016-01-04..2026-07-31",
+    "alpha_daily": 0.0006734997986830462,
+    "alpha_ann": 0.16972194926812764,
+    "alpha_tstat": 2.444908008553486,
+    "betas": {
+     "Mkt-RF": 0.03600392343432321,
+     "SMB": -0.09413927680270215,
+     "HML": -0.020508164405481005,
+     "RMW": -0.26478426910407415,
+     "CMA": -0.06297868120562272,
+     "Mom": -0.08943498491298349
+    },
+    "beta_tstats": {
+     "Mkt-RF": 1.208495647850989,
+     "SMB": -2.006579519298255,
+     "HML": -0.28310528576167887,
+     "RMW": -3.8375108130814137,
+     "CMA": -0.6408051124221255,
+     "Mom": -1.8847482782896452
+    },
+    "r2": 0.02158846217743593,
+    "resid_vol_ann": 0.20652519899906663,
+    "factors_used": [
+     "Mkt-RF",
+     "SMB",
+     "HML",
+     "RMW",
+     "CMA",
+     "Mom"
+    ],
+    "nw_lags": 9
+   },
+   "verdict": "survives factors"
+  },
+  {
+   "fingerprint": "da9db4d1a5f322a1",
+   "source": "archive",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.1493), rank(downside_vol_63))|k=15|rb=21|w=score",
+   "fitness": 1.3754065410245615,
+   "bench_alpha_ann": 0.11719225528579558,
+   "bench_alpha_t": 1.8712166131319081,
+   "ir": 0.6313712035627304,
+   "factor": {
+    "ok": true,
+    "n": 2659,
+    "span": "2016-01-04..2026-07-31",
+    "alpha_daily": 0.0004687812501009532,
+    "alpha_ann": 0.11813287502544022,
+    "alpha_tstat": 1.8731173382753166,
+    "betas": {
+     "Mkt-RF": 0.026491960609388486,
+     "SMB": -0.10846317286198137,
+     "HML": -0.055279102199594476,
+     "RMW": -0.24281920070905227,
+     "CMA": -0.07418070642414323,
+     "Mom": -0.12422009313777573
+    },
+    "beta_tstats": {
+     "Mkt-RF": 0.9329062115563581,
+     "SMB": -2.154737036361907,
+     "HML": -0.7235424088117111,
+     "RMW": -3.098003105797606,
+     "CMA": -0.7129634139338906,
+     "Mom": -2.5296770721568946
+    },
+    "r2": 0.030840335834961263,
+    "resid_vol_ann": 0.18863497805245416,
+    "factors_used": [
+     "Mkt-RF",
+     "SMB",
+     "HML",
+     "RMW",
+     "CMA",
+     "Mom"
+    ],
+    "nw_lags": 9
+   },
+   "verdict": "inconclusive"
+  },
+  {
+   "fingerprint": "014d88f3664ee6d1",
+   "source": "archive",
+   "canonical": "sqrt_abs(ite(add(sigmoid(sub(m_oil, peer_beta)), demean(intraday_range)), div(m_credit_chg, -0.0008), ite(square(sub(m_mkt_dd, 1.036)), tsmean_126(dollar_vol_21",
+   "fitness": 1.371098429184551,
+   "bench_alpha_ann": 0.07848779115214276,
+   "bench_alpha_t": 2.311232623885162,
+   "ir": 0.7631994007518911,
+   "factor": {
+    "ok": true,
+    "n": 2659,
+    "span": "2016-01-04..2026-07-31",
+    "alpha_daily": 0.00030976650576913176,
+    "alpha_ann": 0.07806115945382121,
+    "alpha_tstat": 2.248170664599687,
+    "betas": {
+     "Mkt-RF": 0.0361279585403425,
+     "SMB": -0.03507983945394009,
+     "HML": -0.05285602376937882,
+     "RMW": -0.001532889223005554,
+     "CMA": 0.013532106267466329,
+     "Mom": -0.008274854362688131
+    },
+    "beta_tstats": {
+     "Mkt-RF": 1.7476789153351306,
+     "SMB": -1.1725259007648987,
+     "HML": -1.792000261055603,
+     "RMW": -0.045252740506230425,
+     "CMA": 0.2597078848087498,
+     "Mom": -0.3948247919314185
+    },
+    "r2": 0.009973812875069155,
+    "resid_vol_ann": 0.10754776872978902,
+    "factors_used": [
+     "Mkt-RF",
+     "SMB",
+     "HML",
+     "RMW",
+     "CMA",
+     "Mom"
+    ],
+    "nw_lags": 9
+   },
+   "verdict": "survives factors"
+  },
+  {
+   "fingerprint": "ee170d1bd70305aa",
+   "source": "archive",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.491), ite(add(sigmoid(peer_beta), m_credit_chg), div(m_credit_chg, ite(add(-2",
+   "fitness": 1.33399608059007,
+   "bench_alpha_ann": 0.12020458932396645,
+   "bench_alpha_t": 1.6580138252263734,
+   "ir": 0.5745031038672467,
+   "factor": {
+    "ok": true,
+    "n": 2659,
+    "span": "2016-01-04..2026-07-31",
+    "alpha_daily": 0.00048797235437949557,
+    "alpha_ann": 0.12296903330363289,
+    "alpha_tstat": 1.6951656092231748,
+    "betas": {
+     "Mkt-RF": 0.06371649909517602,
+     "SMB": -0.004491338814811299,
+     "HML": -0.05815103731227453,
+     "RMW": -0.16295861372721,
+     "CMA": 0.0018117287447349528,
+     "Mom": -0.007234969878389157
+    },
+    "beta_tstats": {
+     "Mkt-RF": 1.841009356289823,
+     "SMB": -0.07681014989737624,
+     "HML": -0.6161769295011023,
+     "RMW": -1.352803080277745,
+     "CMA": 0.016731264730951476,
+     "Mom": -0.11402221532596998
+    },
+    "r2": 0.012125005763439334,
+    "resid_vol_ann": 0.22086476946173905,
+    "factors_used": [
+     "Mkt-RF",
+     "SMB",
+     "HML",
+     "RMW",
+     "CMA",
+     "Mom"
+    ],
+    "nw_lags": 9
+   },
+   "verdict": "inconclusive"
+  }
+ ]
+}

@@ -53,6 +53,34 @@ def cfg():
     return config.load()
 
 
+SEARCH_PATH = ("evolve", "genome", "features", "peers", "methods", "backtest")
+
+
+def _imports_of(mod: str) -> set:
+    """Module names a file actually imports, by AST -- not by substring.
+
+    The naive version of this check greps for the module name and trips over
+    ordinary prose: peers.py explains that cohorts are "driven by common
+    factors", which is not an import of loonie/factors.py. A test that fails
+    on a docstring is a test people learn to weaken.
+    """
+    import ast
+
+    root = Path(__file__).resolve().parent.parent / "loonie"
+    tree = ast.parse((root / (mod + ".py")).read_text(encoding="utf-8"))
+    out = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for a in node.names:
+                out.add(a.name.split(".")[0])
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                out.add(node.module.split(".")[-1])
+            for a in node.names:
+                out.add(a.name)
+    return out
+
+
 # =============================================================================
 #  Lookahead -- the tests that matter most
 # =============================================================================
@@ -1711,7 +1739,107 @@ def test_theses_never_reach_the_strategy_search():
     compelling story would quietly bias what gets proposed, which is the exact
     failure this store exists to prevent.
     """
-    for mod in ("evolve", "genome", "features", "peers", "methods", "backtest"):
-        src = (Path("D:/trader") / "loonie" / (mod + ".py")).read_text(encoding="utf-8")
-        assert "knowledge" not in src, \
-            "loonie/%s.py references the thesis store" % mod
+    for mod in SEARCH_PATH:
+        assert "knowledge" not in _imports_of(mod), \
+            "loonie/%s.py imports the thesis store" % mod
+
+
+# =============================================================================
+#  Factor attribution
+# =============================================================================
+def _fake_factors(T=900, seed=5):
+    """A synthetic factor library with the same shape as Ken French's."""
+    import pandas as pd
+    from loonie import factors as FA
+
+    rng = np.random.default_rng(seed)
+    idx = pd.bdate_range("2015-01-01", periods=T)
+    df = pd.DataFrame(
+        rng.normal(0.0, 0.01, size=(T, len(FA.FACTORS))),
+        index=idx, columns=FA.FACTORS)
+    df["RF"] = 0.00008
+    return df
+
+
+def test_attribution_finds_no_alpha_in_a_pure_factor_portfolio():
+    """The test the whole module exists for.
+
+    A return stream that is nothing but a levered bet on SMB and HML must
+    attribute to ~zero alpha. If it did not, the diagnostic would bless a
+    portfolio you can buy for three basis points.
+    """
+    from loonie import factors as FA
+
+    f = _fake_factors()
+    rng = np.random.default_rng(11)
+    ret = (0.8 * f["SMB"].to_numpy() + 0.5 * f["HML"].to_numpy()
+           + rng.normal(0, 0.0005, len(f)))
+
+    a = FA.attribute(ret, f.index, is_excess=True, factors=f)
+    assert a["ok"], a.get("reason")
+    assert abs(a["alpha_tstat"]) < 2.0, \
+        "a pure factor bet must not read as alpha (t=%.2f)" % a["alpha_tstat"]
+    assert abs(a["betas"]["SMB"] - 0.8) < 0.08
+    assert abs(a["betas"]["HML"] - 0.5) < 0.08
+    assert a["r2"] > 0.8, "factors should explain nearly all of it"
+
+
+def test_attribution_keeps_alpha_that_is_orthogonal_to_the_factors():
+    """The converse: a real edge must survive the regression."""
+    from loonie import factors as FA
+
+    f = _fake_factors()
+    rng = np.random.default_rng(12)
+    # 12%/yr of genuine, factor-orthogonal drift.
+    ret = (0.3 * f["Mkt-RF"].to_numpy() + 0.12 / 252.0
+           + rng.normal(0, 0.002, len(f)))
+
+    a = FA.attribute(ret, f.index, is_excess=True, factors=f)
+    assert a["ok"]
+    assert a["alpha_tstat"] > 2.0, "real alpha was regressed away"
+    assert abs(a["alpha_ann"] - 0.12) < 0.04
+
+
+def test_attribution_subtracts_the_risk_free_rate_only_for_total_returns():
+    """A spread is self-financing; a long-only stream is not.
+
+    Getting this backwards shifts the alpha by the whole T-bill yield, which
+    is small enough to miss and large enough to matter.
+    """
+    from loonie import factors as FA
+
+    f = _fake_factors()
+    ret = np.full(len(f), 0.0004)
+
+    exc = FA.attribute(ret, f.index, is_excess=True, factors=f)
+    tot = FA.attribute(ret, f.index, is_excess=False, factors=f)
+    gap = exc["alpha_daily"] - tot["alpha_daily"]
+    assert abs(gap - 0.00008) < 1e-6, \
+        "the difference between the two must be exactly RF"
+
+
+def test_factor_returns_are_fractions_not_percent():
+    """Ken French publishes percent. A missed /100 makes every beta 100x off."""
+    from loonie import factors as FA
+
+    try:
+        f = FA.fetch()
+    except Exception:
+        import pytest
+        pytest.skip("factor library unavailable offline")
+    ann = float(f["Mkt-RF"].mean() * 252)
+    assert 0.02 < ann < 0.15, \
+        "equity premium reads %.3f/yr -- scaling is wrong" % ann
+    assert f.index[0].year < 1930, "daily history should start in the 1920s"
+
+
+def test_attribution_never_reaches_the_strategy_search():
+    """Factors are a yardstick, not a feature.
+
+    If the search could see them it would learn to dodge the regression --
+    optimising for factor-orthogonality rather than for returns -- and the
+    attribution would stop being an independent check on its output.
+    """
+    for mod in SEARCH_PATH:
+        assert "factors" not in _imports_of(mod), \
+            "loonie/%s.py imports the factor library" % mod
