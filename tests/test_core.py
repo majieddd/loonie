@@ -1195,3 +1195,57 @@ def test_continuous_jobs_report_no_countdown():
         assert st["jobs"]["validate"]["next_in_s"] >= 0
     finally:
         o.me.retire()
+
+
+def test_source_fingerprint_changes_when_code_changes(tmp_path, monkeypatch):
+    """The supervisor must notice edited source.
+
+    Long-running workers hold their modules in memory, so a code change does
+    nothing until they restart. That bit four separate times here — most
+    memorably when a redaction fix looked broken because the search daemon
+    kept rewriting the file with pre-fix code while the fix sat correctly on
+    disk.
+    """
+    import time as _t
+
+    from loonie import orchestrator as orc
+
+    pkg = tmp_path / "loonie"
+    pkg.mkdir()
+    (pkg / "a.py").write_text("x = 1")
+    (tmp_path / "config.yaml").write_text("k: v")
+    monkeypatch.setattr(orc, "ROOT", tmp_path)
+
+    first = orc.source_fingerprint()
+    assert first == orc.source_fingerprint(), "fingerprint must be stable"
+
+    _t.sleep(0.01)
+    (pkg / "a.py").write_text("x = 2")
+    assert orc.source_fingerprint() != first, "an edit must change the fingerprint"
+
+
+def test_reload_is_debounced(tmp_path, monkeypatch):
+    """A multi-file save must not restart workers against half-written code."""
+    from loonie import orchestrator as orc
+
+    pkg = tmp_path / "loonie"
+    pkg.mkdir()
+    (pkg / "a.py").write_text("x = 1")
+    monkeypatch.setattr(orc, "ROOT", tmp_path)
+
+    o = orc.Orchestrator.__new__(orc.Orchestrator)
+    o._log = lambda m: None
+    o.jobs = {}
+    o.fingerprint = orc.source_fingerprint()
+    o._pending_fp = None
+    o._pending_since = 0.0
+    o.reloads = 0
+
+    (pkg / "a.py").write_text("x = 2")
+    assert o.check_source(debounce=60) is False, "first sighting must only arm"
+    assert o.check_source(debounce=60) is False, "still inside the debounce"
+    assert o.reloads == 0
+
+    assert o.check_source(debounce=0.0) is True, "should fire once it settles"
+    assert o.reloads == 1
+    assert o.check_source(debounce=0.0) is False, "must not fire again unchanged"

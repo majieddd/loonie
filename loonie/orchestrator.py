@@ -26,6 +26,7 @@ without the live flag, and run_trade.py needs two more locks besides.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -37,6 +38,31 @@ from . import registry
 from .config import ROOT, resolve
 
 HISTORY = "state/validation_history.json"
+
+
+def source_fingerprint() -> str:
+    """Fingerprint of every source file the workers import.
+
+    Long-running workers hold their modules in memory, so editing the code
+    changes nothing until they restart. That bit four times during this
+    project's construction -- most memorably when a redaction fix looked
+    broken because the search daemon kept rewriting the file with pre-fix
+    code while the fix sat correctly on disk.
+
+    mtime rather than content: it is one stat per file instead of reading a
+    few hundred KB every five seconds, and the failure mode of a touched-but-
+    unchanged file is a harmless restart that costs one checkpointed
+    generation.
+    """
+    h = hashlib.sha256()
+    for pat in ("loonie/**/*.py", "scripts/*.py", "config.yaml"):
+        for f in sorted(ROOT.glob(pat)):
+            try:
+                h.update(str(f.relative_to(ROOT)).encode())
+                h.update(str(f.stat().st_mtime_ns).encode())
+            except OSError:
+                continue
+    return h.hexdigest()[:16]
 
 
 @dataclass
@@ -110,6 +136,10 @@ class Orchestrator:
                                   "system supervisor")
         self.children: dict = {}
         self.started = time.time()
+        self.fingerprint = source_fingerprint()
+        self._pending_fp = None
+        self._pending_since = 0.0
+        self.reloads = 0
 
     # ------------------------------------------------------------ children
     def _spawn(self, job: Job):
@@ -186,6 +216,8 @@ class Orchestrator:
     def status(self) -> dict:
         return {
             "uptime_s": round(time.time() - self.started, 1),
+            "source_fingerprint": self.fingerprint,
+            "reloads": self.reloads,
             "jobs": {n: {"runs": j.runs, "failures": j.failures,
                          "status": j.last_status, "detail": j.last_detail,
                          "every_s": j.every_s,
@@ -195,8 +227,44 @@ class Orchestrator:
                      for n, j in self.jobs.items()},
         }
 
+    def check_source(self, debounce: float = 20.0) -> bool:
+        """Restart continuous workers when the source changes.
+
+        Debounced: an editor writing several files in sequence would otherwise
+        trigger a restart mid-save, against a half-written module. The
+        fingerprint has to hold still for `debounce` seconds before it counts.
+        """
+        fp = source_fingerprint()
+        if fp == self.fingerprint:
+            self._pending_fp = None
+            return False
+
+        now = time.time()
+        if fp != self._pending_fp:
+            self._pending_fp = fp
+            self._pending_since = now
+            return False
+        if now - self._pending_since < debounce:
+            return False
+
+        self.fingerprint = fp
+        self._pending_fp = None
+        self.reloads += 1
+        self._log("source changed -- restarting continuous workers "
+                  "(reload #%d)" % self.reloads)
+        for job in self.jobs.values():
+            if job.continuous and job.proc is not None:
+                try:
+                    job.proc.terminate()
+                except Exception:
+                    pass
+                # Reaped and respawned by the next tick. The search checkpoints
+                # every generation, so this costs at most one.
+        return True
+
     def tick(self):
         now = time.time()
+        self.check_source()
         for job in self.jobs.values():
             self._reap(job)
 
@@ -221,7 +289,8 @@ class Orchestrator:
             status="supervising",
             detail="running: " + (", ".join(running) if running else "idle"),
             **{"jobs_running": len(running),
-               "failures": sum(j.failures for j in self.jobs.values())})
+               "failures": sum(j.failures for j in self.jobs.values()),
+               "code_reloads": self.reloads})
 
     def run(self, interval: float = 5.0):
         self._log("supervising %d jobs" % len(self.jobs))
