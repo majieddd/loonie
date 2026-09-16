@@ -314,7 +314,8 @@ class OperatorBandit:
 #  Evolver
 # =============================================================================
 class Evolver:
-    def __init__(self, cfg, panel, feats, seed=None, verbose=True):
+    def __init__(self, cfg, panel, feats, seed=None, verbose=True,
+                 store=None):
         self.cfg = cfg
         self.panel = panel
         self.feats = feats
@@ -329,6 +330,11 @@ class Evolver:
         self.features = FeatureBandit(set(self.family_of.values()))
         self.archive = MapElites()
         self.null = NullModel()
+        # Append-only record of every gated candidate and its forward outcome.
+        # Survives restarts and --fresh; this is the corpus methods.py learns
+        # from. None during unit tests and inner walk-forward searches, where
+        # recording would be noise.
+        self.store = store
 
         # ---- forward validation tail -----------------------------------
         # Everything the fitness function touches -- folds, shuffle test, cost
@@ -415,9 +421,17 @@ class Evolver:
     def _fitness(self, res, g: Genome) -> float:
         """Information ratio, discounted by inconsistency, complexity and
         index-hugging. Deliberately NOT return-based."""
-        base = res.mean_ir
-        consistency = 0.5 + 0.5 * res.frac_positive
-        fit = base * consistency
+        # Fitness shape is a METHOD choice (see methods.py), not a constant.
+        # "consistency" squares the fold-agreement term, so a strategy winning
+        # six folds of eight beats one winning enormously in two -- the second
+        # profile is the one that has repeatedly failed forward here.
+        mode = str(self.cfg.evolve.get("fitness_mode", "ir"))
+        if mode == "consistency":
+            fit = res.mean_ir * (res.frac_positive ** 2)
+        elif mode == "median_alpha":
+            fit = res.median_alpha * (0.5 + 0.5 * res.frac_positive)
+        else:
+            fit = res.mean_ir * (0.5 + 0.5 * res.frac_positive)
 
         # Index-hugging penalty, ramped smoothly from 0.90. A hard cliff at the
         # gate threshold teaches the search to park at 0.9499 and collect the
@@ -633,6 +647,13 @@ class Evolver:
                                    g.get("min_null_percentile", 0.95)),
                                "pass": False})
         ev.gates = checks
+        if self.store is not None:
+            try:
+                self.store.record("gated", ev.genome, cv=ev.cv, gates=checks,
+                                  generation=self.generation,
+                                  fitness=float(ev.fitness))
+            except Exception:
+                pass
         return checks
 
     def revalidate_hall_of_fame(self, population_returns=None):
@@ -684,6 +705,15 @@ class Evolver:
                 ]
                 entry["gates"] = checks
                 demoted.append(entry)
+                if self.store is not None:
+                    try:
+                        self.store.record(
+                            "demoted", Genome.from_dict(gd), cv=ev.cv,
+                            gates=checks, promoted=False,
+                            generation=self.generation,
+                            demote_reason="; ".join(entry["demoted_because"]))
+                    except Exception:
+                        pass
                 self._log(
                     "DEMOTED  %s  no longer clears: %s"
                     % (entry.get("fingerprint"), "; ".join(entry["demoted_because"])))
@@ -806,7 +836,13 @@ class Evolver:
         # Draw as many parents from the behaviour archive as from the fitness
         # elite. Breeding only from the leaderboard is how a population becomes
         # one lineage that has overfit together.
-        pool = elite + self.archive.sample(self.rng, max(4, 2 * n_elite))
+        # Drawing half the parents from the behaviour archive is itself a
+        # method choice; elitist_ir turns it off so QD can be measured against
+        # its own absence rather than assumed to be earning its slots.
+        if bool(self.cfg.evolve.get("use_map_elites", True)):
+            pool = elite + self.archive.sample(self.rng, max(4, 2 * n_elite))
+        else:
+            pool = elite
 
         children = []
         guard = 0
@@ -861,24 +897,50 @@ class Evolver:
         # Population = fitness elite + behaviourally distinct elites. Filling
         # every slot by fitness alone converges in ~3 generations onto one
         # expression and then stops searching; this keeps the frontier wide.
-        keep_fit = int(n * 0.6)
-        chosen = merged[:keep_fit]
-        have = {e.genome.fingerprint for e in chosen}
-        for e in self.archive.elites():
-            if len(chosen) >= n:
-                break
-            if e.genome.fingerprint not in have:
-                chosen.append(e)
-                have.add(e.genome.fingerprint)
-        for e in merged[keep_fit:]:
-            if len(chosen) >= n:
-                break
-            if e.genome.fingerprint not in have:
-                chosen.append(e)
-                have.add(e.genome.fingerprint)
-        self.population = sorted(chosen, key=lambda e: -e.fitness)
+        if not bool(self.cfg.evolve.get("use_map_elites", True)):
+            # elitist_ir: pure top-N. Kept as a method so quality-diversity can
+            # be measured against its own absence instead of assumed to earn
+            # the population slots it costs.
+            self.population = merged[:n]
+        else:
+            keep_fit = int(n * 0.6)
+            chosen = merged[:keep_fit]
+            have = {e.genome.fingerprint for e in chosen}
+            for e in self.archive.elites():
+                if len(chosen) >= n:
+                    break
+                if e.genome.fingerprint not in have:
+                    chosen.append(e)
+                    have.add(e.genome.fingerprint)
+            for e in merged[keep_fit:]:
+                if len(chosen) >= n:
+                    break
+                if e.genome.fingerprint not in have:
+                    chosen.append(e)
+                    have.add(e.genome.fingerprint)
+            self.population = sorted(chosen, key=lambda e: -e.fitness)
         self.bandit.decay()
         self.features.decay()
+
+        # Forward-validate the leader EVERY generation, not only when the
+        # cheap gates happen to pass. It is one extra backtest on a window
+        # nothing else touches, and it is the only labelled signal the method
+        # bandit and the feature bandit can learn from. Gating on it alone
+        # produced six recorded candidates and zero labels -- a corpus with no
+        # outcomes attached teaches nothing.
+        if self.population and self.val_panel is not None:
+            leader = self.population[0]
+            if "val_alpha" not in leader.cv:
+                try:
+                    v = self.validate(leader.genome)
+                    leader.cv.update(v)
+                    if np.isfinite(v.get("val_alpha", np.nan)):
+                        self.features.update(
+                            [self.family_of.get(n, "other")
+                             for n in leader.genome.feature_names()],
+                            survived=v["val_alpha"] > 0)
+                except Exception:
+                    pass
 
         # ---- promotion test on the current leader ------------------------
         if not self.population:
@@ -909,6 +971,14 @@ class Evolver:
                               for h in self.hall_of_fame):
             top.promoted = True
             self.hall_of_fame.append(top.as_dict())
+            if self.store is not None:
+                try:
+                    self.store.record("promoted", top.genome, cv=top.cv,
+                                      gates=top.gates, promoted=True,
+                                      generation=self.generation,
+                                      fitness=float(top.fitness))
+                except Exception:
+                    pass
             self._log("PROMOTED  %s  fit=%.3f  IR=%.2f  DSR=%.2f  t=%.2f"
                       % (top.genome.fingerprint, top.fitness,
                          top.cv["mean_ir"], top.cv.get("dsr", float("nan")),

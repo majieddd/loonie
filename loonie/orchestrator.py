@@ -49,17 +49,22 @@ def source_fingerprint() -> str:
     broken because the search daemon kept rewriting the file with pre-fix
     code while the fix sat correctly on disk.
 
-    mtime rather than content: it is one stat per file instead of reading a
-    few hundred KB every five seconds, and the failure mode of a touched-but-
-    unchanged file is a harmless restart that costs one checkpointed
-    generation.
+    Size AND mtime, from one stat per file, rather than hashing content: the
+    latter means reading a few hundred KB every five seconds forever. Size is
+    not redundant -- two edits inside the filesystem's mtime granularity are
+    otherwise invisible, which a test caught by rewriting a file fast enough
+    that the timestamp never moved. Same-size-same-mtime edits can still slip
+    past, but at a five-second poll that window is theoretical, and the failure
+    mode of a touched-but-unchanged file is a harmless restart costing one
+    checkpointed generation.
     """
     h = hashlib.sha256()
     for pat in ("loonie/**/*.py", "scripts/*.py", "config.yaml"):
         for f in sorted(ROOT.glob(pat)):
             try:
+                st = f.stat()
                 h.update(str(f.relative_to(ROOT)).encode())
-                h.update(str(f.stat().st_mtime_ns).encode())
+                h.update(b"%d:%d" % (st.st_mtime_ns, st.st_size))
             except OSError:
                 continue
     return h.hexdigest()[:16]
@@ -122,6 +127,11 @@ def default_jobs(cfg, population: int) -> list:
         # pushes to the git remote at most every 15 minutes so GitHub Pages
         # stays fed without turning a 20-second generation into 4,000 commits
         # a day. The throttle lives inside publish_dashboard.py.
+        # Re-derives the method posteriors from the whole experience corpus.
+        # Cheap (a parquet scan), and the search reads the result on its next
+        # restart -- which the source-change watcher makes routine.
+        stagger(Job("meta", 4 * 3600,
+                    [py, "-u", "scripts/meta_review.py"]), 1800),
         Job("publish", 60, [py, "-u", "scripts/publish_dashboard.py",
                             "--quiet", "--push", "--throttle", "900"]),
     ]

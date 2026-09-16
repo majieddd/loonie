@@ -27,8 +27,8 @@ if hasattr(sys.stdout, "reconfigure"):
 
 import numpy as np  # noqa: E402
 
-from loonie import (config, data, evolve, features, notify, publish,  # noqa: E402
-                    registry, seal, universe)
+from loonie import (config, data, evolve, experience, features,  # noqa: E402
+                    methods, notify, publish, registry, seal, universe)
 
 
 def build_report(ev: evolve.Evolver, panel) -> str:
@@ -102,6 +102,11 @@ def main() -> int:
                     help="run forever, checkpointing every generation")
     ap.add_argument("--fresh", action="store_true", help="ignore saved state")
     ap.add_argument("--seed", type=int, default=None)
+    ap.add_argument("--method", default=None,
+                    help="force a search method; default draws from the "
+                         "method bandit (see loonie/methods.py)")
+    ap.add_argument("--no-record", action="store_true",
+                    help="skip writing to the experience store")
     ap.add_argument("--report-every", type=int, default=10)
     ap.add_argument("--no-publish", action="store_true",
                     help="skip writing docs/data (the dashboard feed)")
@@ -112,12 +117,27 @@ def main() -> int:
 
     config.load_env()
     cfg = config.load()
+
+    # ---- pick how to search -------------------------------------------
+    # A method is a behaviour-changing configuration of the search itself.
+    # The bandit draws one by Thompson sampling over forward-validated
+    # outcomes, so which way of searching gets used is itself learned.
+    bandit = methods.MethodBandit()
+    bandit.ingest_experience()
+    method = (methods.BY_ID.get(a.method) if a.method
+              else bandit.choose(np.random.default_rng()))
+    if method is None:
+        raise SystemExit("unknown method %r; have %s"
+                         % (a.method, list(methods.BY_ID)))
+    cfg = config.Cfg(method.apply(cfg))
     if a.population:
         cfg["evolve"]["population"] = int(a.population)
 
     print("=" * 72)
     print("  SELF-IMPROVING STRATEGY SEARCH")
     print("=" * 72)
+    print("  method   %s -- %s" % (method.id, method.summary))
+    print("           %s" % " ".join(method.rationale.split())[:150])
 
     uni = universe.Universe.load(cfg)
     panel = data.load_panel(cfg, uni, progress=not a.quiet)
@@ -147,7 +167,15 @@ def main() -> int:
     print("[features] %d terminals over %d sessions x %d tickers"
           % (len(feats), train.shape[0], train.shape[1]))
 
-    ev = evolve.Evolver(cfg, train, feats, seed=a.seed, verbose=not a.quiet)
+    store = None if a.no_record else experience.ExperienceStore(
+        method_id=method.id,
+        context={"panel_start": str(train.dates[0].date()),
+                 "panel_stop": str(train.dates[-1].date()),
+                 "panel_sessions": int(train.shape[0]),
+                 "panel_tickers": int(train.shape[1]),
+                 "coverage": float(panel.coverage.get("coverage", 0))})
+    ev = evolve.Evolver(cfg, train, feats, seed=a.seed, verbose=not a.quiet,
+                        store=store)
     if not a.fresh:
         ev.load()
 
@@ -206,9 +234,20 @@ def main() -> int:
                 break
     except KeyboardInterrupt:
         print("\n[evolve] interrupted; state checkpointed")
-    except Exception:
+        hb.done("interrupted")
+    except Exception as exc:
         traceback.print_exc()
+        hb.error(exc)
         return 1
+    finally:
+        # Flush unconditionally. A daemon is normally ended by Ctrl-C or a
+        # supervisor terminate, and without this every row buffered since the
+        # last 200-row flush is lost — which for a short run is all of them.
+        if store is not None:
+            store.flush()
+            if store.written:
+                print("[experience] recorded %d rows (method %s)"
+                      % (store.written, method.id))
 
     p = notify.write_report("evolve", build_report(ev, panel))
     print("\n" + "=" * 72)

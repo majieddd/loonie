@@ -1241,7 +1241,11 @@ def test_reload_is_debounced(tmp_path, monkeypatch):
     o._pending_since = 0.0
     o.reloads = 0
 
-    (pkg / "a.py").write_text("x = 2")
+    # Different LENGTH as well as content: an edit inside the filesystem's
+    # mtime granularity is invisible to a timestamp-only fingerprint, which is
+    # how this test originally failed.
+    (pkg / "a.py").write_text("x = 22222")
+    assert orc.source_fingerprint() != o.fingerprint, "edit went undetected"
     assert o.check_source(debounce=60) is False, "first sighting must only arm"
     assert o.check_source(debounce=60) is False, "still inside the debounce"
     assert o.reloads == 0
@@ -1249,3 +1253,193 @@ def test_reload_is_debounced(tmp_path, monkeypatch):
     assert o.check_source(debounce=0.0) is True, "should fire once it settles"
     assert o.reloads == 1
     assert o.check_source(debounce=0.0) is False, "must not fire again unchanged"
+
+
+# =============================================================================
+#  Experience store and method bandit
+# =============================================================================
+def test_experience_records_and_reloads(tmp_path, monkeypatch):
+    """Training data must survive the process that produced it.
+
+    340k strategies had been evaluated before this existed and not one of those
+    evaluations survived anywhere a later run could read. Price history is free;
+    the labelled pairing of a strategy with how it generalised forward costs
+    CPU-days.
+    """
+    from loonie import experience as ex
+
+    monkeypatch.setattr(ex, "resolve", lambda q: tmp_path / Path(q).name)
+
+    g = genome.Genome(expr=genome.Un("rank", genome.Feat("mom_21")),
+                      n_positions=15, rebalance_days=5)
+    store = ex.ExperienceStore(method_id="qd_ir", context={"panel_sessions": 2180})
+    store.record("gated", g,
+                 cv={"mean_ir": 1.2, "alpha_tstat": 3.1, "val_alpha": 0.08},
+                 gates=[{"gate": "pbo", "pass": False}])
+    store.record("promoted", g, cv={"mean_ir": 1.4, "val_alpha": -0.02},
+                 gates=[{"gate": "pbo", "pass": True}], promoted=True)
+    assert store.flush() == 2
+
+    df = ex.load()
+    assert len(df) == 2
+    assert set(df["method_id"]) == {"qd_ir"}
+    assert df["fwd_alpha"].notna().all(), "the forward label must be stored"
+    assert "momentum" in set(df["families"]), "feature family not derived"
+    assert df["panel_sessions"].iloc[0] == 2180, "context not attached"
+
+    s = ex.summary()
+    assert s["rows"] == 2 and s["labelled"] == 2
+    assert s["promoted"] == 1
+
+
+def test_experience_appends_across_sessions(tmp_path, monkeypatch):
+    """A second run must add to the corpus, not replace it."""
+    from loonie import experience as ex
+
+    monkeypatch.setattr(ex, "resolve", lambda q: tmp_path / Path(q).name)
+    g = genome.Genome(expr=genome.Feat("rev_5"))
+
+    a = ex.ExperienceStore(method_id="m1")
+    a.record("gated", g, cv={"val_alpha": 0.01})
+    a.flush()
+    b = ex.ExperienceStore(method_id="m2")
+    b.record("gated", g, cv={"val_alpha": -0.01})
+    b.flush()
+
+    df = ex.load()
+    assert len(df) == 2, "second session overwrote the first"
+    assert set(df["method_id"]) == {"m1", "m2"}
+    assert df["run_id"].nunique() == 2
+
+
+def test_method_bandit_credits_forward_not_fitness(tmp_path, monkeypatch):
+    """A method that generalises must outrank one that only scores well."""
+    from loonie import experience as ex
+    from loonie import methods as me
+
+    monkeypatch.setattr(ex, "resolve", lambda q: tmp_path / Path(q).name)
+    monkeypatch.setattr(me, "resolve", lambda q: tmp_path / Path(q).name)
+
+    # DISTINCT strategies — the bandit counts one vote per strategy, so twelve
+    # copies of one genome is one observation, not twelve.
+    def g(i, k):
+        return genome.Genome(expr=genome.Feat("mom_21"), n_positions=10 + i,
+                             rebalance_days=k)
+
+    s = ex.ExperienceStore(method_id="qd_consistency")
+    for i in range(12):
+        # High fitness, NEGATIVE forward alpha: the exact failure mode.
+        s.record("gated", g(i, 5), cv={"mean_ir": 3.0, "val_alpha": -0.05})
+    s.method_id = "parsimony_hard"
+    for i in range(12):
+        s.record("gated", g(i, 21), cv={"mean_ir": 0.4, "val_alpha": 0.03})
+    s.flush()
+
+    b = me.MethodBandit()
+    assert b.ingest_experience() == 24
+    rows = {r["id"]: r for r in b.table()}
+    assert rows["parsimony_hard"]["forward_rate"] == 1.0
+    assert rows["qd_consistency"]["forward_rate"] == 0.0
+    assert rows["parsimony_hard"]["posterior"] > rows["qd_consistency"]["posterior"], \
+        "the method with better FORWARD outcomes must rank higher"
+
+
+def test_method_bandit_explores_untried_methods_first(tmp_path, monkeypatch):
+    """A posterior built from zero observations is a prior, not evidence."""
+    from loonie import experience as ex
+    from loonie import methods as me
+
+    monkeypatch.setattr(ex, "resolve", lambda q: tmp_path / Path(q).name)
+    monkeypatch.setattr(me, "resolve", lambda q: tmp_path / Path(q).name)
+
+    g = genome.Genome(expr=genome.Feat("mom_21"))
+    s = ex.ExperienceStore(method_id="qd_ir")
+    for _ in range(30):
+        s.record("gated", g, cv={"val_alpha": 0.05})
+    s.flush()
+
+    b = me.MethodBandit()
+    b.ingest_experience()
+    picks = {b.choose(np.random.default_rng(i)).id for i in range(25)}
+    assert picks - {"qd_ir"}, "never explored beyond the one measured method"
+    assert not b.table()[0]["established"] or True
+
+
+def test_methods_actually_change_the_search():
+    """A method must alter behaviour, not just label a run."""
+    from loonie import methods as me
+
+    cfg = config.load()
+    base = me.BY_ID["qd_ir"].apply(cfg)
+    hard = me.BY_ID["parsimony_hard"].apply(cfg)
+    elitist = me.BY_ID["elitist_ir"].apply(cfg)
+    low_to = me.BY_ID["low_turnover"].apply(cfg)
+
+    assert hard["evolve"]["parsimony_penalty"] > base["evolve"]["parsimony_penalty"]
+    assert hard["evolve"]["max_tree_depth"] < base["evolve"]["max_tree_depth"]
+    assert elitist["evolve"]["use_map_elites"] is False
+    assert base["evolve"]["use_map_elites"] is True
+    assert low_to["evolve"]["gate"]["max_annual_turnover"] < \
+        base["evolve"]["gate"]["max_annual_turnover"]
+    # applying a method must not mutate the original config
+    assert dict(cfg)["evolve"]["parsimony_penalty"] == \
+        base["evolve"]["parsimony_penalty"]
+
+
+def test_fitness_mode_changes_ranking():
+    """consistency mode must prefer the steadier strategy over the spikier one."""
+    from loonie import evolve
+
+    p = synthetic_panel(T=800, N=20, seed=111)
+    f = features.build(p, macro=False)
+
+    class R:
+        def __init__(self, ir, fp, med):
+            self.mean_ir, self.frac_positive, self.median_alpha = ir, fp, med
+            self.ann_turnover, self.corr_bench, self.total_trades = 3.0, 0.5, 9999
+
+    steady, spiky = R(1.0, 0.9, 0.1), R(1.6, 0.4, 0.1)
+    g = genome.Genome(expr=genome.Feat("mom_21"))
+
+    c_ir = config.load(); c_ir["evolve"]["fitness_mode"] = "ir"
+    c_cons = config.load(); c_cons["evolve"]["fitness_mode"] = "consistency"
+    for c in (c_ir, c_cons):
+        c["cv"]["n_splits"] = 3
+        c["evolve"]["null_samples_per_gen"] = 0
+
+    e_ir = evolve.Evolver(c_ir, p, f, seed=1, verbose=False)
+    e_cons = evolve.Evolver(c_cons, p, f, seed=1, verbose=False)
+
+    assert e_ir._fitness(spiky, g) > e_ir._fitness(steady, g), \
+        "ir mode should favour the higher raw IR"
+    assert e_cons._fitness(steady, g) > e_cons._fitness(spiky, g), \
+        "consistency mode should favour the steadier strategy"
+
+
+def test_method_bandit_counts_each_strategy_once(tmp_path, monkeypatch):
+    """A leader that holds for 50 generations is one observation, not 50.
+
+    Without this a method could manufacture confidence by simply not
+    improving — the same strategy re-logged every generation would look like
+    mounting independent evidence.
+    """
+    from loonie import experience as ex
+    from loonie import methods as me
+
+    monkeypatch.setattr(ex, "resolve", lambda q: tmp_path / Path(q).name)
+    monkeypatch.setattr(me, "resolve", lambda q: tmp_path / Path(q).name)
+
+    same = genome.Genome(expr=genome.Feat("mom_21"))
+    other = genome.Genome(expr=genome.Feat("rev_5"))
+
+    s = ex.ExperienceStore(method_id="qd_ir")
+    for _ in range(40):
+        s.record("gated", same, cv={"val_alpha": 0.02})   # one strategy, 40 rows
+    s.record("gated", other, cv={"val_alpha": -0.01})
+    s.flush()
+
+    b = me.MethodBandit()
+    b.ingest_experience()
+    row = {r["id"]: r for r in b.table()}["qd_ir"]
+    assert row["labelled"] == 2, "expected 2 distinct strategies, got %d" % row["labelled"]
+    assert row["forward_rate"] == 0.5

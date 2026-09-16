@@ -481,6 +481,73 @@ function crewSection(snap){
   return sec;
 }
 
+
+/* ── meta: what the system has learned about how to search ────────── */
+function metaSection(snap){
+  const E = snap.experience || {};
+  const M = snap.methods || [];
+  const F = snap.family_forward_rates || {};
+  if (!E.rows && !M.length) return null;
+
+  const sec = section("05", "Meta-learning",
+    int(E.labelled || 0) + " labelled outcomes");
+  sec.appendChild(Object.assign(el("p","lede"),{innerHTML:
+    "Three loops learn inside one method; this one learns <b>between</b> "+
+    "methods. Every gated candidate and its forward outcome is kept in a "+
+    "parquet corpus that survives restarts, and each search cycle draws a "+
+    "method by Thompson sampling over those outcomes. Credit is <b>forward "+
+    "alpha, never fitness</b> — a method judged on its own score would win "+
+    "by inflating it."}));
+
+  const kv = (k,v) => { const r=el("div","kv"); r.appendChild(el("span","k",k));
+    r.appendChild(el("span","v",v)); return r; };
+  const g2 = el("div","grid2");
+
+  const left = el("div");
+  left.appendChild(kv("rows recorded", int(E.rows || 0)));
+  left.appendChild(kv("with a forward label", int(E.labelled || 0)));
+  left.appendChild(kv("distinct strategies", int(E.distinct_strategies || 0)));
+  left.appendChild(kv("runs / methods", (E.runs||0)+" / "+(E.methods||0)));
+  left.appendChild(kv("corpus on disk", ((E.bytes||0)/1024).toFixed(1)+" KB"));
+  if (E.fwd_positive_rate != null)
+    left.appendChild(kv("forward-positive", num(E.fwd_positive_rate*100,1)+"%"));
+  g2.appendChild(left);
+
+  const right = el("div");
+  const fams = Object.entries(F).slice(0,8);
+  if (fams.length){
+    right.appendChild(Object.assign(el("div","k"),{textContent:
+      "FEATURE FAMILIES BY FORWARD SURVIVAL", style:
+      "font:400 11px/1 var(--mono);letter-spacing:.13em;color:var(--fg-2);"+
+      "display:block;margin-bottom:10px"}));
+    fams.forEach(([f,t]) => right.appendChild(
+      kv(f, num(t.rate*100,1)+"%   ("+int(t.survived)+" of "+int(t.seen)+")")));
+  }
+  g2.appendChild(right);
+  sec.appendChild(g2);
+
+  if (M.length){
+    const anyEstablished = M.some(m => m.established);
+    sec.appendChild(Object.assign(el("p","lede"),{style:"margin-top:30px",
+      innerHTML: anyEstablished
+        ? "A method below has enough labelled outcomes to separate it from the prior."
+        : "<b>No method yet has enough labelled outcomes to distinguish it from "+
+          "the prior.</b> The ranking below is still noise; the bandit is "+
+          "exploring. Do not act on it."}));
+    sec.appendChild(table([
+      {h:"method", f:r=>el("span","sym", r.id)},
+      {h:"what it changes", cls:"dim", f:r=>r.summary||"—"},
+      {h:"forward rate", r:true, cls:"mono",
+       f:r=>r.forward_rate==null?"—":num(r.forward_rate*100,1)+"%"},
+      {h:"labelled", r:true, cls:"mono", f:r=>int(r.labelled||0)},
+      {h:"cycles", r:true, cls:"mono", f:r=>int(r.cycles||0)},
+      {h:"established", r:true, f:r=>el("span", r.established?"up":"dim",
+        r.established?"yes":"not yet")},
+    ], M));
+  }
+  return sec;
+}
+
 /* ── render ───────────────────────────────────────────────────────── */
 function render(snap, series){
   const app = $("#app");
@@ -664,8 +731,12 @@ function render(snap, series){
   }
   app.appendChild(s4);
 
-  /* 05 risk + 06 seal */
-  const s5 = section("05","Risk and seal");
+  /* 05 meta-learning */
+  const meta = metaSection(snap);
+  if (meta) app.appendChild(meta);
+
+  /* 06 risk + seal */
+  const s5 = section("06","Risk and seal");
   const g3 = el("div","grid2");
 
   const risk = el("div");
@@ -726,7 +797,7 @@ function render(snap, series){
 
   /* 06 provenance */
   const D = snap.data||{};
-  const s6 = section("06","Data provenance");
+  const s6 = section("07","Data provenance");
   const cov = D.coverage||0;
   s6.appendChild(Object.assign(el("p","lede"),{innerHTML:
     "Point-in-time S&P 500 membership: on any date the backtest may only buy "+

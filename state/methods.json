@@ -1,0 +1,113 @@
+{
+ "a": {
+  "qd_ir": 3.0,
+  "qd_consistency": 2.0,
+  "elitist_ir": 1.0,
+  "parsimony_hard": 2.0,
+  "low_turnover": 1.0,
+  "wide_explore": 1.0
+ },
+ "b": {
+  "qd_ir": 3.0,
+  "qd_consistency": 5.0,
+  "elitist_ir": 1.0,
+  "parsimony_hard": 2.0,
+  "low_turnover": 1.0,
+  "wide_explore": 1.0
+ },
+ "seen": {
+  "qd_ir": 4,
+  "qd_consistency": 5,
+  "elitist_ir": 0,
+  "parsimony_hard": 2,
+  "low_turnover": 0,
+  "wide_explore": 0
+ },
+ "survived": {
+  "qd_ir": 2,
+  "qd_consistency": 1,
+  "elitist_ir": 0,
+  "parsimony_hard": 1,
+  "low_turnover": 0,
+  "wide_explore": 0
+ },
+ "fwd_alpha": {
+  "qd_ir": 0.07283047702119409,
+  "qd_consistency": -0.2193781924708327,
+  "elitist_ir": 0.0,
+  "parsimony_hard": 0.01147264874643906,
+  "low_turnover": 0.0,
+  "wide_explore": 0.0
+ },
+ "cycles": {
+  "qd_ir": 1,
+  "qd_consistency": 1,
+  "elitist_ir": 3,
+  "parsimony_hard": 0,
+  "low_turnover": 2,
+  "wide_explore": 2
+ },
+ "updated": "2026-09-16T15:30:24+00:00",
+ "table": [
+  {
+   "id": "qd_ir",
+   "summary": "MAP-Elites + information-ratio fitness",
+   "posterior": 0.5,
+   "forward_rate": 0.5,
+   "mean_fwd_alpha": 0.018207619255298523,
+   "labelled": 4,
+   "cycles": 1,
+   "established": false
+  },
+  {
+   "id": "parsimony_hard",
+   "summary": "heavy complexity penalty",
+   "posterior": 0.5,
+   "forward_rate": 0.5,
+   "mean_fwd_alpha": 0.00573632437321953,
+   "labelled": 2,
+   "cycles": 0,
+   "established": false
+  },
+  {
+   "id": "qd_consistency",
+   "summary": "MAP-Elites + consistency-dominant fitness",
+   "posterior": 0.2857142857142857,
+   "forward_rate": 0.2,
+   "mean_fwd_alpha": -0.04387563849416654,
+   "labelled": 5,
+   "cycles": 1,
+   "established": false
+  },
+  {
+   "id": "elitist_ir",
+   "summary": "plain elitism, no quality-diversity",
+   "posterior": 0.5,
+   "forward_rate": null,
+   "mean_fwd_alpha": null,
+   "labelled": 0,
+   "cycles": 3,
+   "established": false
+  },
+  {
+   "id": "low_turnover",
+   "summary": "turnover-averse",
+   "posterior": 0.5,
+   "forward_rate": null,
+   "mean_fwd_alpha": null,
+   "labelled": 0,
+   "cycles": 2,
+   "established": false
+  },
+  {
+   "id": "wide_explore",
+   "summary": "high exploration, deeper trees",
+   "posterior": 0.5,
+   "forward_rate": null,
+   "mean_fwd_alpha": null,
+   "labelled": 0,
+   "cycles": 2,
+   "established": false
+  }
+ ]
+}

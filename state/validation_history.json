@@ -16,5 +16,23 @@
   "segments": 4,
   "beat_benchmark": false,
   "significant": false
+ },
+ {
+  "at": "2026-09-16T15:27:08+00:00",
+  "mode": "honest",
+  "report": "walkforward_20260916_102708.html",
+  "from": "2018-12-04",
+  "to": "2024-08-30",
+  "sessions": 1414,
+  "strategy": 0.111927,
+  "benchmark": 0.127832,
+  "excess": -0.015905,
+  "alpha_t": -0.1609,
+  "excess_sr": -0.0656,
+  "dsr": 0.0005,
+  "segments_won": 1,
+  "segments": 4,
+  "beat_benchmark": false,
+  "significant": false
  }
 ]

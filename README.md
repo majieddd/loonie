@@ -181,6 +181,8 @@ loonie/
   portfolio.py   target book -> orders, position caps, no-trade band
   risk.py        latching kill switches
   macro.py       16 causal regime series (VIX, curve, credit, breadth)
+  experience.py  parquet corpus: every candidate + its forward outcome
+  methods.py     bandit over six ways of searching
   registry.py    per-worker heartbeats; liveness from timestamp age
   orchestrator.py  supervisor: five jobs, staggered, restarted on death
   publish.py     JSON snapshot the dashboard reads
@@ -188,7 +190,7 @@ loonie/
 scripts/
   fetch_data.py  run_evolve.py  run_trade.py
   evaluate_holdout.py  status.py  clear_halt.py
-  walkforward.py serve.py  run_system.py
+  walkforward.py serve.py  run_system.py  meta_review.py
   publish_dashboard.py  setup_pages.sh  install_scheduler.ps1
 docs/
   index.html     the dashboard (static; GitHub Pages)
@@ -213,6 +215,62 @@ count written down, instead of once at the end.
 
 Not investment advice. Backtested results are hypothetical. Paper trade for a
 long time.
+
+---
+
+## Meta-learning: which way of searching actually works
+
+Three loops already learn *inside* one method — which mutation operators help,
+which feature families survive forward, which live strategies deserve capital.
+None of them could ask whether genetic-programming-with-IR-fitness is the right
+method at all, and that was picked by a person on the first afternoon with no
+evidence.
+
+**`loonie/methods.py`** is a bandit over six real, behaviour-changing
+configurations of the search:
+
+| method | what it changes |
+|---|---|
+| `qd_ir` | the incumbent: MAP-Elites + information-ratio fitness |
+| `qd_consistency` | squares fold-agreement — six steady folds beat two spectacular ones |
+| `elitist_ir` | drops quality-diversity entirely, so QD is measured against its own absence |
+| `parsimony_hard` | 10× complexity pressure, shallower trees |
+| `low_turnover` | 8× turnover cap, 9× cost stress |
+| `wide_explore` | bigger population, deeper grammar — tests under-exploring vs over-fitting |
+
+Each search cycle draws one by Thompson sampling. **Credit is forward alpha,
+never fitness** — a method judged on its own score would win by inflating it.
+Untried methods get first refusal, because a posterior built from zero
+observations is a prior and acting on it as evidence is how a bandit convinces
+itself of something it never measured.
+
+Evidence is counted **once per distinct strategy**, not once per generation. A
+leader that holds position for fifty generations is one observation; counting
+fifty would let a method manufacture confidence by simply not improving.
+
+## Training data that survives
+
+**`loonie/experience.py`** keeps every gated candidate and its forward outcome
+in a daily-partitioned parquet corpus. Before it existed, 340,000 strategies
+had been evaluated and not one of those evaluations survived anywhere a later
+run could read.
+
+Price history is free and finite. What costs CPU-days is the *labelled pairing
+of a strategy with how it actually generalised forward* — and that is what
+accumulates here, across restarts and across `--fresh`.
+
+```bash
+python scripts/meta_review.py     # what has been learned, and whether to believe it
+```
+
+The review prints its own sample size and refuses to over-claim:
+
+> *no method has enough labelled outcomes to distinguish it from the prior. The
+> bandit is still exploring, and any apparent ranking above is noise. Do not
+> act on it.*
+
+The corpus is gitignored — it is machine-local and grows without bound. Back it
+up deliberately.
 
 ---
 

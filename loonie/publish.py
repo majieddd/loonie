@@ -27,7 +27,7 @@ import time
 from datetime import datetime, timezone
 
 
-from . import orchestrator, registry
+from . import experience, methods, orchestrator, registry
 from .config import ROOT, resolve
 
 OUT = "docs/data"
@@ -225,9 +225,18 @@ def build_snapshot(cfg) -> dict:
         w.pop("pid", None)
     vhist = orchestrator.validation_history()
 
+    try:
+        exp = experience.summary()
+        fams = experience.family_forward_rates()
+    except Exception:
+        exp, fams = {"rows": 0}, {}
+
     return {
         "generated_at": _now(),
         "workers": workers,
+        "experience": exp,
+        "family_forward_rates": fams,
+        "methods": methods.current().get("table", []),
         "validation_history": vhist[-40:],
         "search": search,
         "gates": gates,

@@ -7,6 +7,12 @@ __pycache__/
 # scripts/fetch_data.py. Never belongs in git history.
 data/cache/
 
+# The experience corpus. This is genuinely valuable training data -- the
+# labelled pairing of a strategy with how it generalised forward -- but it
+# grows without bound and is machine-local. Back it up deliberately; do not
+# let it into the repo by accident.
+data/experience/
+
 # Rewritten every generation (~20s) and ~1 MB. Committing it would add a
 # megabyte of churn to the repo every twenty seconds. The dashboard reads
 # docs/data/snapshot.json instead, and CI reads docs/data/strategies.json.
