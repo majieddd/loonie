@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T07:52:49+00:00",
+ "generated_at": "2026-09-16T08:08:49+00:00",
  "workers": {
   "workers": [
    {
@@ -8,27 +8,27 @@
     "label": "genetic program",
     "started_at": "2026-09-16T06:49:00+00:00",
     "status": "running",
-    "detail": "gen 635 | fit +1.674 | IR +1.80 | alpha t +3.72",
+    "detail": "gen 736 | fit +1.674 | IR +1.80 | alpha t +3.72",
     "progress": null,
     "metrics": {
-     "generation": 635,
-     "trials": 83556,
-     "trials_effective": 7622,
+     "generation": 736,
+     "trials": 92266,
+     "trials_effective": 8933,
      "best_fitness": 1.6745,
      "best_alpha_t": 3.717,
-     "best_dsr": 0.361,
-     "archive_cells": 104,
+     "best_dsr": 0.346,
+     "archive_cells": 105,
      "promoted": 0,
      "demoted": 0,
-     "seconds_per_gen": 10.78
+     "seconds_per_gen": 10.09
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T07:52:41+00:00",
-    "heartbeat_epoch": 1789545161.1870377,
-    "uptime_s": 3820.4,
-    "heartbeat_age_s": 8.4,
+    "heartbeat": "2026-09-16T08:08:44+00:00",
+    "heartbeat_epoch": 1789546124.8089604,
+    "uptime_s": 4784.0,
+    "heartbeat_age_s": 5.0,
     "liveness": "live"
    },
    {
@@ -46,9 +46,9 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T07:52:49+00:00",
-    "heartbeat_epoch": 1789545169.4918342,
-    "uptime_s": 3841.1,
+    "heartbeat": "2026-09-16T08:08:49+00:00",
+    "heartbeat_epoch": 1789546129.7250376,
+    "uptime_s": 4801.3,
     "heartbeat_age_s": 0.1,
     "liveness": "live"
    },
@@ -72,7 +72,7 @@
     "heartbeat": "2026-09-16T06:54:01+00:00",
     "heartbeat_epoch": 1789541641.0413914,
     "uptime_s": 11.2,
-    "heartbeat_age_s": 3528.6,
+    "heartbeat_age_s": 4488.8,
     "liveness": "dead"
    },
    {
@@ -90,89 +90,89 @@
     "heartbeat": "2026-09-16T07:04:06+00:00",
     "heartbeat_epoch": 1789542246.5729907,
     "uptime_s": 0.0,
-    "heartbeat_age_s": 2923.0,
+    "heartbeat_age_s": 3883.3,
     "liveness": "dead"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 2,
-  "updated": "2026-09-16T07:52:49+00:00"
+  "updated": "2026-09-16T08:08:49+00:00"
  },
  "validation_history": [],
  "search": {
-  "generation": 635,
-  "trials": 83556,
-  "trials_effective": 7622,
-  "independence": 0.09121484362823085,
-  "archive_cells": 104,
+  "generation": 736,
+  "trials": 92266,
+  "trials_effective": 8933,
+  "independence": 0.09682041302624414,
+  "archive_cells": 105,
   "explore": 0.85,
   "best_fitness": 1.6744886401886263,
   "best_ir": 1.8045965844348246,
   "best_alpha_t": 3.71672000183369,
-  "best_dsr": 0.360842103164765,
-  "best_pbo": 0.38571428571428573,
+  "best_dsr": 0.34625619227097704,
+  "best_pbo": 0.4142857142857143,
   "best_corr": 0.9007346572200635,
   "best_null_pct": 1.0,
-  "seconds_per_gen": 10.78,
+  "seconds_per_gen": 10.09,
   "promoted_count": 0,
   "demoted_count": 0,
   "null_summary": {
    "n": 3000,
-   "mean_fitness": -1.0746785109619044,
-   "p95_fitness": 0.18657908393338796,
-   "p99_fitness": 0.37436231354713334,
+   "mean_fitness": -1.0634414288263048,
+   "p95_fitness": 0.18735957618850704,
+   "p99_fitness": 0.3577057555140637,
    "max_fitness": 1.2784299733747166,
-   "p95_alpha_t": 1.3112070427118756
+   "p95_alpha_t": 1.2971454842887584
   },
   "operators": {
    "point": {
-    "rate": 0.027777777777777776,
-    "tried": 576,
-    "won": 16,
-    "posterior_mean": 0.037370427442718915
+    "rate": 0.028037383177570093,
+    "tried": 642,
+    "won": 18,
+    "posterior_mean": 0.037088977071038594
    },
    "subtree": {
-    "rate": 0.02861952861952862,
-    "tried": 594,
-    "won": 17,
-    "posterior_mean": 0.03165725999665969
+    "rate": 0.028700906344410877,
+    "tried": 662,
+    "won": 19,
+    "posterior_mean": 0.032060505084489606
    },
    "hoist": {
-    "rate": 0.04171494785631518,
-    "tried": 863,
+    "rate": 0.03969128996692393,
+    "tried": 907,
     "won": 36,
-    "posterior_mean": 0.03264910612895364
+    "posterior_mean": 0.02548963915546545
    },
    "shrink": {
-    "rate": 0.030063291139240507,
-    "tried": 632,
+    "rate": 0.028064992614475627,
+    "tried": 677,
     "won": 19,
-    "posterior_mean": 0.035980100256384734
+    "posterior_mean": 0.028039723606951346
    },
    "wrap": {
-    "rate": 0.02782608695652174,
-    "tried": 575,
+    "rate": 0.02618657937806874,
+    "tried": 611,
     "won": 16,
-    "posterior_mean": 0.03383216526455577
+    "posterior_mean": 0.02869400179359303
    },
    "jitter": {
-    "rate": 0.07218915524490799,
-    "tried": 18313,
-    "won": 1322,
-    "posterior_mean": 0.06568705230551074
+    "rate": 0.07222222222222222,
+    "tried": 18360,
+    "won": 1326,
+    "posterior_mean": 0.06675697766752636
    },
    "crossover": {
-    "rate": 0.06796116504854369,
-    "tried": 3914,
-    "won": 266,
-    "posterior_mean": 0.07024125942889077
+    "rate": 0.06793159990630124,
+    "tried": 4269,
+    "won": 290,
+    "posterior_mean": 0.06888409802791289
    },
    "params": {
-    "rate": 0.09267127534967043,
-    "tried": 87082,
-    "won": 8070,
-    "posterior_mean": 0.09421310822335278
+    "rate": 0.09252870801902657,
+    "tried": 104065,
+    "won": 9629,
+    "posterior_mean": 0.09301995579163057
    }
   },
   "features": {
@@ -264,17 +264,17 @@
   },
   {
    "name": "deflated_sharpe",
-   "value": 0.360842103164765,
+   "value": 0.34625619227097704,
    "op": ">=",
    "threshold": 0.5,
    "pass": false
   },
   {
    "name": "pbo",
-   "value": 0.38571428571428573,
+   "value": 0.4142857142857143,
    "op": "<=",
    "threshold": 0.4,
-   "pass": true
+   "pass": false
   }
  ],
  "leader": {
@@ -287,8 +287,8 @@
   "alpha_t": 3.71672000183369,
   "folds_positive": 1.0,
   "worst_fold": 0.04601761811256751,
-  "dsr": 0.360842103164765,
-  "pbo": 0.38571428571428573,
+  "dsr": 0.34625619227097704,
+  "pbo": 0.4142857142857143,
   "corr": 0.9007346572200635,
   "turnover": 26.34117953375405,
   "trades": 4790,
@@ -310,8 +310,8 @@
    "alpha_t": 3.71672000183369,
    "folds_positive": 1.0,
    "worst_fold": 0.04601761811256751,
-   "dsr": 0.360842103164765,
-   "pbo": 0.38571428571428573,
+   "dsr": 0.34625619227097704,
+   "pbo": 0.4142857142857143,
    "corr": 0.9007346572200635,
    "turnover": 26.34117953375405,
    "trades": 4790,
