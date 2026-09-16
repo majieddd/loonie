@@ -1,12 +1,12 @@
 {
- "updated": "2026-09-16T22:46:50+00:00",
- "generation": 1669,
- "trials": 195828,
+ "updated": "2026-09-16T23:02:50+00:00",
+ "generation": 1711,
+ "trials": 200734,
  "promoted": true,
  "strategies": [
   {
-   "fingerprint": "0f99ec75a18e5acd",
-   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(sigmoid(sub(0.1922, tsrank_126(peer_beta))), div(m_credit_chg, -0.1519), dollar_vol_21), rank(downside_vol_63))|k=15|rb=21|w=score",
+   "fingerprint": "f8bc6dd4e3e976ff",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(sigmoid(tsrank_126(peer_beta)), div(m_credit_chg, -0.15), dollar_vol_21), rank(downside_vol_63))|k=15|rb=21|w=score",
    "promoted": true,
    "genome": {
     "expr": {
@@ -48,20 +48,12 @@
        "op": "sigmoid",
        "window": 0,
        "child": {
-        "t": "bin",
-        "op": "sub",
-        "left": {
-         "t": "const",
-         "value": 0.1922
-        },
-        "right": {
-         "t": "un",
-         "op": "tsrank",
-         "window": 126,
-         "child": {
-          "t": "feat",
-          "name": "peer_beta"
-         }
+        "t": "un",
+        "op": "tsrank",
+        "window": 126,
+        "child": {
+         "t": "feat",
+         "name": "peer_beta"
         }
        }
       },
@@ -74,7 +66,7 @@
        },
        "right": {
         "t": "const",
-        "value": -0.1519
+        "value": -0.15
        }
       },
       "b": {
@@ -95,46 +87,46 @@
     "n_positions": 15,
     "rebalance_days": 21,
     "weighting": "score",
-    "born": 1623,
+    "born": 1697,
     "parents": [
-     "fd405e2d33383692",
-     "31330a0136894418"
+     "dc7d024590bd5cca",
+     "995cd9c0fadef1d5"
     ],
     "operator": "crossover",
     "meta": {},
-    "fingerprint": "0f99ec75a18e5acd",
-    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(sigmoid(sub(0.1922, tsrank_126(peer_beta))), div(m_credit_chg, -0.1519), dollar_vol_21), rank(downside_vol_63))|k=15|rb=21|w=score"
+    "fingerprint": "f8bc6dd4e3e976ff",
+    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(sigmoid(tsrank_126(peer_beta)), div(m_credit_chg, -0.15), dollar_vol_21), rank(downside_vol_63))|k=15|rb=21|w=score"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.3176059243930465,
-    "median_alpha": 0.19859287469000123,
-    "mean_ir": 1.9685513617345536,
+    "mean_alpha": 0.3176118568289815,
+    "median_alpha": 0.19859287465655406,
+    "mean_ir": 1.9685710546710495,
     "worst_fold_alpha": 0.05101830158399376,
-    "alpha_tstat": 4.4919070574573245,
+    "alpha_tstat": 4.492184274434975,
     "total_trades": 1488,
-    "ann_turnover": 12.95504715087307,
-    "corr_bench": 0.7535361302792333,
+    "ann_turnover": 12.95504874681188,
+    "corr_bench": 0.7535523168257526,
     "n_folds": 8,
     "ok": true,
-    "val_alpha": 0.0013226483233341449,
-    "val_ir": 0.09218068870011968,
-    "val_t": 0.013838638774219059,
+    "val_alpha": 0.0013211444755322546,
+    "val_ir": 0.09217011920960974,
+    "val_t": 0.013822875216061584,
     "val_sessions": 426,
-    "dsr": 0.8241035281455271,
-    "sr_ann_excess": 1.8490385784088743,
-    "sr_star_ann": 1.5076185448904855,
-    "trials_total": 195828,
-    "trials_effective": 28753,
-    "independence": 0.14682619068893188,
-    "pbo": 0.24285714285714285,
-    "stress_alpha": 0.3046835108437942,
-    "stress_ir": 1.860900070217291,
+    "dsr": 0.8225065165451876,
+    "sr_ann_excess": 1.849156155957519,
+    "sr_star_ann": 1.5099948188119559,
+    "trials_total": 200734,
+    "trials_effective": 29573,
+    "independence": 0.14732205454934463,
+    "pbo": 0.35714285714285715,
+    "stress_alpha": 0.3046894417006574,
+    "stress_ir": 1.8609178582111663,
     "stress_multiplier": 3.0,
     "null_percentile": 1.0,
-    "null_mean_ir": 0.2630463902211404,
-    "null_p95_ir": 0.6839828034939582,
-    "real_ir": 1.9685513617345536,
+    "null_mean_ir": 0.13767466134268788,
+    "null_p95_ir": 0.671967795524899,
+    "real_ir": 1.9685710546710495,
     "n": 24
    }
   }
