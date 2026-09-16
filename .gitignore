@@ -11,8 +11,7 @@ data/cache/
 # megabyte of churn to the repo every twenty seconds. The dashboard reads
 # docs/data/snapshot.json instead, and CI reads docs/data/strategies.json.
 state/evolve_state.json
-state/evolve.log
-state/fetch*.log
+state/*.log
 state/.last_push
 
 # Generated HTML reports; the dashboard supersedes them.
