@@ -211,6 +211,13 @@ def main() -> int:
                 demoted=len(getattr(ev, "demoted", [])),
                 seconds_per_gen=rec["seconds"])
 
+            # Flush the experience corpus periodically. It otherwise buffers
+            # to 200 rows and only writes on exit -- fine for a bounded run,
+            # but a daemon meant to run for weeks would hold days of labelled
+            # outcomes in memory and lose all of them to a kill -9.
+            if store is not None and n_done % 10 == 0:
+                store.flush()
+
             # Feed the dashboard. Cheap (a few hundred KB of JSON); the git
             # push, if enabled, is throttled inside publish_dashboard.py so a
             # 20-second generation does not become 4,000 commits a day.

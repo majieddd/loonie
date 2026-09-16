@@ -42,12 +42,12 @@
  "cycles": {
   "qd_ir": 1,
   "qd_consistency": 1,
-  "elitist_ir": 3,
+  "elitist_ir": 4,
   "parsimony_hard": 0,
   "low_turnover": 2,
-  "wide_explore": 2
+  "wide_explore": 3
  },
- "updated": "2026-09-16T15:30:24+00:00",
+ "updated": "2026-09-16T15:34:58+00:00",
  "table": [
   {
    "id": "qd_ir",
@@ -86,7 +86,7 @@
    "forward_rate": null,
    "mean_fwd_alpha": null,
    "labelled": 0,
-   "cycles": 3,
+   "cycles": 4,
    "established": false
   },
   {
@@ -106,7 +106,7 @@
    "forward_rate": null,
    "mean_fwd_alpha": null,
    "labelled": 0,
-   "cycles": 2,
+   "cycles": 3,
    "established": false
   }
  ]

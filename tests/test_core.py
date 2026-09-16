@@ -1443,3 +1443,28 @@ def test_method_bandit_counts_each_strategy_once(tmp_path, monkeypatch):
     row = {r["id"]: r for r in b.table()}["qd_ir"]
     assert row["labelled"] == 2, "expected 2 distinct strategies, got %d" % row["labelled"]
     assert row["forward_rate"] == 0.5
+
+
+def test_experience_survives_an_unclean_exit(tmp_path, monkeypatch):
+    """Buffered rows must reach disk before a kill, not only on a clean exit.
+
+    The store batches to 200 rows. A daemon meant to run for weeks would
+    otherwise hold days of labelled outcomes in memory and lose all of them to
+    a kill -9 — the exact way this system is normally stopped.
+    """
+    from loonie import experience as ex
+
+    monkeypatch.setattr(ex, "resolve", lambda q: tmp_path / Path(q).name)
+    g = genome.Genome(expr=genome.Feat("mom_21"))
+
+    store = ex.ExperienceStore(method_id="qd_ir")
+    for i in range(7):
+        store.record("gated", g, cv={"val_alpha": 0.01 * i})
+    assert ex.load().empty, "nothing should be on disk before a flush"
+
+    store.flush()                          # what the daemon now does every 10 gens
+    assert len(ex.load()) == 7, "a periodic flush must durably persist rows"
+
+    # A later flush with an empty buffer must not corrupt or duplicate.
+    assert store.flush() == 0
+    assert len(ex.load()) == 7
