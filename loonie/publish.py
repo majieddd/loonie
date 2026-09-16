@@ -214,6 +214,12 @@ def build_snapshot(cfg) -> dict:
     # a hung or SIGKILLed process leaves "running: true" behind forever but
     # cannot fake a fresh timestamp.
     workers = registry.summary()
+    # Redact local machine details. The dashboard needs to know a worker is
+    # alive and what it is doing; it has never needed the hostname or the PID,
+    # and this file is served publicly.
+    for w in workers.get("workers", []):
+        w.pop("host", None)
+        w.pop("pid", None)
     vhist = orchestrator.validation_history()
 
     return {

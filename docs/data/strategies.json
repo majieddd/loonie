@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-16T06:40:23+00:00",
- "generation": 195,
- "trials": 41568,
+ "updated": "2026-09-16T06:44:49+00:00",
+ "generation": 215,
+ "trials": 44945,
  "promoted": false,
  "strategies": [
   {
@@ -86,13 +86,13 @@
     "corr_bench": 0.9007346572200635,
     "n_folds": 8,
     "ok": true,
-    "dsr": 0.3791823615656963,
+    "dsr": 0.4092700444291042,
     "sr_ann_excess": 1.3546338956919752,
-    "sr_star_ann": 1.475861474683776,
-    "trials_total": 41568,
-    "trials_effective": 6275,
-    "independence": 0.1509482906248204,
-    "pbo": 0.21428571428571427
+    "sr_star_ann": 1.445042845321134,
+    "trials_total": 44945,
+    "trials_effective": 4610,
+    "independence": 0.10257750700117964,
+    "pbo": 0.07142857142857142
    }
   },
   {
@@ -164,8 +164,8 @@
    }
   },
   {
-   "fingerprint": "893a21a13f554e5e",
-   "canonical": "min(min(min(m_breadth, sub(min(min(min(m_breadth, sub(downside_vol_63, -0.4282)), sub(rev_21, -0.2797)), add(vol_21, vol_126)), -0.284)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal",
+   "fingerprint": "48c816f1fbde318d",
+   "canonical": "min(min(min(min(min(min(m_breadth, sub(downside_vol_63, -0.2728)), sub(rev_21, -0.2797)), add(vol_21, vol_126)), m_breadth), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
@@ -178,12 +178,8 @@
        "t": "bin",
        "op": "min",
        "left": {
-        "t": "feat",
-        "name": "m_breadth"
-       },
-       "right": {
         "t": "bin",
-        "op": "sub",
+        "op": "min",
         "left": {
          "t": "bin",
          "op": "min",
@@ -191,55 +187,51 @@
           "t": "bin",
           "op": "min",
           "left": {
-           "t": "bin",
-           "op": "min",
-           "left": {
-            "t": "feat",
-            "name": "m_breadth"
-           },
-           "right": {
-            "t": "bin",
-            "op": "sub",
-            "left": {
-             "t": "feat",
-             "name": "downside_vol_63"
-            },
-            "right": {
-             "t": "const",
-             "value": -0.4282
-            }
-           }
+           "t": "feat",
+           "name": "m_breadth"
           },
           "right": {
            "t": "bin",
            "op": "sub",
            "left": {
             "t": "feat",
-            "name": "rev_21"
+            "name": "downside_vol_63"
            },
            "right": {
             "t": "const",
-            "value": -0.2797
+            "value": -0.2728
            }
           }
          },
          "right": {
           "t": "bin",
-          "op": "add",
+          "op": "sub",
           "left": {
            "t": "feat",
-           "name": "vol_21"
+           "name": "rev_21"
           },
           "right": {
-           "t": "feat",
-           "name": "vol_126"
+           "t": "const",
+           "value": -0.2797
           }
          }
         },
         "right": {
-         "t": "const",
-         "value": -0.284
+         "t": "bin",
+         "op": "add",
+         "left": {
+          "t": "feat",
+          "name": "vol_21"
+         },
+         "right": {
+          "t": "feat",
+          "name": "vol_126"
+         }
         }
+       },
+       "right": {
+        "t": "feat",
+        "name": "m_breadth"
        }
       },
       "right": {
@@ -271,26 +263,26 @@
     "n_positions": 20,
     "rebalance_days": 10,
     "weighting": "equal",
-    "born": 192,
+    "born": 205,
     "parents": [
-     "e9fe94c6b2374215",
-     "2b59500dd8692983"
+     "6c257f49c9ac1546",
+     "e5edeb2730b831d9"
     ],
-    "operator": "jitter",
+    "operator": "crossover",
     "meta": {},
-    "fingerprint": "893a21a13f554e5e",
-    "canonical": "min(min(min(m_breadth, sub(min(min(min(m_breadth, sub(downside_vol_63, -0.4282)), sub(rev_21, -0.2797)), add(vol_21, vol_126)), -0.284)), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal"
+    "fingerprint": "48c816f1fbde318d",
+    "canonical": "min(min(min(min(min(min(m_breadth, sub(downside_vol_63, -0.2728)), sub(rev_21, -0.2797)), add(vol_21, vol_126)), m_breadth), sub(rev_21, -0.2797)), add(vol_21, vol_126))|k=20|rb=10|w=equal"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.14874230284695578,
+    "mean_alpha": 0.14747700736227715,
     "median_alpha": 0.11880402740023355,
-    "mean_ir": 1.7909335316782955,
-    "worst_fold_alpha": 0.043583699280301424,
-    "alpha_tstat": 3.6439182654503703,
-    "total_trades": 4787,
-    "ann_turnover": 26.297173265685835,
-    "corr_bench": 0.8988816186629409,
+    "mean_ir": 1.8045965844348246,
+    "worst_fold_alpha": 0.04601761811256751,
+    "alpha_tstat": 3.71672000183369,
+    "total_trades": 4790,
+    "ann_turnover": 26.34117953375405,
+    "corr_bench": 0.9007346572200635,
     "n_folds": 8,
     "ok": true
    }

@@ -12,6 +12,11 @@ data/cache/
 # docs/data/snapshot.json instead, and CI reads docs/data/strategies.json.
 state/evolve_state.json
 state/*.log
+
+# Per-process heartbeats: PIDs, hostname, and rewritten every few seconds.
+# Local runtime plumbing. The PUBLISHED view of who is running lives in
+# docs/data/snapshot.json, which the dashboard reads.
+state/workers/
 state/.last_push
 
 # Generated HTML reports; the dashboard supersedes them.
