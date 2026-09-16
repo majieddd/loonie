@@ -47,6 +47,7 @@ import numpy as np
 
 from . import backtest as bt
 from . import cv as cvmod
+from . import ic as icmod
 from . import metrics
 from .config import resolve
 from .genome import Genome, Grammar
@@ -374,6 +375,13 @@ class Evolver:
         self.folds = cvmod.block_folds(self.panel.shape[0], int(cfg.cv.n_splits),
                                        int(cfg.cv.embargo_days))
 
+        # Forward returns for the IC gate, memoised per holding period. Every
+        # genome carries its own rebalance length and there are only a handful
+        # of distinct ones, so this is a few arrays rather than one per
+        # candidate.
+        self._fwd: dict = {}
+        self._val_fwd: dict = {}
+
         self.population: list = []
         self.hall_of_fame: list = []
         self.demoted: list = []
@@ -479,12 +487,27 @@ class Evolver:
         if not res.ok:
             return {"val_alpha": float("nan"), "val_ir": float("nan"),
                     "val_t": float("nan")}
-        return {
+        out = {
             "val_alpha": float(res.stats["alpha_ann"]),
             "val_ir": float(res.stats["ir"]),
             "val_t": float(res.stats["alpha_tstat"]),
             "val_sessions": int(len(res.ret)),
         }
+        # The same ranking question, on the window fitness has never seen. A
+        # portfolio alpha over a short tail is almost pure noise; the IC over
+        # the same tail uses every name on every day of it.
+        try:
+            h = max(1, int(g.rebalance_days))
+            if h not in self._val_fwd:
+                self._val_fwd[h] = icmod.forward_returns(
+                    self.val_panel.close, h)
+            r = icmod.summarize(score, self._val_fwd[h],
+                                self.val_panel.tradable, h)
+            out["val_ic"] = r["ic"]
+            out["val_ic_t"] = r["ic_t"]
+        except Exception:
+            out["val_ic"] = out["val_ic_t"] = float("nan")
+        return out
 
     # --------------------------------------------------------- cost stress
     def cost_stress(self, g: Genome, multiplier: float = 3.0) -> dict:
@@ -632,6 +655,31 @@ class Evolver:
         ev.cv["trials_effective"] = n_eff
         ev.cv["independence"] = eff.get("independence", 1.0)
 
+        # ---- the gate with power ------------------------------------------
+        # Placed after n_eff because the threshold is a function of it: the
+        # largest |t| this search would have found in noise, having looked
+        # exactly as hard as it has. It rises as the search continues, so a
+        # candidate cannot clear it simply by being evaluated late.
+        try:
+            h = max(1, int(ev.genome.rebalance_days))
+            if h not in self._fwd:
+                self._fwd[h] = icmod.forward_returns(self.panel.close, h)
+            score = ev.genome.score(self.feats, self.panel.tradable)
+            r = icmod.summarize(score, self._fwd[h], self.panel.tradable, h)
+            ev.cv.update({k: r[k] for k in
+                          ("ic", "ic_t", "ic_n", "ic_ir", "ic_hit")})
+            want = g.get("min_ic_tstat", "auto")
+            bar = (icmod.null_bar(n_eff, float(g.get("ic_tstat_floor", 2.0)))
+                   if str(want).lower() == "auto" else float(want))
+            ev.cv["ic_bar"] = bar
+            checks.append(metrics.summarize_gate("ic_tstat", r["ic_t"],
+                                                 ">=", bar))
+        except Exception:
+            ev.cv["ic_t"] = float("nan")
+            checks.append({"gate": "ic_tstat", "value": float("nan"),
+                           "op": ">=", "threshold": float("nan"),
+                           "pass": False})
+
         # PBO over the BEHAVIOUR archive, not the fitness leaderboard. CSCV asks
         # "does my selection procedure pick winners that keep winning?", which
         # only means something across genuinely different configurations. Run it
@@ -671,6 +719,10 @@ class Evolver:
                 checks.append(metrics.summarize_gate(
                     "forward_alpha", v["val_alpha"], ">=",
                     float(g.get("min_forward_alpha", 0.0))))
+                if np.isfinite(v.get("val_ic", np.nan)):
+                    checks.append(metrics.summarize_gate(
+                        "forward_ic", v["val_ic"], ">=",
+                        float(g.get("min_forward_ic", 0.0))))
             else:
                 checks.append({"gate": "forward_alpha", "value": float("nan"),
                                "op": ">=", "threshold": 0.0, "pass": False})

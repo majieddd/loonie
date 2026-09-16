@@ -771,7 +771,12 @@ def test_revalidation_keeps_strategies_that_still_clear():
                  ("max_pbo", 1.0), ("min_alpha_tstat", -99.0), ("min_trades", 0),
                  ("max_annual_turnover", 1e9), ("max_benchmark_corr", 1.0),
                  ("min_null_percentile", 0.0), ("min_stress_alpha", -1e9),
-                 ("min_forward_alpha", -1e9)):
+                 ("min_forward_alpha", -1e9),
+                 # The IC gates default to `auto`, which on a random-walk
+                 # panel correctly demotes everything. This test is about the
+                 # revalidation loop, not the thresholds, so they are lowered
+                 # with the rest.
+                 ("min_ic_tstat", -99.0), ("min_forward_ic", -1e9)):
         c["evolve"]["gate"][k] = v
 
     ev = evolve.Evolver(c, p, f, seed=3, verbose=False)
@@ -2088,3 +2093,101 @@ def test_detectable_alpha_scales_with_span_and_tracking_error():
     # strategy delivers. If this ever drops below ~4% the instrument has
     # genuinely changed and the gate should be revisited.
     assert mde(0.1481, 5.61) > 0.12
+
+
+# =============================================================================
+#  Cross-sectional IC -- the gate that has power
+# =============================================================================
+def test_forward_returns_start_the_day_after_the_score():
+    """The score at t is acted on at t+1, so it is judged from t+1.
+
+    Starting the forward window at t would score a signal against a bar it is
+    already inside -- the single most productive way to manufacture an edge
+    that cannot be traded.
+    """
+    from loonie import ic as IC
+
+    close = np.cumprod(1 + np.full((60, 3), 0.01)) .reshape(60, 3) * 100
+    close = (100 * np.cumprod(np.full((60, 3), 1.01), axis=0))
+    f = IC.forward_returns(close, 5)
+
+    # A constant 1%/day compounding for 5 days, measured from t+1.
+    assert abs(f[0, 0] - (1.01 ** 5 - 1)) < 1e-9
+    # The last h+1 rows cannot know their own future.
+    assert np.all(np.isnan(f[-6:]))
+
+
+def test_ic_recovers_a_planted_ranking_and_rejects_a_scrambled_one():
+    from loonie import ic as IC
+
+    rng = np.random.default_rng(3)
+    T, N = 400, 80
+    fwd = rng.normal(0, 0.02, (T, N))
+    mask = np.ones((T, N), bool)
+
+    perfect = IC.summarize(fwd.copy(), fwd, mask, 1)
+    assert perfect["ic"] > 0.99, "a perfect ranking did not score IC 1"
+    # A flawless ranker has no spread in its IC at all, so the t-stat is
+    # undefined rather than zero. Scoring it 0.0 would call the best possible
+    # signal worthless, so the degenerate case is reported as infinite.
+    assert perfect["ic_t"] == float("inf")
+
+    noise = IC.summarize(rng.normal(0, 1, (T, N)), fwd, mask, 1)
+    assert abs(noise["ic"]) < 0.05
+    assert abs(noise["ic_t"]) < 3.0, "unrelated scores produced a t-stat"
+
+
+def test_overlapping_windows_do_not_inflate_the_t_stat():
+    """Consecutive ICs at horizon h share h-1 days of the same forward window.
+
+    Treating them as independent inflates the t-stat by roughly sqrt(h). At a
+    21-day rebalance that is a factor near 4.5 -- the difference between a
+    gate that means something and one that passes everything.
+    """
+    from loonie import ic as IC
+
+    rng = np.random.default_rng(17)
+    x = rng.normal(0.01, 0.05, 1200)
+    naive = float(np.mean(x) / (np.std(x, ddof=1) / np.sqrt(len(x))))
+    corrected = IC._nw_tstat(x, 21)
+    assert corrected < naive, "the overlap correction did not reduce the t-stat"
+
+    # On a deliberately autocorrelated series the gap must be large, not token.
+    y = np.convolve(rng.normal(0.01, 0.05, 1300), np.ones(21) / 21, "valid")
+    n_y = float(np.mean(y) / (np.std(y, ddof=1) / np.sqrt(len(y))))
+    assert IC._nw_tstat(y, 21) < 0.6 * n_y
+
+
+def test_null_bar_rises_with_how_hard_the_search_looked():
+    """A fixed threshold is the wrong shape for 200,000 evaluated genomes.
+
+    The largest |t| among k independent null draws grows like sqrt(2 ln k), so
+    the honest bar is a function of search effort, not a constant.
+    """
+    from loonie import ic as IC
+
+    assert IC.null_bar(10) < IC.null_bar(1000) < IC.null_bar(100000)
+    assert abs(IC.null_bar(56837) - 4.68) < 0.02, \
+        "the bar at the live effective-trial count moved"
+    # A young search still has to clear ordinary significance first.
+    assert IC.null_bar(2) == 2.0
+    assert IC.null_bar(1, floor=2.5) == 2.5
+
+
+def test_ic_is_computed_on_the_fitting_window_not_the_whole_panel():
+    """The gate must not be able to see the forward tail.
+
+    Evolver.gate scores IC against self.panel, which is truncated at
+    fit_end; the validation tail is a separate panel reached only through
+    validate(). If the gate ever read full_panel the forward_ic check would
+    be scoring the window it had already optimised against.
+    """
+    import ast
+
+    src = (Path(__file__).resolve().parent.parent / "loonie" / "evolve.py")
+    tree = ast.parse(src.read_text(encoding="utf-8"))
+    fn = next(n for n in ast.walk(tree)
+              if isinstance(n, ast.FunctionDef) and n.name == "gate")
+    attrs = {n.attr for n in ast.walk(fn) if isinstance(n, ast.Attribute)}
+    assert "full_panel" not in attrs, "the IC gate can see the forward tail"
+    assert "panel" in attrs

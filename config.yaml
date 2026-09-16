@@ -91,6 +91,29 @@ evolve:
     # however good its CAGR looks.
     min_null_percentile: 0.95
 
+    # THE GATE THAT ACTUALLY HAS POWER. Measuring the portfolio test showed it
+    # cannot resolve a realistic edge: 5.6 years at 14.8% tracking error needs
+    # +12.5%/yr to reach t=2, and a genuine 3%/yr edge scores 0.48. Four honest
+    # walk-forwards returned "no edge" and every one was equally consistent
+    # with a dead search and a good one.
+    #
+    # The information coefficient keeps the cross-section instead of
+    # compressing 500 ranked names into one number a day: ~2,700 daily
+    # observations rather than 5.6 years of portfolio returns, and the noise of
+    # which 25 names were held never enters. Measured on the archive it
+    # discriminates -- live candidates span t -1.04 to +4.47 -- where the
+    # portfolio t-stat gave everything the same uninformative answer.
+    #
+    # `auto` sets the threshold to sqrt(2 ln k) on EFFECTIVE trials: the
+    # largest |t| this search would have found in pure noise, having looked
+    # exactly as hard as it has. The bar rises as the search continues, which
+    # is the multiple-testing correction applied to the threshold instead of
+    # bolted on as a footnote. A number here overrides it.
+    min_ic_tstat: auto
+    ic_tstat_floor: 2.0           # ordinary significance, before the correction
+    # ...and it must still point the right way on the window fitness cannot see.
+    min_forward_ic: 0.0
+
 cv:
   n_splits: 8
   embargo_days: 10         # gap between train/test to kill leakage
