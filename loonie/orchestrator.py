@@ -92,7 +92,12 @@ def default_jobs(cfg, population: int) -> list:
         stagger(Job("trade", 24 * 3600, [py, "-u", "scripts/run_trade.py",
                                          "--flatten-on-halt"],
                     weekday_only=True), 300),
-        Job("publish", 60, [py, "-u", "scripts/publish_dashboard.py", "--quiet"]),
+        # Writes docs/data every minute so the LOCAL dashboard is current, and
+        # pushes to the git remote at most every 15 minutes so GitHub Pages
+        # stays fed without turning a 20-second generation into 4,000 commits
+        # a day. The throttle lives inside publish_dashboard.py.
+        Job("publish", 60, [py, "-u", "scripts/publish_dashboard.py",
+                            "--quiet", "--push", "--throttle", "900"]),
     ]
 
 

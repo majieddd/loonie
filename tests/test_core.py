@@ -1036,3 +1036,57 @@ def test_forward_validation_gate_rejects_a_tail_failure():
     if "forward_alpha" in names:
         fa = [x for x in checks if x["gate"] == "forward_alpha"][0]
         assert not fa["pass"], "an impossible forward bar was still cleared"
+
+
+def test_snapshot_writes_are_atomic(tmp_path, monkeypatch):
+    """A reader must never catch snapshot.json half-written.
+
+    The dashboard polls it every 30s while the orchestrator rewrites it every
+    60. A plain write_text leaves a window where JSON.parse throws and the page
+    goes blank with no other symptom — observed as a JSONDecodeError when two
+    publishes overlapped.
+    """
+    import json as _json
+    import threading
+
+    from loonie import publish
+
+    monkeypatch.setattr(publish, "ROOT", tmp_path)
+    monkeypatch.setattr(publish, "resolve", lambda q: Path("D:/trader") / q)
+
+    cfg = config.load()
+    publish.publish(cfg)                      # seed the files
+    target = tmp_path / "docs" / "data" / "snapshot.json"
+    assert target.exists()
+
+    torn = []
+    stop = threading.Event()
+
+    def reader():
+        while not stop.is_set():
+            try:
+                _json.loads(target.read_text(encoding="utf-8"))
+            except FileNotFoundError:
+                continue                      # replace window; acceptable
+            except ValueError as e:
+                torn.append(str(e))
+                return
+
+    t = threading.Thread(target=reader, daemon=True)
+    t.start()
+    for _ in range(6):
+        publish.publish(cfg)
+    stop.set()
+    t.join(timeout=5)
+
+    assert not torn, "reader saw a torn snapshot: %s" % torn[:2]
+
+
+def test_publish_returns_the_document_it_wrote():
+    """Callers must not re-read a file another process may be rewriting."""
+    from loonie import publish
+
+    r = publish.publish(config.load())
+    assert "doc" in r, "publish must hand back the snapshot it just built"
+    assert r["doc"]["search"]["generation"] is not None
+    assert r["doc"]["portfolio"]["is_live"] is False

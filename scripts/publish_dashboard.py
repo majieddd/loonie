@@ -17,7 +17,6 @@ moved, it rebases; if that fails it says so and leaves the working tree alone.
 from __future__ import annotations
 
 import argparse
-import json
 import subprocess
 import sys
 import time
@@ -83,8 +82,8 @@ def main() -> int:
     cfg = config.load()
     r = publish.publish(cfg)
 
+    snap = r["doc"]
     if not a.quiet:
-        snap = json.loads(r["snapshot"].read_text(encoding="utf-8"))
         print("[publish] gen %s | %s trials | %d positions | $%s equity | %.1f KB"
               % (snap["search"]["generation"], snap["search"]["trials"],
                  snap["portfolio"]["n_positions"],
@@ -109,7 +108,6 @@ def main() -> int:
             print("[publish] no data changes to commit")
         return 0
 
-    snap = json.loads(r["snapshot"].read_text(encoding="utf-8"))
     msg = ("data: gen %s, %s trials, %d positions, $%s"
            % (snap["search"]["generation"], snap["search"]["trials"],
               snap["portfolio"]["n_positions"],

@@ -21,6 +21,9 @@ re-downloading a growing file forever.
 from __future__ import annotations
 
 import json
+import os
+import tempfile
+import time
 from datetime import datetime, timezone
 
 
@@ -323,8 +326,47 @@ def build_strategies(cfg) -> dict:
     }
 
 
+def _atomic_write(path, text: str):
+    """Write via temp file + os.replace, which is atomic on POSIX and Windows.
+
+    Not a nicety. The dashboard polls snapshot.json every 30 seconds and the
+    orchestrator rewrites it every 60, so a plain write_text leaves a window
+    where a reader gets a truncated file -- JSON.parse throws and the page goes
+    blank with no other symptom. Observed exactly that as a JSONDecodeError
+    when two publishes overlapped. registry.py already does this; the file the
+    dashboard actually reads was the one still doing it unsafely.
+    """
+    tmp = None
+    try:
+        fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+
+        # Windows: os.replace raises PermissionError if the destination has an
+        # open handle, which it routinely does -- the dashboard is reading this
+        # file every 30 seconds. Without the retry the write is simply dropped
+        # and the page silently goes stale, which is the exact failure the
+        # atomic write was added to prevent. A few milliseconds of backoff
+        # clears it; POSIX never enters the loop at all.
+        for attempt in range(40):
+            try:
+                os.replace(tmp, path)
+                tmp = None
+                break
+            except PermissionError:
+                if attempt == 39:
+                    raise
+                time.sleep(0.01)
+    finally:
+        if tmp and os.path.exists(tmp):
+            try:
+                os.unlink(tmp)
+            except Exception:
+                pass
+
+
 def publish(cfg, out_dir: str = OUT) -> dict:
-    """Write snapshot.json + series.json + strategies.json."""
+    """Write snapshot.json + series.json + strategies.json, atomically."""
     d = ROOT / out_dir
     d.mkdir(parents=True, exist_ok=True)
 
@@ -335,8 +377,9 @@ def publish(cfg, out_dir: str = OUT) -> dict:
     sp = d / "snapshot.json"
     yp = d / "series.json"
     gp = d / "strategies.json"
-    sp.write_text(json.dumps(snap, indent=1, default=str), encoding="utf-8")
-    yp.write_text(json.dumps(series, default=str), encoding="utf-8")
-    gp.write_text(json.dumps(strat, indent=1, default=str), encoding="utf-8")
-    return {"snapshot": sp, "series": yp, "strategies": gp,
+    _atomic_write(sp, json.dumps(snap, indent=1, default=str))
+    _atomic_write(yp, json.dumps(series, default=str))
+    _atomic_write(gp, json.dumps(strat, indent=1, default=str))
+    # Hand back the dict so callers never re-read what they just wrote.
+    return {"snapshot": sp, "series": yp, "strategies": gp, "doc": snap,
             "bytes": sum(f.stat().st_size for f in (sp, yp, gp))}
