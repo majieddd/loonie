@@ -1,12 +1,12 @@
 {
- "updated": "2026-09-16T22:14:50+00:00",
- "generation": 1586,
- "trials": 186088,
+ "updated": "2026-09-16T22:30:49+00:00",
+ "generation": 1637,
+ "trials": 191442,
  "promoted": true,
  "strategies": [
   {
-   "fingerprint": "cf6c997df41ca276",
-   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.6003, tsrank_126(peer_beta))), mom_1), div(m_credit_chg, -0.1609), dollar_vol_21), rank(downside_vol_63))|k=15|rb=21|w=score",
+   "fingerprint": "0f99ec75a18e5acd",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(sigmoid(sub(0.1922, tsrank_126(peer_beta))), div(m_credit_chg, -0.1519), dollar_vol_21), rank(downside_vol_63))|k=15|rb=21|w=score",
    "promoted": true,
    "genome": {
     "expr": {
@@ -44,33 +44,25 @@
      "a": {
       "t": "ite",
       "cond": {
-       "t": "bin",
-       "op": "add",
-       "left": {
-        "t": "un",
-        "op": "sigmoid",
-        "window": 0,
-        "child": {
-         "t": "bin",
-         "op": "sub",
-         "left": {
-          "t": "const",
-          "value": 0.6003
-         },
-         "right": {
-          "t": "un",
-          "op": "tsrank",
-          "window": 126,
-          "child": {
-           "t": "feat",
-           "name": "peer_beta"
-          }
+       "t": "un",
+       "op": "sigmoid",
+       "window": 0,
+       "child": {
+        "t": "bin",
+        "op": "sub",
+        "left": {
+         "t": "const",
+         "value": 0.1922
+        },
+        "right": {
+         "t": "un",
+         "op": "tsrank",
+         "window": 126,
+         "child": {
+          "t": "feat",
+          "name": "peer_beta"
          }
         }
-       },
-       "right": {
-        "t": "feat",
-        "name": "mom_1"
        }
       },
       "a": {
@@ -82,7 +74,7 @@
        },
        "right": {
         "t": "const",
-        "value": -0.1609
+        "value": -0.1519
        }
       },
       "b": {
@@ -103,46 +95,46 @@
     "n_positions": 15,
     "rebalance_days": 21,
     "weighting": "score",
-    "born": 1537,
+    "born": 1623,
     "parents": [
-     "3c23061763499aea",
-     "2000d49c7647f0db"
+     "fd405e2d33383692",
+     "31330a0136894418"
     ],
-    "operator": "params",
+    "operator": "crossover",
     "meta": {},
-    "fingerprint": "cf6c997df41ca276",
-    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.6003, tsrank_126(peer_beta))), mom_1), div(m_credit_chg, -0.1609), dollar_vol_21), rank(downside_vol_63))|k=15|rb=21|w=score"
+    "fingerprint": "0f99ec75a18e5acd",
+    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(sigmoid(sub(0.1922, tsrank_126(peer_beta))), div(m_credit_chg, -0.1519), dollar_vol_21), rank(downside_vol_63))|k=15|rb=21|w=score"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.31757819596344117,
-    "median_alpha": 0.19859287472344553,
-    "mean_ir": 1.9684593043439373,
+    "mean_alpha": 0.3176059243930465,
+    "median_alpha": 0.19859287469000123,
+    "mean_ir": 1.9685513617345536,
     "worst_fold_alpha": 0.05101830158399376,
-    "alpha_tstat": 4.490608732926256,
+    "alpha_tstat": 4.4919070574573245,
     "total_trades": 1488,
-    "ann_turnover": 12.955039476852647,
-    "corr_bench": 0.7534603616571842,
+    "ann_turnover": 12.95504715087307,
+    "corr_bench": 0.7535361302792333,
     "n_folds": 8,
     "ok": true,
-    "dsr": 0.8241932466299433,
-    "sr_ann_excess": 1.8484882961168698,
-    "sr_star_ann": 1.5069372144957018,
-    "trials_total": 186088,
-    "trials_effective": 28517,
-    "independence": 0.15324532144149633,
-    "pbo": 0.18571428571428572,
-    "stress_alpha": 0.30465579001088827,
-    "stress_ir": 1.8608169080699153,
-    "stress_multiplier": 3.0,
-    "val_alpha": 0.0013296878466304161,
-    "val_ir": 0.09223017148082878,
-    "val_t": 0.013912429515992137,
+    "val_alpha": 0.0013226483233341449,
+    "val_ir": 0.09218068870011968,
+    "val_t": 0.013838638774219059,
     "val_sessions": 426,
+    "dsr": 0.8287782779884092,
+    "sr_ann_excess": 1.8490385784088743,
+    "sr_star_ann": 1.500933566445611,
+    "trials_total": 191442,
+    "trials_effective": 26575,
+    "independence": 0.1388154036651177,
+    "pbo": 0.22857142857142856,
+    "stress_alpha": 0.3046835108437942,
+    "stress_ir": 1.860900070217291,
+    "stress_multiplier": 3.0,
     "null_percentile": 1.0,
-    "null_mean_ir": 0.18273159562513894,
-    "null_p95_ir": 0.645289860543299,
-    "real_ir": 1.9684593043439373,
+    "null_mean_ir": 0.04944998295252781,
+    "null_p95_ir": 0.5249169083246263,
+    "real_ir": 1.9685513617345536,
     "n": 24
    }
   }
