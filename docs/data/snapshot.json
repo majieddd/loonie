@@ -1,26 +1,44 @@
 {
- "generated_at": "2026-09-16T23:54:32+00:00",
+ "generated_at": "2026-09-16T23:55:32+00:00",
  "workers": {
   "workers": [
+   {
+    "id": "search",
+    "kind": "search",
+    "label": "genetic program",
+    "started_at": "2026-09-16T23:54:42+00:00",
+    "status": "running",
+    "detail": "seeding population",
+    "progress": null,
+    "metrics": {},
+    "cycle": 0,
+    "errors": 0,
+    "last_error": "",
+    "heartbeat": "2026-09-16T23:54:42+00:00",
+    "heartbeat_epoch": 1789602882.6747255,
+    "uptime_s": 0.0,
+    "heartbeat_age_s": 49.8,
+    "liveness": "live"
+   },
    {
     "id": "orchestrator",
     "kind": "supervisor",
     "label": "system supervisor",
     "started_at": "2026-09-16T23:53:32+00:00",
     "status": "supervising",
-    "detail": "running: search, data, publish",
+    "detail": "running: search, publish",
     "progress": null,
     "metrics": {
-     "jobs_running": 3,
-     "failures": 1,
-     "code_reloads": 0
+     "jobs_running": 2,
+     "failures": 2,
+     "code_reloads": 1
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T23:54:32+00:00",
-    "heartbeat_epoch": 1789602872.2120504,
-    "uptime_s": 60.0,
+    "heartbeat": "2026-09-16T23:55:32+00:00",
+    "heartbeat_epoch": 1789602932.244278,
+    "uptime_s": 120.1,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -39,37 +57,8 @@
     "heartbeat": "2026-09-16T20:01:40+00:00",
     "heartbeat_epoch": 1789588900.3752224,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 13972.0,
+    "heartbeat_age_s": 14032.1,
     "liveness": "finished"
-   },
-   {
-    "id": "search",
-    "kind": "search",
-    "label": "genetic program",
-    "started_at": "2026-09-16T23:47:26+00:00",
-    "status": "running",
-    "detail": "gen 1786 | fit +1.789 | IR +1.97 | alpha t +4.49",
-    "progress": null,
-    "metrics": {
-     "generation": 1786,
-     "trials": 211866,
-     "trials_effective": 56837,
-     "best_fitness": 1.7886,
-     "best_alpha_t": 4.492,
-     "best_dsr": 0.781,
-     "archive_cells": 60,
-     "promoted": 1,
-     "demoted": 226,
-     "seconds_per_gen": 50.27
-    },
-    "cycle": 0,
-    "errors": 0,
-    "last_error": "",
-    "heartbeat": "2026-09-16T23:51:07+00:00",
-    "heartbeat_epoch": 1789602667.9187984,
-    "uptime_s": 221.0,
-    "heartbeat_age_s": 204.5,
-    "liveness": "stale"
    },
    {
     "id": "validate",
@@ -89,14 +78,14 @@
     "heartbeat": "2026-09-16T23:50:49+00:00",
     "heartbeat_epoch": 1789602649.5047596,
     "uptime_s": 213.9,
-    "heartbeat_age_s": 222.9,
+    "heartbeat_age_s": 282.9,
     "liveness": "finished"
    }
   ],
-  "live": 1,
-  "stale": 1,
+  "live": 2,
+  "stale": 0,
   "dead": 0,
-  "updated": "2026-09-16T23:54:32+00:00"
+  "updated": "2026-09-16T23:55:32+00:00"
  },
  "experience": {
   "rows": 2385,
@@ -166,7 +155,7 @@
    "forward_rate": 1.0,
    "mean_fwd_alpha": 0.0013222162638455376,
    "labelled": 11,
-   "cycles": 8,
+   "cycles": 9,
    "established": false
   },
   {
