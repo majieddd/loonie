@@ -1,12 +1,12 @@
 {
- "updated": "2026-09-16T15:04:24+00:00",
- "generation": 2827,
- "trials": 342204,
+ "updated": "2026-09-16T15:04:53+00:00",
+ "generation": 2829,
+ "trials": 342680,
  "promoted": false,
  "strategies": [
   {
-   "fingerprint": "7f47878ffe154119",
-   "canonical": "min(min(min(min(min(m_breadth, sub(idio_vol_126, -0.194)), 1.075), add(log1p(add(downside_vol_63, delta_5(m_breadth))), add(add(downside_vol_63, delta_5(m_breadth)), 0.26))), mul(0.7861, pct_52w_high)), sub(rev_21, -0.2797))|k=20|rb=10|w=equal",
+   "fingerprint": "d3ce5559d01a7727",
+   "canonical": "min(min(min(min(min(m_breadth, sub(idio_vol_126, -0.1937)), 2.404), add(log1p(add(downside_vol_63, delta_5(m_breadth))), add(add(downside_vol_63, delta_5(m_breadth)), 0.26))), mul(0.7861, pct_52w_high)), sub(rev_21, -0.2797))|k=20|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
@@ -37,13 +37,13 @@
           },
           "right": {
            "t": "const",
-           "value": -0.194
+           "value": -0.1937
           }
          }
         },
         "right": {
          "t": "const",
-         "value": 1.0748
+         "value": 2.4043
         }
        },
        "right": {
@@ -127,37 +127,37 @@
     "n_positions": 20,
     "rebalance_days": 10,
     "weighting": "equal",
-    "born": 2823,
+    "born": 2829,
     "parents": [
-     "44bd4ac19ad6f773",
-     "5293db7dc33038a0"
+     "997db1c7273f1581",
+     "c0ac29d60a8bfe9a"
     ],
-    "operator": "hoist",
+    "operator": "jitter",
     "meta": {},
-    "fingerprint": "7f47878ffe154119",
-    "canonical": "min(min(min(min(min(m_breadth, sub(idio_vol_126, -0.194)), 1.075), add(log1p(add(downside_vol_63, delta_5(m_breadth))), add(add(downside_vol_63, delta_5(m_breadth)), 0.26))), mul(0.7861, pct_52w_high)), sub(rev_21, -0.2797))|k=20|rb=10|w=equal"
+    "fingerprint": "d3ce5559d01a7727",
+    "canonical": "min(min(min(min(min(m_breadth, sub(idio_vol_126, -0.1937)), 2.404), add(log1p(add(downside_vol_63, delta_5(m_breadth))), add(add(downside_vol_63, delta_5(m_breadth)), 0.26))), mul(0.7861, pct_52w_high)), sub(rev_21, -0.2797))|k=20|rb=10|w=equal"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.1974378898147142,
+    "mean_alpha": 0.1976602464848348,
     "median_alpha": 0.171078761412116,
-    "mean_ir": 2.2527991502183617,
+    "mean_ir": 2.2565035397844575,
     "worst_fold_alpha": 0.0941632302192173,
-    "alpha_tstat": 5.343441669589493,
-    "total_trades": 4922,
-    "ann_turnover": 28.007908426439972,
-    "corr_bench": 0.9014018307469215,
+    "alpha_tstat": 5.348691022603731,
+    "total_trades": 4921,
+    "ann_turnover": 27.992244823736065,
+    "corr_bench": 0.9014076634494541,
     "n_folds": 8,
     "ok": true,
-    "dsr": 0.7248715359474961,
-    "sr_ann_excess": 1.8816816049787297,
-    "sr_star_ann": 1.6492117269605442,
-    "trials_total": 342204,
-    "trials_effective": 50080,
-    "independence": 0.14634506291371027,
-    "pbo": 0.014285714285714285,
-    "stress_alpha": 0.1693008905264926,
-    "stress_ir": 1.9342417041486897,
+    "dsr": 0.7307992894559399,
+    "sr_ann_excess": 1.8838136343894132,
+    "sr_star_ann": 1.6443868616191406,
+    "trials_total": 342680,
+    "trials_effective": 47366,
+    "independence": 0.13822095216268127,
+    "pbo": 0.0,
+    "stress_alpha": 0.169537755895737,
+    "stress_ir": 1.9381212029162347,
     "stress_multiplier": 3.0,
     "val_alpha": -0.1347739953111086,
     "val_ir": -1.4855611278153344,

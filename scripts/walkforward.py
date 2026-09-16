@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -228,7 +229,28 @@ def _report(rows, chained, chained_bench, sl, n_trials, mode):
         "%s mode. Training window only; holdout untouched (%s of %s left)."
         % (mode, sl.remaining() if sl else "?",
            sl.max_evaluations if sl else "?")))
+    # Structured result alongside the HTML. The orchestrator used to recover
+    # these numbers by regex over the rendered report, which is fragile in the
+    # worst way: a markup change makes every field come back None, the history
+    # silently stays empty, and nothing errors. Emit the data directly.
+    out = {
+        "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "mode": mode, "report": p.name,
+        "from": rows[0]["from"], "to": rows[-1]["to"], "sessions": int(len(R)),
+        "strategy": round(ann(R), 6), "benchmark": round(ann(B), 6),
+        "excess": round(ann(R) - ann(B), 6),
+        "alpha_t": round(float(t), 4), "excess_sr": round(d["sr_ann"], 4),
+        "dsr": round(d["dsr"], 4),
+        "segments_won": won, "segments": len(rows),
+        "beat_benchmark": bool(ann(R) > ann(B)),
+        "significant": bool(t >= 2.0 and won > len(rows) / 2),
+    }
+    rp = config.resolve("state/walkforward_last.json")
+    rp.parent.mkdir(parents=True, exist_ok=True)
+    rp.write_text(json.dumps(out, indent=1), encoding="utf-8")
+
     print("  report: %s" % p)
+    print("  result: %s" % rp)
     return 0
 
 

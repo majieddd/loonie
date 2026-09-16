@@ -155,40 +155,29 @@ class Orchestrator:
         decay is the failure mode a self-improving system is most prone to and
         least able to notice from the inside.
         """
+        p = resolve("state/walkforward_last.json")
+        if not p.exists():
+            self._log("validate finished but wrote no result file")
+            return
         try:
-            reports = sorted(resolve("reports").glob("walkforward_*.html"),
-                             key=lambda p: p.stat().st_mtime)
-            if not reports:
-                return
-            txt = reports[-1].read_text(encoding="utf-8", errors="replace")
-        except Exception:
+            entry = json.loads(p.read_text(encoding="utf-8"))
+        except Exception as e:
+            self._log("validate result unreadable: %s" % e)
             return
 
-        import re
-
-        def grab(label):
-            m = re.search(r">%s</td>\s*<td[^>]*>([^<]+)<" % label, txt)
-            if m:
-                return m.group(1).strip()
-            m = re.search(r"%s[^0-9\-+]*([-+]?[0-9.]+)" % label, txt)
-            return m.group(1) if m else None
-
-        entry = {
-            "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            "report": reports[-1].name,
-            "strategy": grab("strategy"), "benchmark": grab("benchmark"),
-            "excess": grab("excess"), "alpha_t": grab("alpha t"),
-            "dsr": grab("DSR"), "segments_won": grab("segments won"),
-        }
-        p = resolve(HISTORY)
+        hp = resolve(HISTORY)
         hist = []
-        if p.exists():
+        if hp.exists():
             try:
-                hist = json.loads(p.read_text(encoding="utf-8"))
+                hist = json.loads(hp.read_text(encoding="utf-8"))
             except Exception:
                 hist = []
+        if hist and hist[-1].get("at") == entry.get("at"):
+            return                       # same run; do not double-record
         hist.append(entry)
-        p.write_text(json.dumps(hist[-200:], indent=1), encoding="utf-8")
+        hp.write_text(json.dumps(hist[-200:], indent=1), encoding="utf-8")
+        self._log("recorded validation: excess %s, alpha t %s"
+                  % (entry.get("excess"), entry.get("alpha_t")))
 
     # ---------------------------------------------------------------- loop
     def _log(self, msg):
@@ -200,8 +189,8 @@ class Orchestrator:
             "jobs": {n: {"runs": j.runs, "failures": j.failures,
                          "status": j.last_status, "detail": j.last_detail,
                          "every_s": j.every_s,
-                         "next_in_s": (max(0, j.every_s - (time.time() - j.last_run))
-                                       if not j.continuous else 0),
+                         "next_in_s": (None if j.continuous else
+                                       max(0, j.every_s - (time.time() - j.last_run))),
                          "running": j.proc is not None}
                      for n, j in self.jobs.items()},
         }

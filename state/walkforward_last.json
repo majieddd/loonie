@@ -1,0 +1,18 @@
+{
+ "at": "2026-09-16T15:04:49+00:00",
+ "mode": "honest",
+ "report": "walkforward_20260916_100449.html",
+ "from": "2018-12-04",
+ "to": "2024-08-30",
+ "sessions": 1414,
+ "strategy": 0.105726,
+ "benchmark": 0.127832,
+ "excess": -0.022106,
+ "alpha_t": 0.18,
+ "excess_sr": 0.0631,
+ "dsr": 0.0023,
+ "segments_won": 2,
+ "segments": 4,
+ "beat_benchmark": false,
+ "significant": false
+}

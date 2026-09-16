@@ -1143,3 +1143,55 @@ def test_evolver_accepts_a_zero_validation_tail():
     assert ev.panel.shape[0] == p.shape[0], "the full window must reach fitness"
     ev.seed_population(6)
     assert ev.population, "a 600-session panel must produce viable candidates"
+
+
+def test_validation_result_is_structured_not_scraped(tmp_path, monkeypatch):
+    """The orchestrator must read a JSON result, never regex an HTML report.
+
+    Scraping the rendered report is fragile in the worst way: a markup change
+    makes every field come back None, validation_history silently stays empty,
+    and nothing errors — the same shape of failure as the validate job that
+    exited rc=1 for hours without anyone noticing.
+    """
+    import json as _json
+
+    from loonie import orchestrator as orc
+
+    import re as _re
+
+    src = (Path("D:/trader") / "loonie" / "orchestrator.py").read_text(encoding="utf-8")
+    # Match the import STATEMENT, not the substring — "from . import registry"
+    # contains "import re" and made the naive check fail.
+    assert not _re.search(r"^\s*import re\s*$", src, _re.M),         "orchestrator still imports re for scraping"
+    assert "walkforward_last.json" in src
+
+    monkeypatch.setattr(orc, "resolve", lambda q: tmp_path / Path(q).name)
+    o = orc.Orchestrator.__new__(orc.Orchestrator)
+    o._log = lambda m: None
+
+    result = {"at": "2026-09-16T10:00:00+00:00", "excess": -0.0159,
+              "alpha_t": -0.16, "segments_won": 1, "segments": 4}
+    (tmp_path / "walkforward_last.json").write_text(_json.dumps(result))
+
+    o._record_validation()
+    hist = _json.loads((tmp_path / Path(orc.HISTORY).name).read_text())
+    assert len(hist) == 1
+    assert hist[0]["alpha_t"] == -0.16
+
+    o._record_validation()               # same run again
+    hist = _json.loads((tmp_path / Path(orc.HISTORY).name).read_text())
+    assert len(hist) == 1, "the same validation run was recorded twice"
+
+
+def test_continuous_jobs_report_no_countdown():
+    """A continuous job has no 'next run'; it was reporting -29,826,180 min."""
+    from loonie import orchestrator as orc
+
+    o = orc.Orchestrator(config.load())
+    try:
+        st = o.status()
+        assert st["jobs"]["search"]["next_in_s"] is None
+        assert st["jobs"]["publish"]["next_in_s"] is not None
+        assert st["jobs"]["validate"]["next_in_s"] >= 0
+    finally:
+        o.me.retire()
