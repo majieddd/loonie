@@ -881,6 +881,26 @@ class Evolver:
         self.features.decay()
 
         # ---- promotion test on the current leader ------------------------
+        if not self.population:
+            # Every candidate failed to evaluate -- too little usable history,
+            # or a panel so short block_folds returns nothing. Re-seed once and
+            # give up on the generation rather than dying on an index error, so
+            # a caller running many small searches (walkforward --honest) can
+            # skip the segment instead of losing the whole run.
+            self.seed_population()
+            if not self.population:
+                self._log("generation %d: no viable candidates; skipping"
+                          % self.generation)
+                return {"generation": self.generation, "best_fitness": float("nan"),
+                        "best_ir": float("nan"), "best_alpha_t": float("nan"),
+                        "best_dsr": float("nan"), "best_pbo": float("nan"),
+                        "best_corr": float("nan"), "best_vs_null_pct": float("nan"),
+                        "median_fitness": float("nan"), "archive_cells": 0,
+                        "trials": self.trials, "trials_effective": self.trials,
+                        "independence": 1.0, "explore": float(self.explore),
+                        "promoted_total": len(self.hall_of_fame),
+                        "null_p99_fitness": float("nan"), "seconds": 0.0,
+                        "degenerate": True}
         top = self.population[0]
         pop_ret = self._population_return_matrix()
         self.gate(top, pop_ret)

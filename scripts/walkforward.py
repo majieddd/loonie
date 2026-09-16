@@ -119,13 +119,25 @@ def honest_walkforward(cfg, train, feats, bench, sl, a):
         sub_cfg["evolve"]["population"] = a.pop
         sub_cfg["evolve"]["null_samples_per_gen"] = 0
         sub_cfg["cv"]["n_splits"] = 4
+        # No nested holdout. The Evolver normally reserves a forward tail the
+        # fitness cannot see, but inside a walk-forward the NEXT SEGMENT is
+        # already that test — reserving another one here just takes 20% of an
+        # already-short window away from the searcher for no extra evidence.
+        # With it on, early segments had too little left to form CV folds, every
+        # candidate failed to evaluate, and the run died on an empty population.
+        sub_cfg["evolve"]["validation_tail_frac"] = 0.0
 
         ev = evolve.Evolver(sub_cfg, past, past_feats,
                             seed=int(cfg.evolve.seed) + s, verbose=False)
         ev.seed_population(a.pop)
+        if not ev.population:
+            print("  seg %d  skipped: %d sessions produced no viable candidates"
+                  % (s + 1, train_hi), flush=True)
+            continue
         for _ in range(a.gens):
             ev.step()
         if not ev.population:
+            print("  seg %d  skipped: population collapsed" % (s + 1), flush=True)
             continue
         winner = ev.population[0].genome
 

@@ -1090,3 +1090,56 @@ def test_publish_returns_the_document_it_wrote():
     assert "doc" in r, "publish must hand back the snapshot it just built"
     assert r["doc"]["search"]["generation"] is not None
     assert r["doc"]["portfolio"]["is_live"] is False
+
+
+def test_step_survives_an_empty_population():
+    """A degenerate generation must skip, not raise.
+
+    Regression: the scheduled walk-forward died with IndexError on
+    `self.population[0]` because its per-segment searches got a window too
+    short to form CV folds, so every candidate failed to evaluate. One
+    IndexError took out the only job that validates the whole system.
+    """
+    from loonie import evolve
+
+    p = synthetic_panel(T=400, N=12, seed=101)
+    f = features.build(p, macro=False)
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+    c["evolve"]["population"] = 4
+    c["evolve"]["validation_tail_frac"] = 0.0
+
+    ev = evolve.Evolver(c, p, f, seed=21, verbose=False)
+    ev.population = []                     # force the degenerate case
+    rec = ev.step()                        # must not raise
+    assert isinstance(rec, dict)
+    assert "generation" in rec
+
+
+def test_walkforward_disables_the_nested_holdout():
+    """Inside a walk-forward the next segment IS the forward test.
+
+    Reserving another tail inside each per-segment search takes 20% of an
+    already-short window for no extra evidence — and made early segments
+    unviable entirely.
+    """
+    src = (Path("D:/trader") / "scripts" / "walkforward.py").read_text(encoding="utf-8")
+    assert 'sub_cfg["evolve"]["validation_tail_frac"] = 0.0' in src
+
+
+def test_evolver_accepts_a_zero_validation_tail():
+    from loonie import evolve
+
+    p = synthetic_panel(T=600, N=15, seed=102)
+    f = features.build(p, macro=False)
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+    c["evolve"]["validation_tail_frac"] = 0.0
+
+    ev = evolve.Evolver(c, p, f, seed=22, verbose=False)
+    assert ev.val_panel is None, "no tail should be reserved at frac 0"
+    assert ev.panel.shape[0] == p.shape[0], "the full window must reach fitness"
+    ev.seed_population(6)
+    assert ev.population, "a 600-session panel must produce viable candidates"
