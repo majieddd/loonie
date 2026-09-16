@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-16T20:55:46+00:00",
- "generation": 1373,
- "trials": 164692,
+ "updated": "2026-09-16T21:11:47+00:00",
+ "generation": 1465,
+ "trials": 172288,
  "promoted": false,
  "strategies": [
   {
@@ -89,13 +89,141 @@
     "val_ir": -0.054046186955291134,
     "val_t": -0.05191212871648306,
     "val_sessions": 426,
-    "dsr": 0.6150223286548196,
+    "dsr": 0.6107611214185223,
     "sr_ann_excess": 1.5641099424982832,
-    "sr_star_ann": 1.4542779552133134,
-    "trials_total": 164692,
-    "trials_effective": 10479,
-    "independence": 0.06362677576843011,
-    "pbo": 0.2714285714285714
+    "sr_star_ann": 1.458458149238369,
+    "trials_total": 172288,
+    "trials_effective": 10969,
+    "independence": 0.06366718848509359,
+    "pbo": 0.32857142857142857
+   }
+  },
+  {
+   "fingerprint": "4ae18252e23ad180",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, tsrank_126(peer_beta))), neg(intraday_range)), div(m_credit_chg, -0.1609), dollar_vol_21), rank(downside_vol_63))|k=30|rb=21|w=score",
+   "promoted": false,
+   "genome": {
+    "expr": {
+     "t": "ite",
+     "cond": {
+      "t": "bin",
+      "op": "add",
+      "left": {
+       "t": "un",
+       "op": "sigmoid",
+       "window": 0,
+       "child": {
+        "t": "bin",
+        "op": "sub",
+        "left": {
+         "t": "feat",
+         "name": "m_oil"
+        },
+        "right": {
+         "t": "feat",
+         "name": "peer_beta"
+        }
+       }
+      },
+      "right": {
+       "t": "un",
+       "op": "neg",
+       "window": 0,
+       "child": {
+        "t": "feat",
+        "name": "intraday_range"
+       }
+      }
+     },
+     "a": {
+      "t": "ite",
+      "cond": {
+       "t": "bin",
+       "op": "add",
+       "left": {
+        "t": "un",
+        "op": "sigmoid",
+        "window": 0,
+        "child": {
+         "t": "bin",
+         "op": "sub",
+         "left": {
+          "t": "const",
+          "value": 0.2557
+         },
+         "right": {
+          "t": "un",
+          "op": "tsrank",
+          "window": 126,
+          "child": {
+           "t": "feat",
+           "name": "peer_beta"
+          }
+         }
+        }
+       },
+       "right": {
+        "t": "un",
+        "op": "neg",
+        "window": 0,
+        "child": {
+         "t": "feat",
+         "name": "intraday_range"
+        }
+       }
+      },
+      "a": {
+       "t": "bin",
+       "op": "div",
+       "left": {
+        "t": "feat",
+        "name": "m_credit_chg"
+       },
+       "right": {
+        "t": "const",
+        "value": -0.1609
+       }
+      },
+      "b": {
+       "t": "feat",
+       "name": "dollar_vol_21"
+      }
+     },
+     "b": {
+      "t": "un",
+      "op": "rank",
+      "window": 0,
+      "child": {
+       "t": "feat",
+       "name": "downside_vol_63"
+      }
+     }
+    },
+    "n_positions": 30,
+    "rebalance_days": 21,
+    "weighting": "score",
+    "born": 1455,
+    "parents": [
+     "93ec9f0aa8e79479",
+     "cb41bdc783e77fe3"
+    ],
+    "operator": "params",
+    "meta": {},
+    "fingerprint": "4ae18252e23ad180",
+    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, tsrank_126(peer_beta))), neg(intraday_range)), div(m_credit_chg, -0.1609), dollar_vol_21), rank(downside_vol_63))|k=30|rb=21|w=score"
+   },
+   "cv": {
+    "frac_positive": 1.0,
+    "mean_alpha": 0.29149668590402944,
+    "median_alpha": 0.18444108085214883,
+    "mean_ir": 1.9155948951000745,
+    "worst_fold_alpha": 0.028996675743518257,
+    "alpha_tstat": 4.379837425752062,
+    "total_trades": 2716,
+    "ann_turnover": 10.546520164835222,
+    "corr_bench": 0.7652465832327785,
+    "n_folds": 8,
+    "ok": true
    }
   },
   {
@@ -193,129 +321,6 @@
     "trials_effective": 10443,
     "independence": 0.06357376800888742,
     "pbo": 0.3
-   }
-  },
-  {
-   "fingerprint": "7445751153e32c05",
-   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.1609), dollar_vol_21), rank(downside_vol_63))|k=30|rb=21|w=score",
-   "promoted": false,
-   "genome": {
-    "expr": {
-     "t": "ite",
-     "cond": {
-      "t": "bin",
-      "op": "add",
-      "left": {
-       "t": "un",
-       "op": "sigmoid",
-       "window": 0,
-       "child": {
-        "t": "bin",
-        "op": "sub",
-        "left": {
-         "t": "feat",
-         "name": "m_oil"
-        },
-        "right": {
-         "t": "feat",
-         "name": "peer_beta"
-        }
-       }
-      },
-      "right": {
-       "t": "un",
-       "op": "neg",
-       "window": 0,
-       "child": {
-        "t": "feat",
-        "name": "intraday_range"
-       }
-      }
-     },
-     "a": {
-      "t": "ite",
-      "cond": {
-       "t": "bin",
-       "op": "add",
-       "left": {
-        "t": "un",
-        "op": "sigmoid",
-        "window": 0,
-        "child": {
-         "t": "bin",
-         "op": "sub",
-         "left": {
-          "t": "const",
-          "value": 0.2557
-         },
-         "right": {
-          "t": "feat",
-          "name": "peer_beta"
-         }
-        }
-       },
-       "right": {
-        "t": "un",
-        "op": "neg",
-        "window": 0,
-        "child": {
-         "t": "feat",
-         "name": "intraday_range"
-        }
-       }
-      },
-      "a": {
-       "t": "bin",
-       "op": "div",
-       "left": {
-        "t": "feat",
-        "name": "m_credit_chg"
-       },
-       "right": {
-        "t": "const",
-        "value": -0.1609
-       }
-      },
-      "b": {
-       "t": "feat",
-       "name": "dollar_vol_21"
-      }
-     },
-     "b": {
-      "t": "un",
-      "op": "rank",
-      "window": 0,
-      "child": {
-       "t": "feat",
-       "name": "downside_vol_63"
-      }
-     }
-    },
-    "n_positions": 30,
-    "rebalance_days": 21,
-    "weighting": "score",
-    "born": 1333,
-    "parents": [
-     "0e9bcc32cf135fe7",
-     "0e9bcc32cf135fe7"
-    ],
-    "operator": "params",
-    "meta": {},
-    "fingerprint": "7445751153e32c05",
-    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.1609), dollar_vol_21), rank(downside_vol_63))|k=30|rb=21|w=score"
-   },
-   "cv": {
-    "frac_positive": 1.0,
-    "mean_alpha": 0.29589986097902016,
-    "median_alpha": 0.23114113260250552,
-    "mean_ir": 1.9003316356360722,
-    "worst_fold_alpha": 0.028996675743518257,
-    "alpha_tstat": 4.486176905057235,
-    "total_trades": 2730,
-    "ann_turnover": 10.645450738205419,
-    "corr_bench": 0.768945071238394,
-    "n_folds": 8,
-    "ok": true
    }
   }
  ]
