@@ -110,6 +110,30 @@ REGISTRY = [
          "evolve.cost_stress_multiplier": 9.0},
     ),
     Method(
+        "novelty_search",
+        "novelty over objective (Stanley & Lehman)",
+        "Fitness is distance to the k nearest neighbours in behaviour space; "
+        "alpha is only a tiebreak. 'Why Greatness Cannot Be Planned' argues "
+        "that on deceptive problems most beacons lead you astray, and that "
+        "rewarding difference beats rewarding the goal. Every other method here "
+        "climbs toward alpha; this one refuses to, and is still judged on "
+        "forward alpha -- which is the only fair way to settle the question.",
+        {"evolve.fitness_mode": "novelty", "evolve.use_map_elites": True,
+         "evolve.parsimony_penalty": 0.01},
+    ),
+    Method(
+        "mdl_parsimony",
+        "description-length complexity penalty",
+        "Replaces the hand-picked 0.01-per-node penalty with a BIC-style term, "
+        "complexity * ln(n) / 2n, which scales with sample size the way a "
+        "model-selection criterion should. The GP generalisation literature "
+        "treats node-count parsimony as an algorithmic proxy and prefers "
+        "description length; this tests whether the principled version is "
+        "actually better here or just tidier.",
+        {"evolve.fitness_mode": "ir", "evolve.use_map_elites": True,
+         "evolve.parsimony_mode": "bic"},
+    ),
+    Method(
         "wide_explore",
         "high exploration, deeper trees",
         "Larger population, deeper grammar, more random injection. Tests "

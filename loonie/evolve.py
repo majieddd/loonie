@@ -426,7 +426,14 @@ class Evolver:
         # six folds of eight beats one winning enormously in two -- the second
         # profile is the one that has repeatedly failed forward here.
         mode = str(self.cfg.evolve.get("fitness_mode", "ir"))
-        if mode == "consistency":
+        if mode == "novelty":
+            # Novelty search with local competition (Stanley & Lehman). Reward
+            # behavioural DIFFERENCE, not alpha: on deceptive problems the
+            # objective is itself the thing leading the search astray. Alpha
+            # survives only as a tiebreak, and the method is still credited on
+            # forward alpha, so the question gets settled by evidence.
+            fit = self._novelty(res, g) + 0.05 * res.mean_ir
+        elif mode == "consistency":
             fit = res.mean_ir * (res.frac_positive ** 2)
         elif mode == "median_alpha":
             fit = res.median_alpha * (0.5 + 0.5 * res.frac_positive)
@@ -440,7 +447,14 @@ class Evolver:
         if corr > 0.90:
             fit -= 2.0 * ((corr - 0.90) / 0.10) ** 2
 
-        fit -= float(self.cfg.evolve.parsimony_penalty) * g.complexity
+        if str(self.cfg.evolve.get("parsimony_mode", "linear")) == "bic":
+            # BIC-style: complexity * ln(n) / 2n. Scales with sample size the
+            # way a model-selection criterion should, instead of being a
+            # constant someone picked on the first afternoon.
+            n_obs = max(self.panel.shape[0], 2)
+            fit -= g.complexity * float(np.log(n_obs)) / (2.0 * n_obs) * 100.0
+        else:
+            fit -= float(self.cfg.evolve.parsimony_penalty) * g.complexity
         # Turnover you cannot pay for.
         cap = float(self.cfg.evolve.gate.max_annual_turnover)
         if res.ann_turnover > cap:
@@ -506,6 +520,33 @@ class Evolver:
             "stress_ir": float(res.mean_ir),
             "stress_multiplier": float(multiplier),
         }
+
+    def _novelty(self, res, g, k: int = 8) -> float:
+        """Mean distance to the k nearest behaviours already in the archive.
+
+        Behaviour is the MAP-Elites descriptor (turnover, benchmark
+        correlation, complexity) taken as a continuous vector rather than a
+        bin, so novelty is measured on the same axes the archive already
+        considers meaningful. An empty archive means everything is novel.
+        """
+        here = np.array([
+            float(res.ann_turnover), float(abs(res.corr_bench)),
+            float(g.complexity)], dtype=np.float64)
+        pool = self.archive.elites()
+        if len(pool) < 2:
+            return 1.0
+        # Normalised so turnover (0-30) does not swamp correlation (0-1).
+        scale = np.array([10.0, 0.25, 15.0])
+        d = []
+        for e in pool[:200]:
+            c = e.cv
+            other = np.array([
+                float(c.get("ann_turnover", 0.0)),
+                float(abs(c.get("corr_bench", 0.0))),
+                float(e.genome.complexity)], dtype=np.float64)
+            d.append(float(np.linalg.norm((here - other) / scale)))
+        d.sort()
+        return float(np.mean(d[:min(k, len(d))]))
 
     # ------------------------------------------------------------ null test
     def shuffle_test(self, g: Genome, n: int | None = None) -> dict:

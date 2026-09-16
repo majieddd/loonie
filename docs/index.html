@@ -96,14 +96,15 @@ a{color:inherit}
 .stat .s{font:400 11px/1.4 var(--mono);color:var(--fg-3);margin-top:5px}
 
 /* ── sections ─────────────────────────────────────────────────────── */
-section{padding-top:56px}
+section{padding-top:76px}
 .head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
       padding-bottom:10px;border-bottom:1px solid var(--line-2)}
 .num{font:400 11px/1 var(--mono);color:var(--fg-3);letter-spacing:.1em}
 h2{font-size:20px;font-weight:400;letter-spacing:-.02em;margin:0}
 .head .note{margin-left:auto;font:400 11px/1 var(--mono);color:var(--fg-2);
             letter-spacing:.06em;text-transform:uppercase}
-.lede{color:var(--fg-2);font-size:14.5px;max-width:68ch;margin:16px 0 26px}
+.lede{color:var(--fg-2);font-size:14.5px;line-height:1.65;
+      max-width:70ch;margin:18px 0 30px}
 .lede b{color:var(--fg);font-weight:500}
 
 /* ── tables (tradingview working scale) ───────────────────────────── */
@@ -146,6 +147,33 @@ tbody tr:hover{background:var(--panel)}
 .fail-row{background:rgba(242,54,69,.07)}
 .void-row .name,.void-row .rd{color:var(--fg-3)}
 
+
+
+/* -- the method: four loops, stated plainly ------------------------- */
+.method{border-top:1px solid var(--line);margin-top:40px}
+.loop{display:grid;grid-template-columns:22px 1fr 1fr 118px;gap:20px;
+      align-items:baseline;padding:18px 0;border-bottom:1px solid var(--line)}
+.loop .n{font:400 11px/1.5 var(--mono);color:var(--fg-3)}
+.loop .what{font:500 14px/1.4 var(--sans);letter-spacing:-.01em}
+.loop .what i{display:block;font:400 12px/1.5 var(--mono);color:var(--fg-3);
+              font-style:normal;margin-top:5px}
+.loop .cred{font:400 12.5px/1.5 var(--mono);color:var(--fg-2)}
+.loop .cred b{display:block;font-size:11px;letter-spacing:.11em;
+              text-transform:uppercase;color:var(--fg-3);font-weight:400;
+              margin-bottom:5px}
+.loop .when{font:400 11px/1.5 var(--mono);color:var(--fg-3);text-align:right}
+.claim{margin:30px 0 0;padding:18px 0 0;border-top:1px solid var(--line-2);
+       font:400 14.5px/1.65 var(--sans);color:var(--fg-2);max-width:74ch}
+.claim b{color:var(--fg);font-weight:500}
+.cite{margin-top:16px;font:400 12px/1.8 var(--mono);color:var(--fg-3)}
+.cite a{color:var(--fg-2);text-decoration:none;
+        border-bottom:1px solid var(--line-2)}
+.cite a:hover{color:var(--fg);border-color:var(--fg-2)}
+@media(max-width:820px){
+  .loop{grid-template-columns:22px 1fr;gap:6px 16px}
+  .loop .cred,.loop .when{grid-column:2/-1}
+  .loop .when{text-align:left}
+}
 
 /* ── live activity: who is running and what they are doing ────────── */
 .crew{border-top:1px solid var(--line);margin-top:34px}
@@ -401,12 +429,100 @@ function section(n, title, note){
 }
 
 
+
+/* -- the method, stated before any number is shown ------------------ */
+function methodSection(snap){
+  const S = snap.search || {}, E = snap.experience || {}, D = snap.data || {};
+  const sec = section("01", "How it learns", "four loops, no language model");
+
+  const box = el("div","method");
+  const LOOPS = [
+    ["01", "Genetic program", "mutates and recombines expression trees",
+     "cross-validated alpha vs an equal-weight universe", "every generation"],
+    ["02", "Operator bandit", "picks which mutation to apply",
+     "did the child beat the parent it modified", "every generation"],
+    ["03", "Feature bandit", "picks which input families to draw from",
+     "survival on a window fitness never sees", "every generation"],
+    ["04", "Method bandit", "picks how to search at all",
+     "forward alpha, pooled across every run recorded", "every cycle"],
+  ];
+  LOOPS.forEach(function(L){
+    const row = el("div","loop");
+    row.appendChild(el("i","n", L[0]));
+    const w = el("div","what", L[1]);
+    const sub = el("i"); sub.textContent = L[2]; w.appendChild(sub);
+    row.appendChild(w);
+    const c = el("div","cred");
+    const b = el("b"); b.textContent = "credited on"; c.appendChild(b);
+    c.appendChild(document.createTextNode(L[3]));
+    row.appendChild(c);
+    row.appendChild(el("div","when", L[4]));
+    box.appendChild(row);
+  });
+  sec.appendChild(box);
+
+  const claim = el("p","claim");
+  claim.innerHTML =
+    "Every loop is credited by something it cannot fake. The inner loops could "+
+    "each be gamed by the thing that scores them, so the outer two are judged "+
+    "only on a window the search never sees. <b>The generator and the evaluator "+
+    "share no parameters</b> &mdash; a genetic program proposes, a backtest "+
+    "decides &mdash; which is the failure a 2026 survey of 1,250 "+
+    "self-improvement papers calls a self-confirming loop, and the reason no "+
+    "language model runs here.";
+  sec.appendChild(claim);
+
+  const cite = el("div","cite");
+  cite.innerHTML =
+    "Cross-read against seven papers &mdash; <a href='research.html'>the method "+
+    "and its limits</a>, including where the literature says this design is "+
+    "<b>wrong</b>. Synthesis: <a href='memory.html'>a model-agnostic memory "+
+    "substrate</a>.";
+  sec.appendChild(cite);
+
+  const h = el("div","head"); h.style.marginTop = "48px";
+  h.appendChild(el("span","num","01b"));
+  h.appendChild(el("h2",null,"What it trains on"));
+  h.appendChild(el("span","note", int(E.labelled || 0) + " labelled outcomes kept"));
+  sec.appendChild(h);
+
+  const kv = function(k,v){ const r=el("div","kv");
+    r.appendChild(el("span","k",k)); r.appendChild(el("span","v",v)); return r; };
+  const g2 = el("div","grid2"); g2.style.marginTop = "22px";
+
+  const left = el("div");
+  left.appendChild(kv("price history",
+    (snap.config.universe_start || "?") + "  to  " + (snap.seal.start || "?")));
+  left.appendChild(kv("universe", int(D.fetched || 0) + " of " +
+    int(D.universe_size || 0) + " names ever in the index"));
+  left.appendChild(kv("coverage", num((D.coverage || 0) * 100, 1) + "%"));
+  left.appendChild(kv("regime series", "16 macro, causal, z-scored"));
+  left.appendChild(kv("strategies evaluated", int(S.trials || 0)));
+  left.appendChild(kv("independent hypotheses", int(S.trials_effective || 0)));
+  g2.appendChild(left);
+
+  const right = el("div");
+  right.appendChild(kv("experience corpus", int(E.rows || 0) + " rows"));
+  right.appendChild(kv("with a forward label", int(E.labelled || 0)));
+  right.appendChild(kv("distinct strategies", int(E.distinct_strategies || 0)));
+  right.appendChild(kv("runs / methods tried",
+    (E.runs || 0) + " / " + (E.methods || 0)));
+  right.appendChild(kv("corpus survives", "restarts and --fresh"));
+  right.appendChild(kv("holdout", snap.seal.evaluations + " of " +
+    snap.seal.max_evaluations + " evaluations used"));
+  g2.appendChild(right);
+  sec.appendChild(g2);
+  return sec;
+}
+
 /* ── live activity ────────────────────────────────────────────────── */
 function crewSection(snap){
   const W = (snap.workers && snap.workers.workers) || [];
   const live = (snap.workers && snap.workers.live) || 0;
-  const sec = section("00", "Running now",
-    live + " live" + (W.length > live ? " of " + W.length : ""));
+  const fin = W.filter(function(w){ return w.liveness === "finished"; }).length;
+  const sec = section("02", "Running now",
+    live + " live" + (fin ? " · " + fin + " completed" : "") +
+    (W.length > live + fin ? " · " + (W.length - live - fin) + " stale" : ""));
   sec.appendChild(Object.assign(el("p","lede"),{innerHTML:
     "Every worker writes a heartbeat; liveness is read from how old that "+
     "heartbeat is, never from a self-reported flag — a hung process leaves "+
@@ -432,7 +548,7 @@ function crewSection(snap){
 
     const doing = el("div");
     doing.appendChild(el("div","doing",
-      w.liveness === "dead" ? "no heartbeat for " + ago(w.heartbeat)
+      w.liveness === "dead" ? "last heartbeat " + ago(w.heartbeat)
                             : (w.detail || w.status || "—")));
     if (w.progress != null){
       const pb = el("div","pbar"); const pi = el("i");
@@ -460,7 +576,7 @@ function crewSection(snap){
   const V = snap.validation_history || [];
   if (V.length){
     const h = el("div","head"); h.style.marginTop = "40px";
-    h.appendChild(el("span","num","00b"));
+    h.appendChild(el("span","num","02b"));
     h.appendChild(el("h2",null,"Walk-forward history"));
     h.appendChild(el("span","note", int(V.length) + " runs"));
     sec.appendChild(h);
@@ -489,7 +605,7 @@ function metaSection(snap){
   const F = snap.family_forward_rates || {};
   if (!E.rows && !M.length) return null;
 
-  const sec = section("05", "Meta-learning",
+  const sec = section("07", "Meta-learning",
     int(E.labelled || 0) + " labelled outcomes");
   sec.appendChild(Object.assign(el("p","lede"),{innerHTML:
     "Three loops learn inside one method; this one learns <b>between</b> "+
@@ -616,11 +732,14 @@ function render(snap, series){
     app.appendChild(e);
   }
 
-  /* 00 running now */
+  /* 01 the method, stated before any number is shown */
+  app.appendChild(methodSection(snap));
+
+  /* 02 running now */
   app.appendChild(crewSection(snap));
 
   /* 01 positions */
-  const s1 = section("01","Positions", int(P.n_positions)+" held");
+  const s1 = section("03","Positions", int(P.n_positions)+" held");
   s1.appendChild(Object.assign(el("p","lede"),{innerHTML:
     "Marked at the most recent daily close. Unrealised P&L on a freshly opened "+
     "book is mostly the <b>"+num(snap.config.slippage_bps,1)+" bps</b> slippage "+
@@ -639,7 +758,7 @@ function render(snap, series){
 
   /* 02 the gate */
   const failing = (snap.gates||[]).filter(g=>!g.pass).map(g=>g.name);
-  const s2 = section("02","The promotion gate", gPass+" of "+gAll+" clear");
+  const s2 = section("04","The promotion gate", gPass+" of "+gAll+" clear");
   s2.appendChild(Object.assign(el("p","lede"),{innerHTML:
     "A strategy may not touch the portfolio until it clears <b>every</b> test. "+
     "Each gate is drawn as its margin from its own threshold — "+
@@ -655,7 +774,7 @@ function render(snap, series){
 
   /* 03 search */
   const gens = series.generations || [];
-  const s3 = section("03","Search", "generation "+int(S.generation));
+  const s3 = section("05","Search", "generation "+int(S.generation));
   s3.appendChild(Object.assign(el("p","lede"),{innerHTML:
     "The engine has evaluated <b>"+int(S.trials)+"</b> strategies. They are not "+
     "independent — a genetic program's children are near-copies of their "+
@@ -703,7 +822,7 @@ function render(snap, series){
   app.appendChild(s3);
 
   /* 04 strategies */
-  const s4 = section("04","Strategies", int(S.promoted_count)+" promoted");
+  const s4 = section("06","Strategies", int(S.promoted_count)+" promoted");
   s4.appendChild(Object.assign(el("p","lede"),{innerHTML:
     "Promotion is not permanent. The deflation threshold rises with every "+
     "hypothesis tested, so the hall of fame is re-tested against today's bar "+
@@ -721,7 +840,7 @@ function render(snap, series){
   s4.appendChild(table(strat(), snap.promoted||[]));
   if ((snap.demoted||[]).length){
     const h = el("div","head"); h.style.marginTop="40px";
-    h.appendChild(el("span","num","04b"));
+    h.appendChild(el("span","num","06b"));
     h.appendChild(el("h2",null,"Demoted"));
     h.appendChild(el("span","note", int(snap.demoted.length)+" no longer clear"));
     s4.appendChild(h);
@@ -736,7 +855,7 @@ function render(snap, series){
   if (meta) app.appendChild(meta);
 
   /* 06 risk + seal */
-  const s5 = section("06","Risk and seal");
+  const s5 = section("08","Risk and seal");
   const g3 = el("div","grid2");
 
   const risk = el("div");
@@ -797,7 +916,7 @@ function render(snap, series){
 
   /* 06 provenance */
   const D = snap.data||{};
-  const s6 = section("07","Data provenance");
+  const s6 = section("09","Data provenance");
   const cov = D.coverage||0;
   s6.appendChild(Object.assign(el("p","lede"),{innerHTML:
     "Point-in-time S&P 500 membership: on any date the backtest may only buy "+

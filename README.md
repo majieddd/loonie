@@ -198,6 +198,8 @@ docs/
 .github/workflows/
   dashboard.yml  weekday paper rebalance + Pages deploy
 docs/WHY.md      the full argument, with references
+docs/RESEARCH.md seven papers read against this system
+docs/memory.html a synthesis: model-agnostic memory substrate
 ```
 
 ---
@@ -215,6 +217,60 @@ count written down, instead of once at the end.
 
 Not investment advice. Backtested results are hypothetical. Paper trade for a
 long time.
+
+---
+
+## What the literature says
+
+Seven works read against this system, in [`docs/RESEARCH.md`](docs/RESEARCH.md)
+([rendered](https://majieddd.github.io/loonie/research.html)). The useful output
+is not a reading list — it is two places the literature says this design is
+**wrong**, and one place it says the closest published work is.
+
+The governing constraint, from a 2026 survey of 1,250 self-improvement papers:
+
+> *"Every self-improvement loop is a claim that some signal can substitute for
+> human judgment, and the loop's ceiling is exactly the quality of that
+> substitute."*
+
+Three collapse modes are named there. Checked one at a time: **model collapse**
+does not apply (we never train on generated data — the exogenous fraction is
+1.0 and cannot decay); **self-confirming loops** are avoided by construction
+(the genetic program and the backtest share no parameters, which is the real
+argument for the no-LLM design); **diversity collapse** we observed directly and
+fixed with MAP-Elites.
+
+Where it says we are wrong, now testable as methods:
+
+- **Objective deception** (Stanley & Lehman) — we optimise alpha directly, and
+  novelty search beats objective-driven search on exactly the deceptive problems
+  where a good objective seems most valuable. Added as `novelty_search`.
+- **Parsimony by node count is a heuristic** — the GP literature prefers
+  description length. Added as `mdl_parsimony`, a BIC-style penalty that scales
+  with sample size instead of being a constant chosen by hand.
+
+And against the nearest published relative, AlgoEvolve (2026), which reports a
+Sharpe of **5.60** from LLM-evolved trading programs — the paper's own caveat is
+that its population mean is **1.21**. That 4.6× gap is the selection effect,
+reported honestly and then not corrected for: no deflated Sharpe, no PBO, and
+no disclosure of how many programs were evaluated, which makes correction
+impossible even for a careful reader.
+
+## A synthesis: model-agnostic memory
+
+[`docs/memory.html`](https://majieddd.github.io/loonie/memory.html) converges
+the same literature onto a different problem — **a memory substrate any local or
+cloud model can plug into.**
+
+The thesis: a memory system *is* a recursive self-improvement loop, and it
+inherits every failure mode above. Three of them are invisible under recall@k —
+diversity collapse in particular *improves* your retrieval metrics as it gets
+worse. Five invariants follow, including that utility must be deflated by the
+number of memories tried (the same order statistic as the deflated Sharpe), and
+that the substrate must be text-and-structure rather than one model's vector
+space — embeddings are a disposable per-model index, never the source of truth.
+
+Written with a falsification plan attached. It is a hypothesis, not a result.
 
 ---
 

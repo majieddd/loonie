@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Literature review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000; --line:#1f1f22; --line-2:#2e2e33;
+  --fg:#fff; --fg-2:#8d8d96; --fg-3:#82828c; --mark:#ccff00;
+  --sans:"Geist",ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;border-radius:0}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font:400 16px/1.7 var(--sans);-webkit-font-smoothing:antialiased;
+     font-variant-numeric:tabular-nums}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px 120px}
+.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+     padding:22px 0 18px;border-bottom:1px solid var(--line);
+     font:400 11px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;
+     color:var(--fg-3)}
+.top a{color:var(--fg-3);text-decoration:none}
+.top a:hover{color:var(--fg)}
+.top .sp{flex:1}
+header{padding:76px 0 0}
+h1{font-size:clamp(30px,5vw,44px);font-weight:300;letter-spacing:-.03em;
+   line-height:1.12;margin:0}
+.sub{font-size:19px;font-weight:300;color:var(--fg-2);margin:20px 0 0;
+     line-height:1.5;letter-spacing:-.01em}
+h2{font-size:15px;font-weight:400;letter-spacing:.11em;text-transform:uppercase;
+   margin:72px 0 0;padding-bottom:10px;border-bottom:1px solid var(--line-2)}
+h3{font-size:17px;font-weight:500;letter-spacing:-.01em;margin:40px 0 0}
+p{margin:20px 0 0;color:var(--fg-2)}
+strong{color:var(--fg);font-weight:500}
+em{color:var(--fg);font-style:italic}
+a{color:var(--fg-2);text-decoration:none;border-bottom:1px solid var(--line-2)}
+a:hover{color:var(--fg);border-color:var(--fg-2)}
+code{font-family:var(--mono);font-size:13.5px;color:var(--fg)}
+blockquote{margin:26px 0 0;padding:0 0 0 20px;
+           border-left:1px solid var(--line-2);color:var(--fg-2);
+           font-size:15.5px;line-height:1.65}
+blockquote p{margin-top:0}
+blockquote p + p{margin-top:14px}
+table{width:100%;border-collapse:collapse;margin-top:26px;font-size:14px}
+th{font:400 10.5px/1.4 var(--mono);letter-spacing:.11em;text-transform:uppercase;
+   color:var(--fg-3);text-align:left;padding:0 14px 10px 0;
+   border-bottom:1px solid var(--line-2);vertical-align:bottom}
+td{padding:12px 14px 12px 0;border-bottom:1px solid var(--line);
+   vertical-align:top;color:var(--fg-2)}
+td:first-child{color:var(--fg)}
+.tw{overflow-x:auto}
+ul,ol{margin:20px 0 0;padding-left:22px;color:var(--fg-2)}
+li{margin:10px 0}
+li::marker{color:var(--fg-3)}
+hr{border:0;border-top:1px solid var(--line);margin:56px 0 0}
+pre{margin:24px 0 0;padding:20px;border:1px solid var(--line);overflow-x:auto;
+    font:400 12.5px/1.75 var(--mono);color:var(--fg-2);background:#050506}
+.foot{margin-top:76px;padding-top:22px;border-top:1px solid var(--line);
+      font:400 11.5px/1.8 var(--mono);color:var(--fg-3)}
+@media(max-width:640px){.wrap{padding:0 16px 80px}}
+</style>
+</head>
+<body><div class="wrap">
+<div class="top">
+  <span>loonie</span><span class="sp"></span>
+  <a href="index.html">dashboard</a>
+  <a href="memory.html">grounded memory</a>
+</div>
+<header><h1>Literature review</h1><p class="sub">Seven works on recursive self-improvement, read against this system</p></header>
+<p>Seven works, read against the system in this repository. The useful output is
+not a reading list — it is two places the literature says we are <strong>wrong</strong>, and
+one place it says the closest published work is.</p>
+<hr />
+<h2>The papers</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>work</th>
+<th>what it establishes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="https://arxiv.org/abs/2607.07663">Recursive Self-Improvement in AI: From Bounded Self-Refinement to Autonomous Research Loops</a> (2026, survey of 1,250 papers)</td>
+<td>the evaluator is the ceiling; three named collapse modes</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="https://arxiv.org/abs/2606.26173">AlgoEvolve: LLM-driven Meta-evolution of Algorithmic Trading Programs</a> (2026)</td>
+<td>closest prior work: LLM-evolved trading programs with a meta-loop</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="https://arxiv.org/abs/2003.03384">AutoML-Zero: Evolving ML Algorithms From Scratch</a> (Real, Liang, So, Le — ICML 2020)</td>
+<td>evolution over primitives rediscovers real algorithms</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="https://arxiv.org/abs/1504.04909">MAP-Elites / quality-diversity</a> (Mouret &amp; Clune)</td>
+<td>illumination beats optimisation on rugged spaces</td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="https://link.springer.com/book/10.1007/978-3-319-15524-1">Why Greatness Cannot Be Planned</a> (Stanley &amp; Lehman, 2015)</td>
+<td><strong>objective deception</strong>: optimising the objective can prevent reaching it</td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="https://arxiv.org/abs/cs/0601044">Genetic Programming, Validation Sets, and Parsimony Pressure</a></td>
+<td>validation sets and parsimony both reduce GP overfitting, and both cost data</td>
+</tr>
+<tr>
+<td>7</td>
+<td><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551">The Deflated Sharpe Ratio</a> (Bailey &amp; López de Prado)</td>
+<td>selection bias under multiple testing</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2>1. The finding that matters most</h2>
+<p>From the 2026 survey, stated as flatly as it can be:</p>
+<blockquote>
+<p><em>&quot;Every self-improvement loop is a claim that some signal can substitute for
+human judgment, and the loop's ceiling is exactly the quality of that
+substitute.&quot;</em></p>
+</blockquote>
+<p>And the empirical regularity across the whole corpus:</p>
+<blockquote>
+<p><em>&quot;self-training works where answers are checkable (code, math) and degrades
+where they are not.&quot;</em></p>
+</blockquote>
+<p>This is the most important sentence in the literature for this project, because
+trading sits in an awkward middle. The evaluator — a backtest — is <strong>perfectly
+checkable</strong>: deterministic code over fixed data, near the top of the survey's
+verification hierarchy. But the <em>quantity it estimates</em> is future return, which
+is noisy and non-stationary. The loop is therefore well-grounded in mechanism
+and weakly grounded in signal.</p>
+<p>That is the exact position our own measurements keep reporting from: gates
+passing cleanly in-sample while forward alpha sits at t = 0.10.</p>
+<h2>2. Three collapse modes, checked one at a time</h2>
+<p>The survey names three failure modes for self-improving systems. Where each
+leaves us:</p>
+<p><strong>Model collapse</strong> — <em>&quot;if the fraction of exogenous, externally grounded signal
+vanishes asymptotically, degenerative dynamics follow.&quot;</em></p>
+<p>→ <strong>Not applicable, structurally.</strong> We never train on generated data. Every
+evaluation runs against real market history the system cannot author. The
+exogenous fraction is 1.0 and cannot decay. This is the one collapse mode a
+trading system gets for free, and it is worth noticing that LLM self-training
+loops do not.</p>
+<p><strong>Self-confirming loops</strong> — <em>&quot;when generator and evaluator share weights,
+biases correlate&quot;</em>, over-rewarding high-confidence mistakes.</p>
+<p>→ <strong>Avoided by construction.</strong> The generator is a typed genetic program; the
+evaluator is a backtest. They share no parameters and no representation. This
+is a genuine architectural advantage over LLM-based RSI, where the proposer and
+the judge are the same weights — and it is the strongest argument for the
+no-language-model design that started this project.</p>
+<p><strong>Diversity collapse</strong> — <em>&quot;proposers converge to the narrow band of problems
+that satisfy the reward.&quot;</em></p>
+<p>→ <strong>Observed here, then fixed.</strong> Without MAP-Elites the population collapsed
+onto a single expression in three generations. The archive exists because of
+that measurement, not because a paper recommended it.</p>
+<h2>3. Against the closest prior work</h2>
+<p>AlgoEvolve (2026) is the nearest published relative: LLM-driven evolution of
+trading programs with a meta-evolutionary outer loop that evolves the prompts
+guiding synthesis. It reports an <strong>annualised Sharpe of 5.60</strong>.</p>
+<p>Read the paper's own caveat:</p>
+<blockquote>
+<p><em>&quot;AlgoEvolve's Sharpe here corresponds to the elite Prompt Genome selected
+under evolutionary pressure, while the population-level mean Sharpe remains
+≈1.21; our claims are therefore comparative and selection-based rather than
+reflective of average deployable performance.&quot;</em></p>
+</blockquote>
+<p>That 4.6× gap between the selected elite and the population mean <strong>is the
+selection effect</strong>, reported honestly and then not corrected for. The paper
+applies no deflated Sharpe, no PBO and no trial counting — and, the detail that
+makes correction impossible even for a careful reader, <strong>does not report how
+many programs were evaluated in total</strong>.</p>
+<p>This is less a criticism of their result than a description of the shape of the
+field. The difference here is narrow but load-bearing: the trial count is an
+<em>input to the gate</em>, so a 5.60 selected from an unreported population could not
+be promoted by this system at all.</p>
+<p>They also evaluate over roughly 200 trading days. Our walk-forward runs 1,575
+sessions and still returns t ≈ 0.</p>
+<h2>4. Where the literature says WE are wrong</h2>
+<p>Two concrete gaps. Both are now methods in the registry, so the bandit settles
+them with evidence instead of argument.</p>
+<h3>(a) Objective deception — we optimise the objective directly</h3>
+<p>Stanley &amp; Lehman's thesis is that for genuinely hard problems <em>&quot;most beacons are
+deceptive and will lead us astray&quot;</em>, and that progress comes from collecting
+stepping stones rather than climbing toward the goal. Novelty search — rewarding
+behavioural difference and <strong>ignoring the objective entirely</strong> — outperforms
+objective-driven search on precisely the deceptive problems where a good
+objective would be most valuable.</p>
+<p>Our fitness is alpha. MAP-Elites hedges this, since an archive <em>is</em> a
+stepping-stone collector, but selection pressure inside each cell remains
+objective-driven.</p>
+<p><strong>Added as <code>novelty_search</code></strong>: fitness is mean distance to the k nearest
+neighbours in behaviour space, with local competition; alpha enters only as a
+tiebreak. If objective deception is real on this problem, the bandit finds out —
+because it is credited on forward alpha either way.</p>
+<h3>(b) Parsimony by node count is a heuristic, not a principle</h3>
+<p>The GP generalisation literature is explicit that bloat <em>&quot;can be interpreted as
+expanding the effective hypothesis class considered by the algorithm, which may
+increase the risk of overfitting&quot;</em>, and that parsimony pressure is an
+<em>&quot;algorithmic proxy&quot;</em> for complexity control. Recent work prefers description
+length as a principled criterion.</p>
+<p>Our penalty was <code>0.01 × node_count</code> — a constant chosen by hand on the first
+afternoon.</p>
+<p><strong>Added as <code>mdl_parsimony</code></strong>: a BIC-style penalty,
+<code>complexity × ln(n_sessions) / (2 × n_sessions)</code>, which scales with sample size
+the way a model-selection criterion should.</p>
+<h2>5. Where the literature says we are right</h2>
+<ul>
+<li><strong>AutoML-Zero</strong> validates evolution over a primitive grammar: from basic maths
+operations it rediscovered two-layer networks, backpropagation and normalised
+gradients, and adapted its discoveries to the task — <em>&quot;dropout-like techniques
+appear when little data is available.&quot;</em> Our terminals-and-operators grammar is
+the same shape of search space, and the macro-conditioned <code>ite</code> is the same
+shape of adaptation.</li>
+<li><strong>The validation-set finding</strong> — a held-out set is the standard GP remedy, and
+its known drawback is that <em>&quot;it removes a significant amount of data from the
+training set.&quot;</em> We hit that precisely: the 20% forward tail made early
+walk-forward segments unviable until the nested holdout was removed.</li>
+<li><strong>The survey's structural prescription</strong> — <em>&quot;audit structural change, not
+model judgment&quot;</em>, keep the self-modification surface <em>&quot;verifiable and
+diffs-able&quot;</em> — is a description of what a human-readable expression tree with
+logged, reasoned demotions already is.</li>
+</ul>
+<h2>6. The honest summary</h2>
+<p>The literature does not say this approach is wrong. It says the ceiling is the
+evaluator, and that in a noisy, non-stationary domain the evaluator is weak no
+matter how clean the mechanism is. Everything expensive in this repository — the
+forward tail, the deflation, the shuffle test, the scheduled walk-forward — is
+spent raising that ceiling rather than on searching harder.</p>
+<p>Which is consistent with what the system keeps reporting: <strong>no edge</strong>, measured
+three times, at t between −0.16 and +0.18.</p>
+
+<div class="foot">Rendered from <code>docs/RESEARCH.md</code>. The markdown is canonical;
+this page is generated by <code>scripts/render_docs.py</code>.</div>
+</div></body></html>

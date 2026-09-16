@@ -232,11 +232,10 @@ def session(cfg, args) -> int:
     except Exception as e:
         print("[publish] skipped: %s: %s" % (type(e).__name__, e))
 
-    hb.beat(status="idle",
-            detail="%d orders, %d positions, equity $%s"
+    hb.done(detail="%d orders, %d positions, equity $%s"
                    % (len(orders), len(account.positions),
-                      format(account.equity, ",.2f")),
-            equity=round(account.equity, 2),
+                      format(account.equity, ",.2f")))
+    hb.beat(equity=round(account.equity, 2),
             positions=len(account.positions),
             orders=len(orders),
             halted=bool(decision.halt))

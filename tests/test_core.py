@@ -7,6 +7,7 @@ does not look broken -- it looks brilliant, which is much worse.
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -1468,3 +1469,99 @@ def test_experience_survives_an_unclean_exit(tmp_path, monkeypatch):
     # A later flush with an empty buffer must not corrupt or duplicate.
     assert store.flush() == 0
     assert len(ex.load()) == 7
+
+
+# =============================================================================
+#  Literature-derived methods
+# =============================================================================
+def test_novelty_fitness_rewards_behavioural_difference():
+    """Stanley & Lehman: reward difference, not the objective.
+
+    On deceptive problems the objective is itself what leads the search astray.
+    Novelty fitness must rank a behaviourally unusual strategy above a
+    conventional one with better alpha — otherwise it is just alpha wearing a
+    different name.
+    """
+    from loonie import evolve
+
+    p = synthetic_panel(T=700, N=18, seed=131)
+    f = features.build(p, macro=False)
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+    c["evolve"]["fitness_mode"] = "novelty"
+
+    ev = evolve.Evolver(c, p, f, seed=31, verbose=False)
+    ev.seed_population(10)
+    assert ev.archive.coverage >= 2, "need an archive to measure novelty against"
+
+    class R:
+        def __init__(self, to, corr, ir):
+            self.ann_turnover, self.corr_bench, self.mean_ir = to, corr, ir
+            self.frac_positive, self.median_alpha = 0.5, 0.0
+            self.total_trades = 9999
+
+    g = genome.Genome(expr=genome.Feat("mom_21"))
+    typical = ev.population[0]
+    # Far from anything in the archive, but weaker alpha.
+    weird = R(90.0, 0.02, 0.1)
+    # Sitting right on an existing elite's behaviour, with better alpha.
+    same = R(typical.cv["ann_turnover"], typical.cv["corr_bench"], 1.5)
+
+    assert ev._fitness(weird, g) > ev._fitness(same, g), \
+        "novelty mode ranked the conventional strategy above the unusual one"
+
+
+def test_bic_parsimony_scales_with_sample_size():
+    """A model-selection penalty must depend on n; a hand-picked constant does not."""
+    from loonie import evolve
+
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+    c["evolve"]["parsimony_mode"] = "bic"
+
+    class R:
+        ann_turnover, corr_bench, mean_ir = 3.0, 0.5, 1.0
+        frac_positive, median_alpha, total_trades = 0.8, 0.1, 9999
+
+    simple = genome.Genome(expr=genome.Feat("mom_21"))
+    complex_ = genome.Genome(expr=genome.Bin(
+        "add", genome.Un("rank", genome.Feat("mom_21")),
+        genome.Bin("mul", genome.Feat("vol_21"), genome.Feat("rev_5"))))
+
+    small = evolve.Evolver(c, synthetic_panel(T=400, N=12, seed=141),
+                           features.build(synthetic_panel(T=400, N=12, seed=141),
+                                          macro=False), seed=1, verbose=False)
+    big = evolve.Evolver(c, synthetic_panel(T=1400, N=12, seed=141),
+                         features.build(synthetic_panel(T=1400, N=12, seed=141),
+                                        macro=False), seed=1, verbose=False)
+
+    pen_small = small._fitness(R(), simple) - small._fitness(R(), complex_)
+    pen_big = big._fitness(R(), simple) - big._fitness(R(), complex_)
+    assert pen_small > 0 and pen_big > 0, "complexity must cost something"
+    assert pen_small > pen_big, \
+        "BIC must penalise complexity MORE when there is less data to justify it"
+
+
+def test_all_registry_methods_are_distinct_and_applicable():
+    """Every method must change the config, and no two may be identical."""
+    from loonie import methods as me
+
+    cfg = config.load()
+    applied = {m.id: me.BY_ID[m.id].apply(cfg) for m in me.REGISTRY}
+    assert len(applied) >= 8, "expected the literature-derived methods"
+
+    seen = {}
+    for mid, a in applied.items():
+        key = json.dumps({k: a["evolve"].get(k) for k in
+                          ("fitness_mode", "use_map_elites", "parsimony_penalty",
+                           "parsimony_mode", "max_tree_depth", "population",
+                           "cost_stress_multiplier")}, sort_keys=True)
+        gate = json.dumps(a["evolve"]["gate"], sort_keys=True)
+        assert (key, gate) not in seen, \
+            "%s is identical to %s" % (mid, seen.get((key, gate)))
+        seen[(key, gate)] = mid
+
+    assert applied["novelty_search"]["evolve"]["fitness_mode"] == "novelty"
+    assert applied["mdl_parsimony"]["evolve"]["parsimony_mode"] == "bic"

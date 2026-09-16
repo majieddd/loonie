@@ -123,8 +123,14 @@ class Worker:
                                    else str(exc))[:240]
         self.beat(status="error")
 
-    def done(self, detail: str = ""):
-        self.beat(status="finished", detail=detail, progress=1.0)
+    def done(self, detail: str = "", **metrics):
+        """Mark a clean completion.
+
+        Scheduled jobs exit when their work is done; without this they simply
+        stop heartbeating and age into "dead", which puts a red light and a
+        "no heartbeat" warning on the dashboard for a job that succeeded.
+        """
+        self.beat(status="finished", detail=detail, progress=1.0, **metrics)
 
     def retire(self):
         """Remove this worker's file. Called on a clean shutdown."""

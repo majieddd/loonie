@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grounded Memory — a model-agnostic substrate for recursive self-improvement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000; --line:#1f1f22; --line-2:#2e2e33;
+  --fg:#fff; --fg-2:#8d8d96; --fg-3:#82828c;
+  --ok:#22ab94; --bad:#f23645; --mark:#ccff00;
+  --sans:"Geist",ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;border-radius:0}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font:400 16px/1.7 var(--sans);-webkit-font-smoothing:antialiased;
+     font-variant-numeric:tabular-nums}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px 120px}
+
+/* masthead */
+.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+     padding:22px 0 18px;border-bottom:1px solid var(--line);
+     font:400 11px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;
+     color:var(--fg-3)}
+.top a{color:var(--fg-3);text-decoration:none}
+.top a:hover{color:var(--fg)}
+.top .sp{flex:1}
+
+header{padding:76px 0 0}
+h1{font-size:clamp(30px,5vw,44px);font-weight:300;letter-spacing:-.03em;
+   line-height:1.12;margin:0}
+.sub{font-size:19px;font-weight:300;color:var(--fg-2);margin:20px 0 0;
+     line-height:1.5;letter-spacing:-.01em}
+.byline{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);
+        font:400 11.5px/1.8 var(--mono);color:var(--fg-3)}
+
+h2{font-size:15px;font-weight:400;letter-spacing:.11em;text-transform:uppercase;
+   margin:76px 0 0;padding-bottom:10px;border-bottom:1px solid var(--line-2);
+   color:var(--fg)}
+h2 .n{color:var(--fg-3);margin-right:14px;font-family:var(--mono);font-size:12px}
+h3{font-size:17px;font-weight:500;letter-spacing:-.01em;margin:40px 0 0}
+p{margin:20px 0 0;color:var(--fg-2)}
+p.lead{color:var(--fg);font-size:17px}
+strong{color:var(--fg);font-weight:500}
+em{color:var(--fg);font-style:italic}
+a{color:var(--fg-2);text-decoration:none;border-bottom:1px solid var(--line-2)}
+a:hover{color:var(--fg);border-color:var(--fg-2)}
+code{font-family:var(--mono);font-size:13.5px;color:var(--fg)}
+
+blockquote{margin:26px 0 0;padding:0 0 0 20px;border-left:1px solid var(--line-2);
+           color:var(--fg-2);font-size:15.5px;line-height:1.65}
+blockquote cite{display:block;margin-top:10px;font:400 11.5px/1.6 var(--mono);
+                font-style:normal;color:var(--fg-3)}
+
+.abstract{margin-top:42px;padding:24px 0;border-top:1px solid var(--line-2);
+          border-bottom:1px solid var(--line-2)}
+.abstract p{margin-top:0;color:var(--fg-2);font-size:15.5px}
+.abstract .k{font:400 11px/1 var(--mono);letter-spacing:.13em;
+             text-transform:uppercase;color:var(--fg-3);display:block;
+             margin-bottom:14px}
+
+table{width:100%;border-collapse:collapse;margin-top:26px;font-size:14px}
+th{font:400 10.5px/1.4 var(--mono);letter-spacing:.11em;text-transform:uppercase;
+   color:var(--fg-3);text-align:left;padding:0 14px 10px 0;
+   border-bottom:1px solid var(--line-2);vertical-align:bottom}
+td{padding:12px 14px 12px 0;border-bottom:1px solid var(--line);
+   vertical-align:top;color:var(--fg-2)}
+td:first-child{color:var(--fg)}
+.scroll{overflow-x:auto}
+
+.inv{display:grid;grid-template-columns:30px 1fr;gap:0 20px;
+     padding:20px 0;border-bottom:1px solid var(--line)}
+.inv .n{font:400 12px/1.7 var(--mono);color:var(--mark)}
+.inv h4{margin:0;font-size:16px;font-weight:500;letter-spacing:-.01em}
+.inv p{margin-top:10px}
+
+pre{margin:24px 0 0;padding:20px;border:1px solid var(--line);overflow-x:auto;
+    font:400 12.5px/1.75 var(--mono);color:var(--fg-2);background:#050506}
+pre b{color:var(--fg);font-weight:400}
+pre .c{color:var(--fg-3)}
+
+.note{margin-top:26px;padding:18px 20px;border:1px solid var(--line-2);
+      font-size:14.5px;color:var(--fg-2)}
+.note b{color:var(--fg)}
+
+ol.refs{margin:26px 0 0;padding-left:0;list-style:none;counter-reset:r}
+ol.refs li{counter-increment:r;padding:14px 0 14px 38px;position:relative;
+           border-bottom:1px solid var(--line);font-size:14px;color:var(--fg-2)}
+ol.refs li::before{content:"[" counter(r) "]";position:absolute;left:0;top:14px;
+                   font:400 12px/1.6 var(--mono);color:var(--fg-3)}
+ol.refs b{color:var(--fg);font-weight:400}
+
+.foot{margin-top:76px;padding-top:22px;border-top:1px solid var(--line);
+      font:400 11.5px/1.8 var(--mono);color:var(--fg-3)}
+@media(max-width:640px){
+  .wrap{padding:0 16px 80px}
+  .inv{grid-template-columns:1fr;gap:8px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="top">
+  <span>loonie</span>
+  <span class="sp"></span>
+  <a href="index.html">dashboard</a>
+  <a href="research.html">literature review</a>
+</div>
+
+<header>
+  <h1>Grounded Memory</h1>
+  <p class="sub">A model-agnostic substrate for recursive self-improvement, and
+  why a memory system is a self-improvement loop whether or not you meant it
+  to be.</p>
+  <div class="byline">
+    Synthesis &middot; drawn from seven works on recursive self-improvement,
+    quality-diversity search and backtest overfitting<br>
+    Written against a working system whose measurements are cited throughout
+  </div>
+</header>
+
+<div class="abstract">
+  <span class="k">Abstract</span>
+  <p>Memory systems for language models are usually designed as retrieval
+  problems: store text, embed it, fetch the nearest neighbours. We argue this
+  framing hides the fact that <strong>a memory system is a recursive
+  self-improvement loop</strong> — it accumulates experience and changes future
+  behaviour — and therefore inherits every failure mode the RSI literature has
+  catalogued. We transfer four of those failure modes onto memory, show that
+  three of them are invisible under standard retrieval metrics, and derive five
+  invariants that a memory substrate must satisfy to avoid them. The invariants
+  imply a specific architecture: <strong>provenance-carrying, model-agnostic
+  records whose utility is scored by a process that did not write them, and
+  deflated by the number of memories that were tried.</strong> Because the
+  substrate is text-and-structure rather than one model's vector space, the
+  same memory is readable by any local or cloud model without re-embedding or
+  migration. We give the record schema, the scoring protocol, an evaluation
+  design that would falsify the whole thing, and the failure modes we expect
+  to survive it.</p>
+</div>
+
+<h2><span class="n">01</span>The unacknowledged loop</h2>
+
+<p class="lead">A memory system writes something down because it seemed useful,
+then retrieves it later to change what the model does. That is a loop in which
+the system's own past output becomes its future input — which is the definition
+the RSI literature uses for self-improvement, and it does not stop being one
+because we called it retrieval.</p>
+
+<p>The 2026 survey of 1,250 self-improvement papers states the governing
+constraint in a single sentence:</p>
+
+<blockquote>
+  Every self-improvement loop is a claim that some signal can substitute for
+  human judgment, and the loop's ceiling is exactly the quality of that
+  substitute.
+  <cite>Recursive Self-Improvement in AI: From Bounded Self-Refinement to
+  Autonomous Research Loops, 2026 [1]</cite>
+</blockquote>
+
+<p>For a memory system, the substitute signal is <em>"this is worth
+remembering."</em> Almost every deployed system produces that signal from the
+same model that generated the content, at the moment of generation, with no
+outcome yet observed. The survey has a name for this arrangement, and it is not
+a compliment.</p>
+
+<h2><span class="n">02</span>Four failure modes, transferred</h2>
+
+<p>The survey identifies three collapse dynamics; the finance literature adds a
+fourth that applies whenever you select from many candidates. Each transfers
+onto memory cleanly, and three of the four are invisible to recall@k.</p>
+
+<div class="scroll">
+<table>
+  <thead><tr>
+    <th style="width:26%">failure mode</th>
+    <th style="width:37%">in self-improvement</th>
+    <th>in a memory system</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td>Self-confirming loop</td>
+      <td>“when generator and evaluator share weights, biases correlate” —
+          confidence-coupled rewards “over-reward high-confidence mistakes” [1]</td>
+      <td>The model that wrote the memory also judges it worth keeping. Its
+          confident errors are preserved <em>preferentially</em>, because
+          confidence is what triggered the write.</td>
+    </tr>
+    <tr>
+      <td>Model collapse</td>
+      <td>“if the fraction of exogenous, externally grounded signal vanishes
+          asymptotically, degenerative dynamics follow” [1]</td>
+      <td>Summaries of summaries. Each compaction pass replaces observation
+          with the model's paraphrase of observation, and the exogenous
+          fraction decays toward zero without any alarm firing.</td>
+    </tr>
+    <tr>
+      <td>Diversity collapse</td>
+      <td>“proposers converge to the narrow band of problems that satisfy the
+          reward, starving the solver's curriculum” [1]</td>
+      <td>Retrieval returns what it returned last time, that context produces
+          similar output, which produces similar memories. The effective
+          context narrows while recall@k <em>improves</em>.</td>
+    </tr>
+    <tr>
+      <td>Selection bias</td>
+      <td>“not controlling for the number of trials involved in a particular
+          discovery leads to over-optimistic performance expectations” [7]</td>
+      <td>A memory kept because it “worked once” was selected from every
+          memory that could have been kept. With enough candidates, some look
+          useful by arithmetic alone.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The third is the one worth dwelling on, because it is the only failure mode
+that <em>improves</em> your metrics as it gets worse. A memory system that has
+collapsed onto a narrow band retrieves highly relevant results with high
+confidence. Recall is excellent. It has simply stopped being able to surprise
+you, and nothing in a retrieval benchmark measures that.</p>
+
+<h2><span class="n">03</span>Five invariants</h2>
+
+<p>Each follows from a failure mode above, and each is a property you can check
+mechanically rather than a practice you have to remember.</p>
+
+<div class="inv"><div class="n">I</div><div>
+  <h4>Every record carries its ground truth, not a paraphrase of it</h4>
+  <p>A memory stores the <em>artefact</em> — the command and its exit code, the
+  diff, the test output, the measured value — and the model's interpretation as
+  a separate, clearly-marked field. Compaction may rewrite the interpretation.
+  It may never rewrite the artefact. This makes the exogenous fraction a
+  structural property rather than a hope, which is what closes model collapse:
+  the grounded portion cannot decay because nothing is permitted to overwrite
+  it.</p>
+</div></div>
+
+<div class="inv"><div class="n">II</div><div>
+  <h4>The writer and the scorer are different processes</h4>
+  <p>Whatever decides a memory was useful must not be the thing that produced
+  it. The cheapest sufficient separation is <strong>time</strong>: score a
+  memory by what happened <em>after</em> it was retrieved, not by how confident
+  the model was when it wrote it. Retrieval-then-outcome is a signal the writer
+  cannot fabricate, and it is available in any system that can observe its own
+  subsequent success or failure.</p>
+</div></div>
+
+<div class="inv"><div class="n">III</div><div>
+  <h4>Utility is deflated by the number of memories tried</h4>
+  <p>If a thousand memories are eligible and you keep the twenty that correlate
+  with success, you have run a thousand-hypothesis experiment. The deflated
+  Sharpe ratio [7] exists for exactly this situation in finance and transfers
+  directly: the threshold a memory must clear rises with the size of the pool
+  it was selected from. <strong>A memory store that does not track how many
+  candidates it considered cannot know whether its best entries are real.</strong></p>
+</div></div>
+
+<div class="inv"><div class="n">IV</div><div>
+  <h4>Retrieval illuminates rather than optimises</h4>
+  <p>Top-k nearest-neighbour retrieval is a pure optimiser, and optimisers
+  collapse diversity. The quality-diversity literature [4] offers the
+  alternative: partition the memory by <em>behavioural</em> descriptor — task
+  type, outcome, recency, source — and return the best entry from each
+  relevant cell rather than the k best overall. This is the same structure as a
+  MAP-Elites archive, applied to recall, and it is what keeps a context window
+  from filling with six restatements of one idea.</p>
+</div></div>
+
+<div class="inv"><div class="n">V</div><div>
+  <h4>The substrate is readable without the model that wrote it</h4>
+  <p>A memory keyed by one model's embedding vectors is that model's memory,
+  not yours — swap the model and the index is meaningless. The durable
+  substrate is <strong>text and explicit structure</strong>; embeddings are a
+  disposable index built <em>over</em> it, per model, rebuildable at any time.
+  This is the invariant that makes a store portable across a local 7B and a
+  frontier API, and it costs nothing except the discipline of never treating
+  the vector as the source of truth.</p>
+</div></div>
+
+<h2><span class="n">04</span>The record</h2>
+
+<p>The invariants determine the schema more than any design preference does.
+Fields exist here because a failure mode demands them.</p>
+
+<pre><b>{</b>
+  <span class="c">// --- identity: stable, model-independent ---</span>
+  "id":         "sha256 of (artefact + context key)",
+  "created":    "2026-09-16T15:04:49Z",
+  "kind":       "procedure | fact | correction | preference",
+
+  <span class="c">// --- I. ground truth. Never rewritten by any process. ---</span>
+  "artefact": <b>{</b>
+    "source":   "command | file | api | human",
+    "verbatim": "npm test -- --run  =>  exit 1, 3 failing",
+    "locator":  "repo@a1b2c3d:package.json:14"
+  <b>}</b>,
+
+  <span class="c">// --- the model's reading. Rewritable, marked as opinion. ---</span>
+  "interpretation": "vitest needs --run in CI or it hangs on watch mode",
+  "written_by":     "any-model-id",
+
+  <span class="c">// --- II. outcome, observed AFTER retrieval, by another process ---</span>
+  "uses":        41,
+  "followed_by_success": 34,
+  "last_used":   "2026-09-16T14:58:02Z",
+
+  <span class="c">// --- III. the multiple-testing denominator ---</span>
+  "pool_size_at_write": 1180,   <span class="c">// candidates eligible that turn</span>
+  "deflated_utility":   0.71,   <span class="c">// corrected for the pool</span>
+
+  <span class="c">// --- IV. behavioural descriptor: the archive cell ---</span>
+  "cell": <b>{</b> "task":"build", "outcome":"fix", "scope":"repo" <b>}</b>,
+
+  <span class="c">// --- V. portable. Embeddings live elsewhere, per model. ---</span>
+  "text": "full record rendered as plain prose for any reader"
+<b>}</b></pre>
+
+<div class="note">
+  <b>What makes this portable.</b> Nothing above is a vector. A local model and
+  a hosted model read the identical record; each may build its own index over
+  <code>text</code>, and throwing that index away costs an afternoon of
+  re-embedding rather than the memory itself. The <code>id</code> is a content
+  hash rather than a database key, so two machines that observed the same
+  artefact converge on the same identifier without coordinating.
+</div>
+
+<h2><span class="n">05</span>Scoring, concretely</h2>
+
+<p>Invariant III is the one most likely to be waved at and not implemented, so
+here it is as arithmetic. Let a memory be retrieved <code>n</code> times with
+<code>k</code> subsequent successes, drawn from a pool of <code>N</code>
+eligible candidates.</p>
+
+<pre>raw      = k / n                              <span class="c">// naive success rate</span>
+shrunk   = (k + 1) / (n + 2)                  <span class="c">// Beta(1,1) posterior mean</span>
+threshold= expected_max_of(N, n)              <span class="c">// what noise produces</span>
+utility  = shrunk - threshold                 <span class="c">// what is left over</span></pre>
+
+<p><code>expected_max_of(N, n)</code> is the expected best success rate among
+<code>N</code> worthless memories each observed <code>n</code> times — the same
+order statistic the deflated Sharpe ratio uses, where the expected maximum over
+<em>N</em> independent trials grows like <code>sqrt(2 ln N)</code> in standard
+deviations. With N = 1,000 and n = 20, a memory needs a success rate roughly
+<strong>0.20 above base rate</strong> before it has said anything. Most
+memories will not clear this. <strong>That is the finding, not a failure of the
+method.</strong></p>
+
+<p>The working system this synthesis was written against reports the same shape
+of result from the same correction: after 336,000 evaluated candidates, the
+deflation threshold rose faster than any candidate's measured edge, and the
+honest walk-forward returned <code>t = 0.10</code>. The correction is not
+conservative decoration. It is usually the answer.</p>
+
+<h2><span class="n">06</span>An evaluation that could falsify this</h2>
+
+<p>A design that cannot fail is not a design. The claim here is specific:
+<strong>grounded, deflated, illuminated memory outperforms confidence-written
+top-k memory on tasks where the model is confidently wrong</strong>, and is
+merely equal elsewhere. That is testable.</p>
+
+<div class="scroll">
+<table>
+  <thead><tr><th style="width:30%">arm</th><th>differs by</th></tr></thead>
+  <tbody>
+    <tr><td>A — baseline</td><td>write on model confidence, retrieve top-k by embedding similarity</td></tr>
+    <tr><td>B — grounded</td><td>A, plus invariant I: artefact preserved separately from interpretation</td></tr>
+    <tr><td>C — outcome-scored</td><td>B, plus invariant II: utility from post-retrieval outcome</td></tr>
+    <tr><td>D — deflated</td><td>C, plus invariant III: utility corrected for pool size</td></tr>
+    <tr><td>E — illuminated</td><td>D, plus invariant IV: per-cell retrieval instead of top-k</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Run each arm across at least three model families — one local, two hosted —
+on a task suite with <em>verifiable</em> outcomes, because the survey's central
+empirical finding is that self-improvement <em>"works where answers are
+checkable and degrades where they are not"</em> [1]. Code and data tasks
+qualify; open-ended writing does not, and including it would produce a result
+nobody can audit.</p>
+
+<p>Report, for every arm: success rate, <strong>and diversity of retrieved
+cells</strong>, and the fraction of retained memories whose deflated utility is
+positive. The middle metric is the one that catches diversity collapse, and it
+is the one a recall benchmark will never show you.</p>
+
+<div class="note">
+  <b>What would falsify the design.</b> If arm E does not beat arm A on the
+  confidently-wrong subset, invariants II–IV are decoration. If arm B alone
+  captures most of the gain, then grounding is the whole story and the
+  statistical machinery is over-engineering — a real possibility, and the
+  cheapest outcome to act on. If <em>every</em> arm performs identically, the
+  memory was never load-bearing and the honest report is that retrieval did not
+  matter for this task suite.
+</div>
+
+<h2><span class="n">07</span>Limitations</h2>
+
+<p><strong>The outcome signal is weak in exactly the cases you most want it.</strong>
+Invariant II requires observing what happened after retrieval, and attributing a
+downstream success to one retrieved memory among several is a credit-assignment
+problem this design does not solve. It reduces to a bandit over memories, with
+all of that machinery's sample-efficiency problems, and on rare tasks the
+posterior stays near its prior indefinitely.</p>
+
+<p><strong>Deflation makes a cold start slow by construction.</strong> Early on,
+<code>N</code> is small and the threshold is low, so weak memories clear it;
+later, the threshold rises and genuinely useful memories written early may fall
+below it. The store gets more conservative as it grows, which is correct and
+will feel wrong.</p>
+
+<p><strong>Behavioural cells are hand-designed.</strong> Invariant IV needs a
+descriptor space, and choosing it is the same unprincipled act as choosing
+MAP-Elites bins. Get it wrong and illumination degenerates into top-k with extra
+steps.</p>
+
+<p><strong>Portability is asserted, not proven.</strong> Invariant V makes the
+substrate readable by any model. It does not make it equally <em>useful</em> to
+any model — a 7B and a frontier model may need different granularity, and the
+same record may be too terse for one and redundant for the other. The
+evaluation above would detect this; nothing in the design prevents it.</p>
+
+<h2><span class="n">08</span>What this converges</h2>
+
+<p>The contribution is not a new algorithm. It is the observation that four
+literatures which do not cite each other are describing the same object from
+different sides:</p>
+
+<div class="scroll">
+<table>
+  <thead><tr><th style="width:34%">from</th><th>contributes</th></tr></thead>
+  <tbody>
+    <tr><td>RSI survey [1]</td><td>the failure taxonomy, and that the evaluator is the ceiling</td></tr>
+    <tr><td>Quality-diversity [4]</td><td>illumination over optimisation — the fix for diversity collapse</td></tr>
+    <tr><td>Novelty search [5]</td><td>objective deception: the thing you optimise can be what misleads you</td></tr>
+    <tr><td>Deflated Sharpe [7]</td><td>selection bias has a closed form, and it is computable</td></tr>
+    <tr><td>AutoML-Zero [3]</td><td>a primitive substrate outlasts the model searching over it</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The last is the quiet one. AutoML-Zero's durable result was not the
+algorithms it found but that <em>a sufficiently primitive representation
+survives its searcher</em>. A memory of text and artefacts is primitive in the
+same sense. The models will be replaced — repeatedly, and faster than the
+memory should be — and a substrate that outlives them is worth more than one
+that retrieves marginally better this quarter.</p>
+
+<h2><span class="n">09</span>References</h2>
+
+<ol class="refs">
+  <li><b>Recursive Self-Improvement in AI: From Bounded Self-Refinement to
+    Autonomous Research Loops</b> (2026). Survey of 1,250 papers.
+    <a href="https://arxiv.org/abs/2607.07663">arXiv:2607.07663</a></li>
+  <li><b>AlgoEvolve: LLM-driven Meta-evolution of Algorithmic Trading
+    Programs</b>, Sharma &amp; Shroff (2026).
+    <a href="https://arxiv.org/abs/2606.26173">arXiv:2606.26173</a></li>
+  <li><b>AutoML-Zero: Evolving Machine Learning Algorithms From Scratch</b>,
+    Real, Liang, So &amp; Le, ICML (2020).
+    <a href="https://arxiv.org/abs/2003.03384">arXiv:2003.03384</a></li>
+  <li><b>Illuminating search spaces by mapping elites</b>, Mouret &amp; Clune
+    (2015). <a href="https://arxiv.org/abs/1504.04909">arXiv:1504.04909</a></li>
+  <li><b>Why Greatness Cannot Be Planned: The Myth of the Objective</b>,
+    Stanley &amp; Lehman, Springer (2015).
+    <a href="https://link.springer.com/book/10.1007/978-3-319-15524-1">doi:10.1007/978-3-319-15524-1</a></li>
+  <li><b>Genetic Programming, Validation Sets, and Parsimony Pressure</b>,
+    Gagné et al. <a href="https://arxiv.org/abs/cs/0601044">arXiv:cs/0601044</a></li>
+  <li><b>The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest
+    Overfitting and Non-Normality</b>, Bailey &amp; López de Prado (2014).
+    <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551">SSRN 2460551</a></li>
+</ol>
+
+<div class="foot">
+  Synthesis written against a running system — the measurements cited in §05 are
+  from its own logs, not from the literature.<br>
+  No claim here has been experimentally validated for memory; §06 is the design
+  that would do it. Treat this as a hypothesis with a falsification plan
+  attached.
+</div>
+
+</div>
+</body>
+</html>

@@ -5,7 +5,9 @@
   "elitist_ir": 1.0,
   "parsimony_hard": 2.0,
   "low_turnover": 1.0,
-  "wide_explore": 1.0
+  "novelty_search": 1.0,
+  "mdl_parsimony": 1.0,
+  "wide_explore": 3.0
  },
  "b": {
   "qd_ir": 3.0,
@@ -13,7 +15,9 @@
   "elitist_ir": 1.0,
   "parsimony_hard": 2.0,
   "low_turnover": 1.0,
-  "wide_explore": 1.0
+  "novelty_search": 1.0,
+  "mdl_parsimony": 1.0,
+  "wide_explore": 12.0
  },
  "seen": {
   "qd_ir": 4,
@@ -21,7 +25,9 @@
   "elitist_ir": 0,
   "parsimony_hard": 2,
   "low_turnover": 0,
-  "wide_explore": 0
+  "novelty_search": 0,
+  "mdl_parsimony": 0,
+  "wide_explore": 13
  },
  "survived": {
   "qd_ir": 2,
@@ -29,7 +35,9 @@
   "elitist_ir": 0,
   "parsimony_hard": 1,
   "low_turnover": 0,
-  "wide_explore": 0
+  "novelty_search": 0,
+  "mdl_parsimony": 0,
+  "wide_explore": 2
  },
  "fwd_alpha": {
   "qd_ir": 0.07283047702119409,
@@ -37,17 +45,21 @@
   "elitist_ir": 0.0,
   "parsimony_hard": 0.01147264874643906,
   "low_turnover": 0.0,
-  "wide_explore": 0.0
+  "novelty_search": 0.0,
+  "mdl_parsimony": 0.0,
+  "wide_explore": -0.3197515428720526
  },
  "cycles": {
   "qd_ir": 1,
   "qd_consistency": 1,
-  "elitist_ir": 4,
+  "elitist_ir": 5,
   "parsimony_hard": 0,
-  "low_turnover": 2,
+  "low_turnover": 3,
+  "novelty_search": 1,
+  "mdl_parsimony": 0,
   "wide_explore": 3
  },
- "updated": "2026-09-16T15:34:58+00:00",
+ "updated": "2026-09-16T15:54:14+00:00",
  "table": [
   {
    "id": "qd_ir",
@@ -80,13 +92,23 @@
    "established": false
   },
   {
+   "id": "wide_explore",
+   "summary": "high exploration, deeper trees",
+   "posterior": 0.2,
+   "forward_rate": 0.15384615384615385,
+   "mean_fwd_alpha": -0.024596272528619432,
+   "labelled": 13,
+   "cycles": 3,
+   "established": false
+  },
+  {
    "id": "elitist_ir",
    "summary": "plain elitism, no quality-diversity",
    "posterior": 0.5,
    "forward_rate": null,
    "mean_fwd_alpha": null,
    "labelled": 0,
-   "cycles": 4,
+   "cycles": 5,
    "established": false
   },
   {
@@ -96,17 +118,27 @@
    "forward_rate": null,
    "mean_fwd_alpha": null,
    "labelled": 0,
-   "cycles": 2,
+   "cycles": 3,
    "established": false
   },
   {
-   "id": "wide_explore",
-   "summary": "high exploration, deeper trees",
+   "id": "novelty_search",
+   "summary": "novelty over objective (Stanley & Lehman)",
    "posterior": 0.5,
    "forward_rate": null,
    "mean_fwd_alpha": null,
    "labelled": 0,
-   "cycles": 3,
+   "cycles": 1,
+   "established": false
+  },
+  {
+   "id": "mdl_parsimony",
+   "summary": "description-length complexity penalty",
+   "posterior": 0.5,
+   "forward_rate": null,
+   "mean_fwd_alpha": null,
+   "labelled": 0,
+   "cycles": 0,
    "established": false
   }
  ]
