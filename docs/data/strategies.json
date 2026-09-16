@@ -1,12 +1,12 @@
 {
- "updated": "2026-09-16T18:31:42+00:00",
- "generation": 616,
- "trials": 87846,
+ "updated": "2026-09-16T18:47:43+00:00",
+ "generation": 688,
+ "trials": 98316,
  "promoted": false,
  "strategies": [
   {
-   "fingerprint": "cbb3acaa60910e8d",
-   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), intraday_range), div(m_credit_chg, -0.0013), downside_vol_63)|k=30|rb=10|w=score",
+   "fingerprint": "2882e0409b616f96",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.2829), rank(downside_vol_63))|k=30|rb=21|w=score",
    "promoted": false,
    "genome": {
     "expr": {
@@ -32,8 +32,13 @@
        }
       },
       "right": {
-       "t": "feat",
-       "name": "intraday_range"
+       "t": "un",
+       "op": "neg",
+       "window": 0,
+       "child": {
+        "t": "feat",
+        "name": "intraday_range"
+       }
       }
      },
      "a": {
@@ -45,167 +50,177 @@
       },
       "right": {
        "t": "const",
-       "value": -0.0013
+       "value": -0.2829
       }
      },
      "b": {
-      "t": "feat",
-      "name": "downside_vol_63"
+      "t": "un",
+      "op": "rank",
+      "window": 0,
+      "child": {
+       "t": "feat",
+       "name": "downside_vol_63"
+      }
      }
     },
     "n_positions": 30,
-    "rebalance_days": 10,
+    "rebalance_days": 21,
     "weighting": "score",
-    "born": 598,
+    "born": 680,
     "parents": [
-     "5489f146de053ca3",
-     "da66dbcd9ba724f6"
+     "01c657a1b344271c",
+     "f4b05171a4d3baa9"
     ],
-    "operator": "jitter",
+    "operator": "wrap",
     "meta": {},
-    "fingerprint": "cbb3acaa60910e8d",
-    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), intraday_range), div(m_credit_chg, -0.0013), downside_vol_63)|k=30|rb=10|w=score"
+    "fingerprint": "2882e0409b616f96",
+    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.2829), rank(downside_vol_63))|k=30|rb=21|w=score"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.1563177202215298,
-    "median_alpha": 0.07959741500596536,
-    "mean_ir": 1.3416189246306733,
-    "worst_fold_alpha": 0.010356574581449788,
-    "alpha_tstat": 3.251793540901607,
-    "total_trades": 5064,
-    "ann_turnover": 6.51740001354082,
-    "corr_bench": 0.8724104889348102,
+    "mean_alpha": 0.26931829398733803,
+    "median_alpha": 0.12627115984912562,
+    "mean_ir": 1.803884570836758,
+    "worst_fold_alpha": 0.028996675743518257,
+    "alpha_tstat": 4.200749343154624,
+    "total_trades": 2761,
+    "ann_turnover": 10.411827689155377,
+    "corr_bench": 0.7739497190082427,
     "n_folds": 8,
     "ok": true,
-    "val_alpha": -0.010128952097517817,
-    "val_ir": -0.24008318578919025,
-    "val_t": -0.33063815093392557,
+    "val_alpha": -0.0350576675116186,
+    "val_ir": -0.2753770812205167,
+    "val_t": -0.5259404968181243,
     "val_sessions": 426,
-    "dsr": 0.4215210728632326,
-    "sr_ann_excess": 1.3728605963389917,
-    "sr_star_ann": 1.4502579963443214,
-    "trials_total": 87846,
-    "trials_effective": 5462,
-    "independence": 0.06217344557269339,
-    "pbo": 0.6142857142857143
+    "dsr": 0.8401722645171572,
+    "sr_ann_excess": 1.725984507981383,
+    "sr_star_ann": 1.3645290536137504,
+    "trials_total": 98316,
+    "trials_effective": 6574,
+    "independence": 0.06686556220784586,
+    "pbo": 0.24285714285714285
    }
   },
   {
-   "fingerprint": "8853809cb7afba8a",
-   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), intraday_range), div(m_credit_chg, -0.2318), downside_vol_63)|k=50|rb=10|w=score",
+   "fingerprint": "1c7ccc1727ccc33f",
+   "canonical": "sqrt_abs(ite(add(sigmoid(sub(m_oil, peer_beta)), demean(intraday_range)), div(m_credit_chg, -0.0008), downside_vol_63))|k=40|rb=10|w=score",
    "promoted": false,
    "genome": {
     "expr": {
-     "t": "ite",
-     "cond": {
-      "t": "bin",
-      "op": "add",
-      "left": {
-       "t": "un",
-       "op": "sigmoid",
-       "window": 0,
-       "child": {
-        "t": "bin",
-        "op": "sub",
-        "left": {
-         "t": "feat",
-         "name": "m_oil"
-        },
-        "right": {
-         "t": "feat",
-         "name": "peer_beta"
+     "t": "un",
+     "op": "sqrt_abs",
+     "window": 0,
+     "child": {
+      "t": "ite",
+      "cond": {
+       "t": "bin",
+       "op": "add",
+       "left": {
+        "t": "un",
+        "op": "sigmoid",
+        "window": 0,
+        "child": {
+         "t": "bin",
+         "op": "sub",
+         "left": {
+          "t": "feat",
+          "name": "m_oil"
+         },
+         "right": {
+          "t": "feat",
+          "name": "peer_beta"
+         }
         }
-       }
-      },
-      "right": {
-       "t": "feat",
-       "name": "intraday_range"
-      }
-     },
-     "a": {
-      "t": "bin",
-      "op": "div",
-      "left": {
-       "t": "feat",
-       "name": "m_credit_chg"
-      },
-      "right": {
-       "t": "const",
-       "value": -0.2318
-      }
-     },
-     "b": {
-      "t": "feat",
-      "name": "downside_vol_63"
-     }
-    },
-    "n_positions": 50,
-    "rebalance_days": 10,
-    "weighting": "score",
-    "born": 608,
-    "parents": [
-     "152dab61616727bd",
-     "21fec051e3a65f56"
-    ],
-    "operator": "jitter",
-    "meta": {},
-    "fingerprint": "8853809cb7afba8a",
-    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), intraday_range), div(m_credit_chg, -0.2318), downside_vol_63)|k=50|rb=10|w=score"
-   },
-   "cv": {
-    "frac_positive": 0.875,
-    "mean_alpha": 0.13617507567240322,
-    "median_alpha": 0.061851102720483817,
-    "mean_ir": 1.334269343005852,
-    "worst_fold_alpha": -0.010654016982556351,
-    "alpha_tstat": 3.1414862871257023,
-    "total_trades": 8326,
-    "ann_turnover": 5.666359740029082,
-    "corr_bench": 0.8907323835565533,
-    "n_folds": 8,
-    "ok": true
-   }
-  },
-  {
-   "fingerprint": "c3c3dc69d17085cf",
-   "canonical": "ite(add(sigmoid(sub(mom_63, peer_beta)), rank(demean(idio_vol_126))), div(m_credit_chg, -0.5278), downside_vol_63)|k=30|rb=10|w=score",
-   "promoted": false,
-   "genome": {
-    "expr": {
-     "t": "ite",
-     "cond": {
-      "t": "bin",
-      "op": "add",
-      "left": {
-       "t": "un",
-       "op": "sigmoid",
-       "window": 0,
-       "child": {
-        "t": "bin",
-        "op": "sub",
-        "left": {
-         "t": "feat",
-         "name": "mom_63"
-        },
-        "right": {
-         "t": "feat",
-         "name": "peer_beta"
-        }
-       }
-      },
-      "right": {
-       "t": "un",
-       "op": "rank",
-       "window": 0,
-       "child": {
+       },
+       "right": {
         "t": "un",
         "op": "demean",
         "window": 0,
         "child": {
          "t": "feat",
-         "name": "idio_vol_126"
+         "name": "intraday_range"
         }
+       }
+      },
+      "a": {
+       "t": "bin",
+       "op": "div",
+       "left": {
+        "t": "feat",
+        "name": "m_credit_chg"
+       },
+       "right": {
+        "t": "const",
+        "value": -0.0008
+       }
+      },
+      "b": {
+       "t": "feat",
+       "name": "downside_vol_63"
+      }
+     }
+    },
+    "n_positions": 40,
+    "rebalance_days": 10,
+    "weighting": "score",
+    "born": 664,
+    "parents": [
+     "a725b662d8653663",
+     "5097356f394f1e00"
+    ],
+    "operator": "jitter",
+    "meta": {},
+    "fingerprint": "1c7ccc1727ccc33f",
+    "canonical": "sqrt_abs(ite(add(sigmoid(sub(m_oil, peer_beta)), demean(intraday_range)), div(m_credit_chg, -0.0008), downside_vol_63))|k=40|rb=10|w=score"
+   },
+   "cv": {
+    "frac_positive": 1.0,
+    "mean_alpha": 0.16546244760034673,
+    "median_alpha": 0.10539879764643405,
+    "mean_ir": 1.6089270880781035,
+    "worst_fold_alpha": 0.0006838020096307623,
+    "alpha_tstat": 3.4257437177450454,
+    "total_trades": 6772,
+    "ann_turnover": 7.248271956457602,
+    "corr_bench": 0.8782467244509471,
+    "n_folds": 8,
+    "ok": true
+   }
+  },
+  {
+   "fingerprint": "08f8f9a3967ef91a",
+   "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.2738), ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.2969), downside_vol_63))|k=30|rb=21|w=score",
+   "promoted": false,
+   "genome": {
+    "expr": {
+     "t": "ite",
+     "cond": {
+      "t": "bin",
+      "op": "add",
+      "left": {
+       "t": "un",
+       "op": "sigmoid",
+       "window": 0,
+       "child": {
+        "t": "bin",
+        "op": "sub",
+        "left": {
+         "t": "feat",
+         "name": "m_oil"
+        },
+        "right": {
+         "t": "feat",
+         "name": "peer_beta"
+        }
+       }
+      },
+      "right": {
+       "t": "un",
+       "op": "neg",
+       "window": 0,
+       "child": {
+        "t": "feat",
+        "name": "intraday_range"
        }
       }
      },
@@ -218,37 +233,82 @@
       },
       "right": {
        "t": "const",
-       "value": -0.5278
+       "value": -0.2738
       }
      },
      "b": {
-      "t": "feat",
-      "name": "downside_vol_63"
+      "t": "ite",
+      "cond": {
+       "t": "bin",
+       "op": "add",
+       "left": {
+        "t": "un",
+        "op": "sigmoid",
+        "window": 0,
+        "child": {
+         "t": "bin",
+         "op": "sub",
+         "left": {
+          "t": "feat",
+          "name": "m_oil"
+         },
+         "right": {
+          "t": "feat",
+          "name": "peer_beta"
+         }
+        }
+       },
+       "right": {
+        "t": "un",
+        "op": "neg",
+        "window": 0,
+        "child": {
+         "t": "feat",
+         "name": "intraday_range"
+        }
+       }
+      },
+      "a": {
+       "t": "bin",
+       "op": "div",
+       "left": {
+        "t": "feat",
+        "name": "m_credit_chg"
+       },
+       "right": {
+        "t": "const",
+        "value": -0.2969
+       }
+      },
+      "b": {
+       "t": "feat",
+       "name": "downside_vol_63"
+      }
      }
     },
     "n_positions": 30,
-    "rebalance_days": 10,
+    "rebalance_days": 21,
     "weighting": "score",
-    "born": 603,
+    "born": 676,
     "parents": [
-     "0c4b7049f429413f",
-     "7e791eb84bc56c38"
+     "97f81bb86b04007b",
+     "f0e72758e374c662"
     ],
-    "operator": "jitter",
+    "operator": "crossover",
     "meta": {},
-    "fingerprint": "c3c3dc69d17085cf",
-    "canonical": "ite(add(sigmoid(sub(mom_63, peer_beta)), rank(demean(idio_vol_126))), div(m_credit_chg, -0.5278), downside_vol_63)|k=30|rb=10|w=score"
+    "fingerprint": "08f8f9a3967ef91a",
+    "canonical": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.2738), ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.2969), downside_vol_63))|k=30|rb=21|w=score"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.17946426267172844,
-    "median_alpha": 0.0896304250107599,
-    "mean_ir": 1.2583436263219518,
-    "worst_fold_alpha": 0.003483886136545674,
-    "alpha_tstat": 2.9911920137722485,
-    "total_trades": 4820,
-    "ann_turnover": 8.4639669986724,
-    "corr_bench": 0.8244747190693877,
+    "mean_alpha": 0.28142160664078625,
+    "median_alpha": 0.12780890857290805,
+    "mean_ir": 1.7791422292895187,
+    "worst_fold_alpha": 0.028996675743518257,
+    "alpha_tstat": 4.252502869674129,
+    "total_trades": 2761,
+    "ann_turnover": 10.491167773810131,
+    "corr_bench": 0.7643679025820326,
     "n_folds": 8,
     "ok": true
    }
