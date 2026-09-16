@@ -53,3 +53,19 @@ $TWX: possibly delisted; no price data found  (1d 2018-06-16 -> 2026-12-31)
   seg 3  searched 545 sessions, traded 2018-03-19 -> 2019-04-02     -0.58% vs   +6.00%
   seg 4  searched 817 sessions, traded 2019-04-17 -> 2020-05-01    -17.64% vs  -10.01%
   seg 5  searched 1090 sessions, traded 2020-05-18 -> 2021-06-01    +56.04% vs  +67.81%
+  seg 6  searched 1362 sessions, traded 2021-06-16 -> 2022-06-30     -6.31% vs   -8.95%
+  seg 7  searched 1635 sessions, traded 2022-07-18 -> 2023-08-01    +27.30% vs  +17.42%
+  seg 8  searched 1907 sessions, traded 2023-08-16 -> 2024-08-30    +18.81% vs  +20.28%
+------------------------------------------------------------------------------
+  honest     2018-03-19 -> 2024-08-30   (1575 sessions traded forward)
+  strategy     10.37% annualised
+  benchmark    12.76% annualised
+  excess       -2.39% annualised
+  segments won 2 of 6
+  alpha t       0.10   (Newey-West; >= 2.0 to mean anything)
+  excess SR     0.03 annualised
+  DSR           0.00
+==============================================================================
+  READ: the procedure did NOT beat holding the universe.
+==============================================================================
+  report: D:\trader\reports\walkforward_20260915_234757.html

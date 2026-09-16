@@ -741,7 +741,8 @@ def test_revalidation_keeps_strategies_that_still_clear():
     for k, v in (("min_cv_folds_positive", 0.0), ("min_deflated_sharpe", 0.0),
                  ("max_pbo", 1.0), ("min_alpha_tstat", -99.0), ("min_trades", 0),
                  ("max_annual_turnover", 1e9), ("max_benchmark_corr", 1.0),
-                 ("min_null_percentile", 0.0), ("min_stress_alpha", -1e9)):
+                 ("min_null_percentile", 0.0), ("min_stress_alpha", -1e9),
+                 ("min_forward_alpha", -1e9)):
         c["evolve"]["gate"][k] = v
 
     ev = evolve.Evolver(c, p, f, seed=3, verbose=False)
@@ -969,3 +970,69 @@ def test_honest_walkforward_searcher_cannot_see_its_test_segment():
     winner = ev.population[0].genome
     assert winner.score(f, p.tradable).shape == p.close.shape
     assert train_hi + emb < p.shape[0], "fixture leaves no test segment"
+
+
+def test_forward_validation_tail_is_invisible_to_fitness():
+    """Nothing the search optimises may touch the held-back tail.
+
+    Added after a measured failure: with every gate running on the full
+    training window the leader cleared all of them (alpha t 4.07, PBO 0.257)
+    while an honest sequential walk-forward of the same procedure returned
+    alpha t 0.10. CSCV in particular builds its training half from a random
+    combination of time blocks, so half the time it fits on blocks that come
+    after the block it scores — strictly easier than live trading.
+    """
+    from loonie import evolve
+
+    p = synthetic_panel(T=1000, N=25, seed=91)
+    f = features.build(p, macro=False)
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+    c["evolve"]["validation_tail_frac"] = 0.20
+
+    ev = evolve.Evolver(c, p, f, seed=11, verbose=False)
+
+    fit_T = ev.panel.shape[0]
+    assert fit_T < p.shape[0], "fitness panel must be shorter than the input"
+    assert abs(fit_T - int(1000 * 0.8)) <= 2
+
+    for k, v in ev.feats.items():
+        assert v.shape[0] == fit_T, "%s leaked rows into the fitness window" % k
+    for fold in ev.folds:
+        assert fold.stop <= fit_T, "a CV fold reaches into the validation tail"
+
+    assert ev.val_panel is not None
+    gap = p.shape[0] - ev.val_panel.shape[0] - fit_T
+    assert gap >= int(c["cv"]["embargo_days"]) - 1, "embargo gap missing"
+    assert ev.bench.shape[0] == fit_T
+
+
+def test_forward_validation_gate_rejects_a_tail_failure():
+    """A candidate with no forward alpha must not be promotable."""
+    from loonie import evolve
+
+    p = synthetic_panel(T=1000, N=25, seed=92)
+    f = features.build(p, macro=False)
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+
+    ev = evolve.Evolver(c, p, f, seed=12, verbose=False)
+    ev.seed_population(8)
+    assert ev.population
+
+    g = ev.population[0].genome
+    v = ev.validate(g)
+    assert set(v) >= {"val_alpha", "val_ir", "val_t"}
+    if np.isfinite(v["val_alpha"]):
+        assert v["val_sessions"] == ev.val_panel.shape[0]
+
+    # On pure random-walk data no genome should show real forward alpha, so
+    # the gate must be capable of saying no.
+    c["evolve"]["gate"]["min_forward_alpha"] = 1e9
+    checks = ev.gate(ev.population[0], None)
+    names = [x["gate"] for x in checks]
+    if "forward_alpha" in names:
+        fa = [x for x in checks if x["gate"] == "forward_alpha"][0]
+        assert not fa["pass"], "an impossible forward bar was still cleared"

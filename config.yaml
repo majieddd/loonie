@@ -53,6 +53,12 @@ evolve:
   null_samples_per_gen: 12
   null_shuffles: 24        # time-shifted replicas per candidate in the null test
   cost_stress_multiplier: 3.0   # re-price at 3x assumed slippage/commission
+  # Hold back the last 20% of the training window. Fitness, CV, PBO, the
+  # shuffle test and cost stress all run on the first 80% only; the tail is
+  # a forward check the search cannot optimise against. Added after a leader
+  # cleared every full-window gate (alpha t 4.07) while a sequential
+  # walk-forward of the same procedure returned alpha t 0.10.
+  validation_tail_frac: 0.20
 
   # ---- The promotion gate. This is the whole ballgame. --------------------
   # A candidate is only "an improvement" if it clears EVERY one of these on
@@ -71,6 +77,9 @@ evolve:
     # Alpha must stay positive when slippage and commission are tripled. A
     # strategy that fails this was trading the cost model, not an anomaly.
     min_stress_alpha: 0.0
+    # Alpha must be positive on the held-back forward tail. This is the only
+    # gate the fitness function has never been able to see.
+    min_forward_alpha: 0.0
     # A 25-name long-only book drawn from a 500-name index correlates ~0.95
     # with it by construction -- that is arithmetic, not index-hugging. So
     # this is a loose sanity bound, and the real "did picking add anything"

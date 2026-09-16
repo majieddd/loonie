@@ -262,8 +262,42 @@ class Evolver:
         self.archive = MapElites()
         self.null = NullModel()
 
-        self.bench = bt.equal_weight_benchmark(panel)
-        self.folds = cvmod.block_folds(panel.shape[0], int(cfg.cv.n_splits),
+        # ---- forward validation tail -----------------------------------
+        # Everything the fitness function touches -- folds, shuffle test, cost
+        # stress, PBO -- lives in `self.panel`, which is only the FIRST part of
+        # the training window. The tail is held back entirely.
+        #
+        # This exists because of a measured failure. With the gate running on
+        # the full window, the leader cleared every test (alpha t 4.07, PBO
+        # 0.257) while an honest sequential walk-forward of the same procedure
+        # returned alpha t 0.10 -- no forward edge at all. The gates were not
+        # broken; they were all answering "does this work across this history",
+        # and CSCV in particular builds its training half from a RANDOM
+        # combination of time blocks, so half the time it fits on blocks that
+        # come AFTER the block it scores. On non-stationary data that is a
+        # strictly easier question than the one live trading asks.
+        #
+        # A held-back tail asks the real question: fit on the past, and does it
+        # still work on a stretch of future the search never saw?
+        frac = float(cfg.evolve.get("validation_tail_frac", 0.20))
+        T_all = panel.shape[0]
+        emb = int(cfg.cv.embargo_days)
+        fit_end = int(T_all * (1.0 - frac))
+        val_lo = min(T_all, fit_end + emb)
+
+        self.full_panel = panel
+        self.panel = cvmod._slice_panel(panel, 0, fit_end)
+        self.feats = {k: v[:fit_end] for k, v in feats.items()}
+
+        if T_all - val_lo >= 120:
+            self.val_panel = cvmod._slice_panel(panel, val_lo, T_all)
+            self.val_feats = {k: v[val_lo:T_all] for k, v in feats.items()}
+            self.val_bench = bt.equal_weight_benchmark(self.val_panel)
+        else:
+            self.val_panel = self.val_feats = self.val_bench = None
+
+        self.bench = bt.equal_weight_benchmark(self.panel)
+        self.folds = cvmod.block_folds(self.panel.shape[0], int(cfg.cv.n_splits),
                                        int(cfg.cv.embargo_days))
 
         self.population: list = []
@@ -332,6 +366,29 @@ class Evolver:
         if res.total_trades < int(self.cfg.evolve.gate.min_trades):
             fit -= 1.0
         return float(fit) if np.isfinite(fit) else -np.inf
+
+    # --------------------------------------------------- forward validation
+    def validate(self, g: Genome) -> dict:
+        """Backtest on the held-back tail. Nothing in fitness has seen this."""
+        if self.val_panel is None:
+            return {"val_alpha": float("nan"), "val_ir": float("nan"),
+                    "val_t": float("nan")}
+        try:
+            score = g.score(self.val_feats, self.val_panel.tradable)
+        except Exception:
+            return {"val_alpha": float("nan"), "val_ir": float("nan"),
+                    "val_t": float("nan")}
+        res = bt.run(self.val_panel, score, g, self.cfg,
+                     bench_ret=self.val_bench)
+        if not res.ok:
+            return {"val_alpha": float("nan"), "val_ir": float("nan"),
+                    "val_t": float("nan")}
+        return {
+            "val_alpha": float(res.stats["alpha_ann"]),
+            "val_ir": float(res.stats["ir"]),
+            "val_t": float(res.stats["alpha_tstat"]),
+            "val_sessions": int(len(res.ret)),
+        }
 
     # --------------------------------------------------------- cost stress
     def cost_stress(self, g: Genome, multiplier: float = 3.0) -> dict:
@@ -477,6 +534,17 @@ class Evolver:
                 checks.append(metrics.summarize_gate(
                     "cost_stress_alpha", st["stress_alpha"], ">=",
                     float(g.get("min_stress_alpha", 0.0))))
+
+        if all(c["pass"] for c in checks) and self.val_panel is not None:
+            v = self.validate(ev.genome)
+            ev.cv.update(v)
+            if np.isfinite(v.get("val_alpha", np.nan)):
+                checks.append(metrics.summarize_gate(
+                    "forward_alpha", v["val_alpha"], ">=",
+                    float(g.get("min_forward_alpha", 0.0))))
+            else:
+                checks.append({"gate": "forward_alpha", "value": float("nan"),
+                               "op": ">=", "threshold": 0.0, "pass": False})
 
         if all(c["pass"] for c in checks):
             sh = self.shuffle_test(ev.genome)
