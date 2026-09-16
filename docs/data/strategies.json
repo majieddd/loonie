@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-16T16:23:39+00:00",
- "generation": 160,
- "trials": 28084,
+ "updated": "2026-09-16T16:39:39+00:00",
+ "generation": 191,
+ "trials": 34001,
  "promoted": false,
  "strategies": [
   {
@@ -90,13 +90,13 @@
     "val_ir": -3.5362250124599437,
     "val_t": -4.227095268323055,
     "val_sessions": 426,
-    "dsr": 7.475412523812476e-38,
+    "dsr": 5.798352066131741e-38,
     "sr_ann_excess": -3.8784568673614173,
-    "sr_star_ann": 1.5792779325692445,
-    "trials_total": 28084,
-    "trials_effective": 5372,
-    "independence": 0.1912690642884362,
-    "pbo": 0.2571428571428571
+    "sr_star_ann": 1.5876740761383483,
+    "trials_total": 34001,
+    "trials_effective": 5807,
+    "independence": 0.17079804237306723,
+    "pbo": 0.14285714285714285
    }
   },
   {
