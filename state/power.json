@@ -1,0 +1,45 @@
+{
+ "years": 10.678571428571429,
+ "rows": [
+  {
+   "design": "top 25 long-only (current)",
+   "k": 25,
+   "short": false,
+   "tracking_error": 0.10079544657952631,
+   "min_detectable_alpha": 0.061689937540476185,
+   "median_excess": 0.07931185878267444
+  },
+  {
+   "design": "top 50 long-only",
+   "k": 50,
+   "short": false,
+   "tracking_error": 0.08252748626150634,
+   "min_detectable_alpha": 0.0505093795961111,
+   "median_excess": 0.05166655998995595
+  },
+  {
+   "design": "top 100 long-only",
+   "k": 100,
+   "short": false,
+   "tracking_error": 0.06710962424132466,
+   "min_detectable_alpha": 0.041073170151051885,
+   "median_excess": 0.01778150628151942
+  },
+  {
+   "design": "top 25 long / bottom 25 short",
+   "k": 25,
+   "short": true,
+   "tracking_error": 0.12329222832363618,
+   "min_detectable_alpha": 0.07545866527324024,
+   "median_excess": 0.09302723633528531
+  },
+  {
+   "design": "top 100 long / bottom 100 short",
+   "k": 100,
+   "short": true,
+   "tracking_error": 0.07116777974759214,
+   "min_detectable_alpha": 0.0435568871065957,
+   "median_excess": 0.047138618607200033
+  }
+ ]
+}

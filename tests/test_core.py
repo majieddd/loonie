@@ -2062,3 +2062,29 @@ def test_spread_of_a_constant_row_must_be_measured_in_float64():
     clean = np.nanstd(broadcast.astype(np.float64), axis=1)
     assert np.all(clean == 0.0), \
         "accumulating in float64 must report a constant row as constant"
+
+
+def test_detectable_alpha_scales_with_span_and_tracking_error():
+    """The arithmetic behind the power analysis, pinned.
+
+    t = (excess / tracking error) * sqrt(years). Everything the power script
+    concludes rests on this, so it is worth one test that the relationship is
+    the way round we think: a longer span lowers the detectable floor, and a
+    wider tracking error raises it.
+    """
+    import math
+
+    def mde(te, yrs, t=2.0):
+        return t * te / math.sqrt(yrs)
+
+    # Doubling the span does not halve the floor -- it divides by sqrt(2).
+    assert abs(mde(0.10, 10.0) / mde(0.10, 5.0) - 1 / math.sqrt(2)) < 1e-9
+
+    # Tracking error is linear in the floor: halve one, halve the other.
+    assert abs(mde(0.05, 5.0) / mde(0.10, 5.0) - 0.5) < 1e-9
+
+    # The measured case: 14.81% tracking error over 5.61 years needs an
+    # excess north of 12% a year to register, which no long-only equity
+    # strategy delivers. If this ever drops below ~4% the instrument has
+    # genuinely changed and the gate should be revisited.
+    assert mde(0.1481, 5.61) > 0.12
