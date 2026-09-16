@@ -44,50 +44,42 @@ from loonie.data import load_panel  # noqa: E402
 
 
 def _rank(a: np.ndarray) -> np.ndarray:
-    """Row-wise rank in [0,1], NaN preserved. Ties share their mean rank."""
-    out = np.full(a.shape, np.nan)
-    for i in range(a.shape[0]):
-        row = a[i]
-        ok = np.isfinite(row)
-        n = int(ok.sum())
-        if n < 10:
-            continue
-        v = row[ok]
-        order = np.argsort(v, kind="stable")
-        r = np.empty(n, dtype=np.float64)
-        r[order] = np.arange(n, dtype=np.float64)
-        # Average ranks within tied groups, or a feature with many equal
-        # values gets an ordering that is really just column order.
-        s = v[order]
-        i0 = 0
-        for i1 in range(1, n + 1):
-            if i1 == n or s[i1] != s[i0]:
-                if i1 - i0 > 1:
-                    r[order[i0:i1]] = np.mean(r[order[i0:i1]])
-                i0 = i1
-        out[i, ok] = r / max(n - 1, 1)
-    return out
+    """Row-wise rank in [0,1], NaN preserved. Ties share their mean rank.
+
+    Ties are averaged rather than broken arbitrarily. A feature with many
+    equal values -- a flag, a clipped ratio, a stale fundamental that has not
+    been refiled -- would otherwise be ranked by column order, and the IC
+    would be measuring the alphabet.
+    """
+    import pandas as pd
+
+    return pd.DataFrame(a).rank(axis=1, method="average", pct=True).to_numpy()
 
 
-def ic_series(feat: np.ndarray, fwd: np.ndarray, mask: np.ndarray) -> np.ndarray:
-    """Daily cross-sectional Spearman IC between a feature and forward return."""
+def ic_series(feat: np.ndarray, fwd: np.ndarray, mask: np.ndarray,
+              min_names: int = 20) -> np.ndarray:
+    """Daily cross-sectional Spearman IC between a feature and forward return.
+
+    Ranks are recomputed on the pairwise-complete cross-section for each day,
+    so a day where a feature covers 80 names is scored on those 80 -- not on
+    ranks borrowed from a wider set the return vector does not cover.
+    """
     x = np.where(mask, feat, np.nan).astype(np.float64)
     y = np.where(mask, fwd, np.nan).astype(np.float64)
     both = np.isfinite(x) & np.isfinite(y)
-    x = np.where(both, x, np.nan)
-    y = np.where(both, y, np.nan)
+    x, y = np.where(both, x, np.nan), np.where(both, y, np.nan)
 
     rx, ry = _rank(x), _rank(y)
-    out = np.full(len(x), np.nan)
-    for i in range(len(x)):
-        ok = np.isfinite(rx[i]) & np.isfinite(ry[i])
-        if ok.sum() < 20:
-            continue
-        a, b = rx[i][ok], ry[i][ok]
-        sa, sb = a.std(), b.std()
-        if sa > 1e-12 and sb > 1e-12:
-            out[i] = float(np.mean((a - a.mean()) * (b - b.mean())) / (sa * sb))
-    return out
+    n = both.sum(axis=1).astype(np.float64)
+
+    with np.errstate(invalid="ignore"):
+        mx = np.nanmean(rx, axis=1, keepdims=True)
+        my = np.nanmean(ry, axis=1, keepdims=True)
+        dx, dy = np.where(both, rx - mx, 0.0), np.where(both, ry - my, 0.0)
+        num = (dx * dy).sum(axis=1)
+        den = np.sqrt((dx ** 2).sum(axis=1) * (dy ** 2).sum(axis=1))
+        ic = np.where(den > 1e-12, num / np.maximum(den, 1e-12), np.nan)
+    return np.where(n >= min_names, ic, np.nan)
 
 
 def main() -> int:
@@ -121,8 +113,26 @@ def main() -> int:
         ok = np.isfinite(s)
         n = int(ok.sum())
         if n < args.min_obs:
-            rows.append({"feature": name, "family": F.family_of(name),
-                         "n": n, "ic": None, "reason": "too few sessions"})
+            # A macro series is one number a day broadcast across every name,
+            # so its cross-section has no spread and a cross-sectional IC is
+            # undefined -- not small, undefined. Saying "too few sessions"
+            # would read as a data gap and send someone off to fix nothing.
+            # "Constant" has to be judged against float32 resolution, not
+            # against zero. A macro row holding one value 616 times has a
+            # measured spread around 6e-08 -- the same rounding dust that
+            # once got promoted to a regime signal here, when a genome
+            # branched on demean(Const) = -3e-08 and cost a third of the
+            # alpha. Scale-relative, or this check silently never fires.
+            vals = np.where(mask, feats[name], np.nan).astype(np.float64)
+            alive = np.isfinite(vals).any(axis=1)
+            sd = np.nanstd(vals, axis=1)[alive]
+            scale = np.maximum(np.abs(np.nanmean(vals, axis=1))[alive], 1.0)
+            constant = float(np.mean(sd / scale < 1e-6)) if alive.any() else 1.0
+            rows.append({
+                "feature": name, "family": F.family_of(name), "n": n,
+                "ic": None,
+                "reason": ("constant across the cross-section"
+                           if constant > 0.9 else "too few sessions")})
             continue
         v = s[ok]
         sd = float(v.std(ddof=1))
@@ -147,9 +157,26 @@ def main() -> int:
                  100 * r["hit"], r["n"]))
 
     dead = [r for r in rows if r.get("ic") is None]
-    if dead:
-        print("\n%d terminals had too little data to score: %s"
-              % (len(dead), ", ".join(r["feature"] for r in dead[:12])))
+    for why in sorted({r["reason"] for r in dead}):
+        names = [r["feature"] for r in dead if r["reason"] == why]
+        print("\n%d terminals unscored -- %s:\n  %s"
+              % (len(names), why, ", ".join(names[:14])
+                 + (" ..." if len(names) > 14 else "")))
+
+    # The number that matters more than any single row. Testing 80 terminals
+    # and reporting the largest t-stat is a multiple-comparisons problem; the
+    # expected maximum under the null is the bar a winner has to clear.
+    if live:
+        best = max(live, key=lambda r: abs(r["t"]))
+        k = len(live)
+        exp_max = float(np.sqrt(2.0 * np.log(max(k, 2))))
+        print("\nlargest |t| across %d scored terminals : %.2f  (%s)"
+              % (k, abs(best["t"]), best["feature"]))
+        print("expected largest |t| under the null    : %.2f" % exp_max)
+        print("-> %s" % ("clears the multiple-testing bar"
+                         if abs(best["t"]) > exp_max else
+                         "no terminal clears it; every IC here is "
+                         "consistent with noise"))
 
     # Family roll-up. This is the part that catches a broken block.
     print("\n%-15s %6s %9s %9s" % ("family", "n", "mean |IC|", "max |IC|"))

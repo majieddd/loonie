@@ -1996,3 +1996,69 @@ def test_fundamentals_never_reach_the_search_without_passing_causality():
     assert hasattr(FU, "FUNDAMENTAL_NAMES") and FU.FUNDAMENTAL_NAMES
     assert all(n.startswith("f_") for n in FU.FUNDAMENTAL_NAMES), \
         "fundamental terminals must be namespaced so they are identifiable"
+
+
+def _load_script(name: str):
+    """Import a file from scripts/ as a module."""
+    import importlib.util
+
+    p = Path(__file__).resolve().parent.parent / "scripts" / (name + ".py")
+    spec = importlib.util.spec_from_file_location("s_" + name, p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_ic_is_a_rank_correlation_with_ties_averaged():
+    """A feature with many equal values must not be ranked by column order."""
+    ic = _load_script("feature_ic")
+
+    T, N = 300, 60
+    rng = np.random.default_rng(4)
+    fwd = rng.normal(0, 0.02, (T, N))
+    mask = np.ones((T, N), bool)
+
+    # Perfectly predictive: the feature IS the forward return.
+    s = ic.ic_series(fwd.copy(), fwd, mask)
+    assert np.nanmean(s) > 0.99, "a perfect predictor did not score IC 1"
+
+    # A constant feature has no cross-section to correlate; undefined, not 0.
+    flat = ic.ic_series(np.ones((T, N)), fwd, mask)
+    assert np.all(np.isnan(flat)), "a flat feature produced a correlation"
+
+    # Half the names tied: the tied block must share a rank rather than be
+    # ordered by position, which would manufacture signal out of the column
+    # index.
+    tied = fwd.copy()
+    tied[:, :30] = 5.0
+    r = ic._rank(tied)
+    assert np.allclose(r[:, :30], r[:, :1]), "ties were broken by column order"
+
+
+def test_spread_of_a_constant_row_must_be_measured_in_float64():
+    """The bug this project has already paid for once, in a new disguise.
+
+    A macro row holds one value repeated across every name. The values are
+    bit-identical -- nothing differs between them -- and yet np.nanstd on a
+    float32 array accumulates in float32 and reports a spread around 6e-08.
+    The dust is manufactured by the measurement, not present in the data.
+
+    That is the same mechanism that once let a genome branch on
+    demean(Const) = -3e-08 as though it were a regime signal, and cost a
+    third of this system's alpha when it was fixed. Here it made a
+    "is this feature constant?" check silently never fire.
+    """
+    T, N = 200, 616
+    row = np.linspace(-2.0, 2.0, T).astype(np.float32)
+    broadcast = np.repeat(row[:, None], N, axis=1)
+
+    assert np.all(broadcast == broadcast[:, :1]), \
+        "test premise broken: the row is not actually constant"
+
+    dust = np.nanstd(broadcast, axis=1)
+    assert np.any(dust > 1e-12), \
+        "float32 accumulation no longer manufactures spread; simplify this"
+
+    clean = np.nanstd(broadcast.astype(np.float64), axis=1)
+    assert np.all(clean == 0.0), \
+        "accumulating in float64 must report a constant row as constant"

@@ -240,24 +240,32 @@ def _known_series(df: pd.DataFrame, concept: str, dates: pd.DatetimeIndex,
     else:
         quarterly, annual = sub, sub.iloc[0:0]
 
-    out = np.full(len(dates), np.nan)
-    # Latest value per period end, plus the running set of known quarters.
-    latest: dict = {}
-    pos = 0
-    events = quarterly.sort_values("filed")
+    # The value can only change on a filing date, so it is computed once per
+    # filing and broadcast forward. The obvious loop -- reduce once per
+    # calendar date -- does the same work a hundred times over and made a
+    # rebuild of the panel take four minutes, long enough that the search
+    # aged into "stale" on the dashboard every time it reloaded.
+    ev = quarterly.sort_values("filed")
+    if not len(ev):
+        return np.full(len(dates), np.nan)
 
-    for filed, grp in events.groupby("filed", sort=True):
-        # Everything up to this filing keeps the previous view of the world.
-        while pos < len(dates) and dates[pos] < filed:
-            out[pos] = _reduce(latest, flow)
-            pos += 1
-        for _, r in grp.iterrows():
-            latest[r["end"]] = float(r["val"])
-        if pos >= len(dates):
-            break
-    while pos < len(dates):
-        out[pos] = _reduce(latest, flow)
-        pos += 1
+    breaks = ev["filed"].to_numpy()
+    ends = ev["end"].to_numpy()
+    vals = ev["val"].to_numpy(dtype=np.float64)
+
+    uniq, first = np.unique(breaks, return_index=True)
+    step = np.full(len(uniq), np.nan)
+    latest: dict = {}
+    bounds = list(first) + [len(ev)]
+    for k in range(len(uniq)):
+        for i in range(bounds[k], bounds[k + 1]):
+            # A later filing for a period already seen is a restatement; it
+            # replaces the old figure from this date forward, never before.
+            latest[ends[i]] = vals[i]
+        step[k] = _reduce(latest, flow)
+
+    idx = np.searchsorted(uniq, dates.to_numpy(), side="right") - 1
+    out = np.where(idx >= 0, step[np.maximum(idx, 0)], np.nan)
 
     if flow and len(annual):
         # Fall back to the annual figure wherever four quarters were never
