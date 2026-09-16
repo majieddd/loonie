@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T19:51:45+00:00",
+ "generated_at": "2026-09-16T20:07:45+00:00",
  "workers": {
   "workers": [
    {
@@ -8,27 +8,27 @@
     "label": "genetic program",
     "started_at": "2026-09-16T17:29:11+00:00",
     "status": "running",
-    "detail": "gen 1014 | fit +1.524 | IR +1.80 | alpha t +4.19",
+    "detail": "gen 1103 | fit +1.524 | IR +1.80 | alpha t +4.19",
     "progress": null,
     "metrics": {
-     "generation": 1014,
-     "trials": 133020,
-     "trials_effective": 8614,
+     "generation": 1103,
+     "trials": 141065,
+     "trials_effective": 8437,
      "best_fitness": 1.5236,
      "best_alpha_t": 4.192,
-     "best_dsr": 0.821,
+     "best_dsr": 0.822,
      "archive_cells": 113,
      "promoted": 0,
      "demoted": 2,
-     "seconds_per_gen": 11.71
+     "seconds_per_gen": 12.32
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T19:51:38+00:00",
-    "heartbeat_epoch": 1789588298.4748242,
-    "uptime_s": 8547.1,
-    "heartbeat_age_s": 6.3,
+    "heartbeat": "2026-09-16T20:07:41+00:00",
+    "heartbeat_epoch": 1789589261.7241294,
+    "uptime_s": 9510.3,
+    "heartbeat_age_s": 3.5,
     "liveness": "live"
    },
    {
@@ -47,9 +47,9 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T19:51:44+00:00",
-    "heartbeat_epoch": 1789588304.5931184,
-    "uptime_s": 15607.5,
+    "heartbeat": "2026-09-16T20:07:45+00:00",
+    "heartbeat_epoch": 1789589265.031573,
+    "uptime_s": 16567.9,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -57,18 +57,18 @@
     "id": "meta",
     "kind": "meta",
     "label": "method review",
-    "started_at": "2026-09-16T16:01:38+00:00",
+    "started_at": "2026-09-16T20:01:40+00:00",
     "status": "finished",
-    "detail": "8 methods, 28 labelled rows",
+    "detail": "8 methods, 67 labelled rows",
     "progress": 1.0,
     "metrics": {},
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T16:01:38+00:00",
-    "heartbeat_epoch": 1789574498.790694,
-    "uptime_s": 0.5,
-    "heartbeat_age_s": 13806.0,
+    "heartbeat": "2026-09-16T20:01:40+00:00",
+    "heartbeat_epoch": 1789588900.3752224,
+    "uptime_s": 0.4,
+    "heartbeat_age_s": 364.8,
     "liveness": "finished"
    },
    {
@@ -89,27 +89,27 @@
     "heartbeat": "2026-09-16T15:50:00+00:00",
     "heartbeat_epoch": 1789573800.946725,
     "uptime_s": 192.6,
-    "heartbeat_age_s": 14503.8,
+    "heartbeat_age_s": 15464.3,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-16T19:51:44+00:00"
+  "updated": "2026-09-16T20:07:45+00:00"
  },
  "experience": {
-  "rows": 987,
-  "labelled": 987,
+  "rows": 1077,
+  "labelled": 1077,
   "distinct_strategies": 65,
   "runs": 7,
   "methods": 7,
   "promoted": 2,
   "first": "2026-09-16T15:28:11+00:00",
-  "last": "2026-09-16T19:50:55+00:00",
-  "bytes": 83043,
-  "fwd_alpha_mean": 0.05258061231319362,
-  "fwd_positive_rate": 0.28368794326241137
+  "last": "2026-09-16T20:07:07+00:00",
+  "bytes": 87188,
+  "fwd_alpha_mean": 0.045261180630406406,
+  "fwd_positive_rate": 0.25998142989786444
  },
  "family_forward_rates": {
   "volume": {
@@ -123,9 +123,9 @@
    "rate": 0.5118279569892473
   },
   "macro": {
-   "seen": 899,
+   "seen": 989,
    "survived": 269,
-   "rate": 0.2992213570634038
+   "rate": 0.27199191102123355
   },
   "market_relative": {
    "seen": 39,
@@ -133,19 +133,19 @@
    "rate": 0.1794871794871795
   },
   "volatility": {
-   "seen": 508,
+   "seen": 598,
    "survived": 30,
-   "rate": 0.05905511811023622
+   "rate": 0.05016722408026756
   },
   "peer": {
-   "seen": 502,
+   "seen": 592,
    "survived": 28,
-   "rate": 0.055776892430278883
+   "rate": 0.0472972972972973
   },
   "microstructure": {
-   "seen": 595,
+   "seen": 685,
    "survived": 24,
-   "rate": 0.040336134453781515
+   "rate": 0.035036496350364967
   },
   "oscillator": {
    "seen": 8,
@@ -185,6 +185,16 @@
    "established": false
   },
   {
+   "id": "low_turnover",
+   "summary": "turnover-averse",
+   "posterior": 0.3,
+   "forward_rate": 0.2894736842105263,
+   "mean_fwd_alpha": 0.06478774643618253,
+   "labelled": 38,
+   "cycles": 5,
+   "established": true
+  },
+  {
    "id": "qd_consistency",
    "summary": "MAP-Elites + consistency-dominant fitness",
    "posterior": 0.2857142857142857,
@@ -212,16 +222,6 @@
    "mean_fwd_alpha": null,
    "labelled": 0,
    "cycles": 7,
-   "established": false
-  },
-  {
-   "id": "low_turnover",
-   "summary": "turnover-averse",
-   "posterior": 0.5,
-   "forward_rate": null,
-   "mean_fwd_alpha": null,
-   "labelled": 0,
-   "cycles": 5,
    "established": false
   },
   {
@@ -292,131 +292,131 @@
   }
  ],
  "search": {
-  "generation": 1014,
-  "trials": 133020,
-  "trials_effective": 8614,
-  "independence": 0.06475830430164317,
+  "generation": 1103,
+  "trials": 141065,
+  "trials_effective": 8437,
+  "independence": 0.059808250353306426,
   "archive_cells": 113,
   "explore": 0.85,
   "best_fitness": 1.5236317220493216,
   "best_ir": 1.8043516915518854,
   "best_alpha_t": 4.191574595358642,
-  "best_dsr": 0.8205119407368273,
-  "best_pbo": 0.3,
+  "best_dsr": 0.8218507283845273,
+  "best_pbo": 0.45714285714285713,
   "best_corr": 0.7733656247138514,
   "best_null_pct": 1.0,
-  "seconds_per_gen": 11.71,
+  "seconds_per_gen": 12.32,
   "promoted_count": 0,
   "demoted_count": 2,
   "null_summary": {
    "n": 3000,
-   "mean_fitness": -3.9129308817069,
-   "p95_fitness": 0.06804823030673465,
-   "p99_fitness": 0.27618955395249467,
-   "max_fitness": 0.6118973190688245,
-   "p95_alpha_t": 1.1997910121500315
+   "mean_fitness": -3.7171444523052335,
+   "p95_fitness": 0.07837684703416058,
+   "p99_fitness": 0.2755199252731709,
+   "max_fitness": 0.7443630037718627,
+   "p95_alpha_t": 1.2131409174373542
   },
   "operators": {
    "point": {
-    "rate": 0.045081967213114756,
-    "tried": 976,
-    "won": 44,
-    "posterior_mean": 0.0423071827846849
+    "rate": 0.043519394512771994,
+    "tried": 1057,
+    "won": 46,
+    "posterior_mean": 0.03851356866967501
    },
    "subtree": {
-    "rate": 0.059468822170900694,
-    "tried": 1732,
-    "won": 103,
-    "posterior_mean": 0.05607000941220661
+    "rate": 0.05818181818181818,
+    "tried": 1925,
+    "won": 112,
+    "posterior_mean": 0.052632763957008624
    },
    "hoist": {
-    "rate": 0.1059322033898305,
-    "tried": 9204,
+    "rate": 0.10528020732102365,
+    "tried": 9261,
     "won": 975,
-    "posterior_mean": 0.047010654240342516
+    "posterior_mean": 0.03914250177503404
    },
    "shrink": {
-    "rate": 0.08655926905506131,
-    "tried": 4159,
-    "won": 360,
-    "posterior_mean": 0.06221020354040627
+    "rate": 0.08491212052042912,
+    "tried": 4381,
+    "won": 372,
+    "posterior_mean": 0.06087930844142414
    },
    "wrap": {
-    "rate": 0.04097452934662237,
-    "tried": 903,
+    "rate": 0.038702928870292884,
+    "tried": 956,
     "won": 37,
-    "posterior_mean": 0.04136943154341136
+    "posterior_mean": 0.03329504285922133
    },
    "jitter": {
-    "rate": 0.09443615433809423,
-    "tried": 14073,
-    "won": 1329,
-    "posterior_mean": 0.07314454840098818
+    "rate": 0.0933501153765471,
+    "tried": 14301,
+    "won": 1335,
+    "posterior_mean": 0.06724136865403138
    },
    "crossover": {
-    "rate": 0.10553648446439574,
-    "tried": 34083,
-    "won": 3597,
-    "posterior_mean": 0.07391269058302372
+    "rate": 0.1048165998095293,
+    "tried": 34651,
+    "won": 3632,
+    "posterior_mean": 0.07027545433045476
    },
    "params": {
-    "rate": 0.0952144245108229,
-    "tried": 110645,
-    "won": 10535,
-    "posterior_mean": 0.08629696816960529
+    "rate": 0.0932030443446736,
+    "tried": 124953,
+    "won": 11646,
+    "posterior_mean": 0.08311462467291884
    }
   },
   "features": {
    "macro": {
-    "posterior_mean": 0.4943527583792564,
+    "posterior_mean": 0.49452064996292067,
     "seen": 63,
     "survived": 32,
     "rate": 0.5079365079365079
    },
    "market_relative": {
-    "posterior_mean": 0.40291168462979154,
+    "posterior_mean": 0.4169246045372608,
     "seen": 9,
     "survived": 3,
     "rate": 0.3333333333333333
    },
    "microstructure": {
-    "posterior_mean": 0.52044896031062,
+    "posterior_mean": 0.5197250454884218,
     "seen": 45,
     "survived": 22,
     "rate": 0.4888888888888889
    },
    "momentum": {
-    "posterior_mean": 0.4855470991673002,
+    "posterior_mean": 0.48886270670512255,
     "seen": 1,
     "survived": 0,
     "rate": 0.0
    },
    "oscillator": {
-    "posterior_mean": 0.41970993697222936,
+    "posterior_mean": 0.4361427393847554,
     "seen": 2,
     "survived": 0,
     "rate": 0.0
    },
    "peer": {
-    "posterior_mean": 0.4748814563286216,
+    "posterior_mean": 0.47567466521783597,
     "seen": 51,
     "survived": 23,
     "rate": 0.45098039215686275
    },
    "reversal": {
-    "posterior_mean": 0.46152983380803325,
+    "posterior_mean": 0.46635713262176676,
     "seen": 35,
     "survived": 12,
     "rate": 0.34285714285714286
    },
    "volatility": {
-    "posterior_mean": 0.4748814563286216,
+    "posterior_mean": 0.47567466521783597,
     "seen": 51,
     "survived": 23,
     "rate": 0.45098039215686275
    },
    "volume": {
-    "posterior_mean": 0.6174842157580356,
+    "posterior_mean": 0.5996303140203026,
     "seen": 13,
     "survived": 11,
     "rate": 0.8461538461538461
@@ -461,17 +461,17 @@
   },
   {
    "name": "deflated_sharpe",
-   "value": 0.8205119407368273,
+   "value": 0.8218507283845273,
    "op": ">=",
    "threshold": 0.5,
    "pass": true
   },
   {
    "name": "pbo",
-   "value": 0.3,
+   "value": 0.45714285714285713,
    "op": "<=",
    "threshold": 0.4,
-   "pass": true
+   "pass": false
   }
  ],
  "leader": {
@@ -484,8 +484,8 @@
   "alpha_t": 4.191574595358642,
   "folds_positive": 1.0,
   "worst_fold": 0.028996675743518257,
-  "dsr": 0.8205119407368273,
-  "pbo": 0.3,
+  "dsr": 0.8218507283845273,
+  "pbo": 0.45714285714285713,
   "corr": 0.7733656247138514,
   "turnover": 10.411519512041018,
   "trades": 2761,
@@ -558,8 +558,8 @@
    "alpha_t": 4.191574595358642,
    "folds_positive": 1.0,
    "worst_fold": 0.028996675743518257,
-   "dsr": 0.8205119407368273,
-   "pbo": 0.3,
+   "dsr": 0.8218507283845273,
+   "pbo": 0.45714285714285713,
    "corr": 0.7733656247138514,
    "turnover": 10.411519512041018,
    "trades": 2761,
@@ -569,19 +569,19 @@
    "promoted": false
   },
   {
-   "fingerprint": "c06e1d9e8dc6b6ff",
-   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.1716), pct_52w_high), rank(downside_vol_63))|k=30|rb=21|w=score",
-   "operator": "subtree",
-   "fitness": 1.5148413362888369,
-   "ir": 1.9001860818656269,
-   "alpha": 0.2958771920816149,
-   "alpha_t": 4.484641641674773,
+   "fingerprint": "945b59321999ed36",
+   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.1609), pct_52w_high), rank(downside_vol_63))|k=30|rb=21|w=score",
+   "operator": "params",
+   "fitness": 1.5149909644978925,
+   "ir": 1.9003316356357236,
+   "alpha": 0.2958998609788845,
+   "alpha_t": 4.486176905056547,
    "folds_positive": 1.0,
    "worst_fold": 0.028996675743518257,
    "dsr": null,
    "pbo": null,
-   "corr": 0.7688529760881334,
-   "turnover": 10.64551592922864,
+   "corr": 0.7689450712384598,
+   "turnover": 10.645450738205298,
    "trades": 2730,
    "stress_alpha": null,
    "null_pct": null,
@@ -609,19 +609,19 @@
    "promoted": false
   },
   {
-   "fingerprint": "6e8a93e7a4d0e459",
-   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.491), ite(add(sigmoid(peer_beta), m_credit_chg), div(m_credit_chg, ite(add(-2.481, peer_rel_mom_21), peer_rel_vol, ite(add(sigmoid(-0.3308), mom_63), div(amihud_21, -0.54), downside_vol_63))), downside_vol_63))|k=30|rb=21|w=score",
-   "operator": "shrink",
-   "fitness": 1.386675509151246,
-   "ir": 1.8349668856743837,
-   "alpha": 0.34811842955224076,
-   "alpha_t": 4.055761628952218,
+   "fingerprint": "bd7aa7e49bd59277",
+   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.491), ite(add(sigmoid(peer_beta), m_credit_chg), div(m_credit_chg, ite(add(-2.481, peer_rel_mom_21), peer_rel_vol, ite(add(0.5117, mom_63), div(amihud_21, -0.54), downside_vol_63))), downside_vol_63))|k=30|rb=21|w=score",
+   "operator": "params",
+   "fitness": 1.3967962054863157,
+   "ir": 1.8350875816019996,
+   "alpha": 0.3490793554770573,
+   "alpha_t": 4.052092878619979,
    "folds_positive": 1.0,
    "worst_fold": 0.028996675743518257,
    "dsr": null,
    "pbo": null,
-   "corr": 0.6928062809012727,
-   "turnover": 9.892662024370205,
+   "corr": 0.6909921305285004,
+   "turnover": 9.892662017850942,
    "trades": 2724,
    "stress_alpha": null,
    "null_pct": null,
@@ -629,19 +629,19 @@
    "promoted": false
   },
   {
-   "fingerprint": "46ceb396b0f359ae",
-   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.1716), pct_52w_high), rank(downside_vol_63))|k=15|rb=21|w=score",
-   "operator": "params",
-   "fitness": 1.3785705606167156,
-   "ir": 1.9215386588294225,
-   "alpha": 0.32302841728351694,
-   "alpha_t": 4.594905349745888,
+   "fingerprint": "ab98d720b0722a85",
+   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), ite(add(sigmoid(sub(0.2557, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.1609), pct_52w_high), rank(downside_vol_63))|k=15|rb=21|w=score",
+   "operator": "jitter",
+   "fitness": 1.3788348823268382,
+   "ir": 1.9217974030112361,
+   "alpha": 0.323060664359473,
+   "alpha_t": 4.5964670064392905,
    "folds_positive": 1.0,
-   "worst_fold": 0.00480275573978913,
+   "worst_fold": 0.004802755739788237,
    "dsr": null,
    "pbo": null,
-   "corr": 0.7566943714140276,
-   "turnover": 13.167489571403312,
+   "corr": 0.7567825832386329,
+   "turnover": 13.16740033095037,
    "trades": 1500,
    "stress_alpha": null,
    "null_pct": null,
@@ -709,6 +709,26 @@
    "promoted": false
   },
   {
+   "fingerprint": "ef0d93c4fbaa7d05",
+   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.491), ite(add(sigmoid(peer_beta), m_credit_chg), div(m_credit_chg, ite(add(-2.481, peer_rel_mom_21), peer_rel_vol, ite(add(0.5117, mom_63), div(amihud_21, -0.54), downside_vol_63))), ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.1495), rank(downside_vol_63))))|k=30|rb=21|w=score",
+   "operator": "crossover",
+   "fitness": 1.2856736617686075,
+   "ir": 1.8390141349786442,
+   "alpha": 0.33529215270944146,
+   "alpha_t": 3.9751226670160236,
+   "folds_positive": 1.0,
+   "worst_fold": 0.028996675743518257,
+   "dsr": null,
+   "pbo": null,
+   "corr": 0.695295657915887,
+   "turnover": 9.813447571360589,
+   "trades": 2724,
+   "stress_alpha": null,
+   "null_pct": null,
+   "null_mean_ir": null,
+   "promoted": false
+  },
+  {
    "fingerprint": "ca38ed7d03c4e20f",
    "expression": "ite(add(sigmoid(sub(rank(m_oil), peer_beta)), ma_ratio_10), div(m_credit_chg, -0.0023), rank(downside_vol_63))|k=50|rb=21|w=score",
    "operator": "wrap",
@@ -749,40 +769,20 @@
    "promoted": false
   },
   {
-   "fingerprint": "41e2eccb24f02442",
-   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.2768), ite(add(sigmoid(sub(m_oil, peer_beta)), m_credit_chg), div(m_credit_chg, ite(add(abs(log1p(m_mkt_mom)), obv_slope_21), div(m_credit_chg, -0.2738), ite(add(sigmoid(sub(m_oil, peer_beta)), m_credit_chg), min(m_breadth, -1.564), downside_vol_63))), downside_vol_63))|k=30|rb=21|w=score",
-   "operator": "params",
-   "fitness": 1.2425875445577832,
-   "ir": 1.8082834110405108,
-   "alpha": 0.2884556266516167,
-   "alpha_t": 4.329111903366736,
+   "fingerprint": "76e5192313d617fa",
+   "expression": "ite(add(sigmoid(sub(m_oil, peer_beta)), neg(intraday_range)), div(m_credit_chg, -0.2945), ite(add(sigmoid(sub(m_oil, peer_beta)), m_credit_chg), div(m_credit_chg, ite(add(abs(log1p(m_mkt_mom)), obv_slope_21), div(m_credit_chg, -0.2738), ite(add(sigmoid(sub(m_oil, peer_beta)), m_credit_chg), min(m_breadth, -1.564), downside_vol_63))), downside_vol_63))|k=30|rb=21|w=score",
+   "operator": "jitter",
+   "fitness": 1.244689679657025,
+   "ir": 1.8103731049102252,
+   "alpha": 0.28924501909990885,
+   "alpha_t": 4.331429478781596,
    "folds_positive": 1.0,
    "worst_fold": 0.028996675743518257,
    "dsr": null,
    "pbo": null,
-   "corr": 0.7669554606886149,
-   "turnover": 10.49113386372364,
+   "corr": 0.7667679746844382,
+   "turnover": 10.4909348040512,
    "trades": 2761,
-   "stress_alpha": null,
-   "null_pct": null,
-   "null_mean_ir": null,
-   "promoted": false
-  },
-  {
-   "fingerprint": "bf0dd9c823526955",
-   "expression": "ite(add(sigmoid(sub(rank(atr_14), peer_beta)), ma_ratio_10), div(m_credit_chg, -0.0023), downside_vol_63)|k=30|rb=10|w=score",
-   "operator": "subtree",
-   "fitness": 1.1857128624734607,
-   "ir": 1.3057128624734606,
-   "alpha": 0.2831897912375666,
-   "alpha_t": 2.1001290749240313,
-   "folds_positive": 1.0,
-   "worst_fold": 0.021516812818526757,
-   "dsr": null,
-   "pbo": null,
-   "corr": 0.5300971209353659,
-   "turnover": 7.803936379633093,
-   "trades": 5130,
    "stress_alpha": null,
    "null_pct": null,
    "null_mean_ir": null,
