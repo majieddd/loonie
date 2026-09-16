@@ -24,6 +24,7 @@ import json
 from datetime import datetime, timezone
 
 
+from . import orchestrator, registry
 from .config import ROOT, resolve
 
 OUT = "docs/data"
@@ -77,6 +78,7 @@ def build_snapshot(cfg) -> dict:
         "demoted_count": len(ev.get("demoted") or []),
         "null_summary": ev.get("null_summary") or {},
         "operators": ev.get("operator_table") or {},
+        "features": ev.get("feature_table") or {},
     }
 
     # ---- the promotion gate, as a pass/fail board ------------------------
@@ -207,8 +209,17 @@ def build_snapshot(cfg) -> dict:
         })
     arms.sort(key=lambda r: -r["cumulative"])
 
+    # ---- who is running right now ----------------------------------------
+    # Liveness is inferred from heartbeat age, never from a self-reported flag:
+    # a hung or SIGKILLed process leaves "running: true" behind forever but
+    # cannot fake a fresh timestamp.
+    workers = registry.summary()
+    vhist = orchestrator.validation_history()
+
     return {
         "generated_at": _now(),
+        "workers": workers,
+        "validation_history": vhist[-40:],
         "search": search,
         "gates": gates,
         "leader": _strategy(leader) if leader else None,

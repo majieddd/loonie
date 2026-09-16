@@ -283,3 +283,36 @@ FEATURE_NAMES = [
     "clv", "gap", "intraday_range", "close_strength", "beta_126",
     "idio_vol_126", "rel_strength_63",
 ]
+
+
+# =============================================================================
+#  Feature families
+# =============================================================================
+# The operator bandit in evolve.py learns which EDITS help. This grouping lets
+# a second bandit learn which INPUTS generalise forward -- credited by whether
+# strategies containing them survive the held-back validation tail. That is a
+# level above operator credit: the search adapting what it looks at, not just
+# how it mutates.
+FAMILIES = {
+    "momentum": ("mom_", "mom_12_1", "rel_strength"),
+    "reversal": ("rev_", "ma_ratio_", "bollinger", "pct_52w"),
+    "volatility": ("vol_", "downside_vol", "atr_", "drawdown_", "skew_", "kurt_"),
+    "volume": ("dollar_vol", "vol_surge", "amihud", "obv_"),
+    "oscillator": ("rsi_", "macd_", "ts_rank_"),
+    "microstructure": ("clv", "gap", "intraday_range", "close_strength"),
+    "market_relative": ("beta_", "idio_vol"),
+    "macro": ("m_",),
+}
+
+
+def family_of(name: str) -> str:
+    """Which family a terminal belongs to. Unknown names land in 'other'."""
+    for fam, prefixes in FAMILIES.items():
+        for pre in prefixes:
+            if name.startswith(pre) or name == pre.rstrip("_"):
+                return fam
+    return "other"
+
+
+def family_map(names) -> dict:
+    return {n: family_of(n) for n in names}

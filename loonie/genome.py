@@ -334,6 +334,20 @@ class Genome:
     def complexity(self) -> int:
         return self.expr.size()
 
+    def feature_names(self) -> list:
+        """Every feature terminal this expression actually reads.
+
+        Used to credit feature families by whether the strategies built from
+        them survive forward validation.
+        """
+        out, stack = [], [self.expr]
+        while stack:
+            n = stack.pop()
+            if isinstance(n, Feat):
+                out.append(n.name)
+            stack.extend(n.children())
+        return out
+
     # ---------------------------------------------------------------- serdes
     def to_dict(self):
         return {
@@ -379,11 +393,28 @@ class Grammar:
         self.features = list(feature_names)
         self.rng = rng
         self.max_depth = max_depth
+        self._p = None          # per-feature sampling probabilities, or None
+
+    def set_feature_weights(self, family_weights: dict, family_of: dict):
+        """Bias terminal sampling toward families that generalise forward.
+
+        `family_weights` is a Thompson draw per family from evolve.FeatureBandit.
+        Every feature keeps a non-zero probability -- a family that stops
+        working is proposed less, never banned, so it can return if the regime
+        changes and it starts surviving again.
+        """
+        if not family_weights:
+            self._p = None
+            return
+        w = np.array([max(1e-6, float(family_weights.get(
+            family_of.get(f, "other"), 1.0))) for f in self.features])
+        total = w.sum()
+        self._p = (w / total) if total > 0 else None
 
     # ---------------------------------------------------------------- sample
     def terminal(self) -> Node:
         if self.rng.random() < 0.88:
-            return Feat(str(self.rng.choice(self.features)))
+            return Feat(str(self.rng.choice(self.features, p=self._p)))
         return Const(round(float(self.rng.normal(0, 1.5)), 4))
 
     def random_expr(self, depth=0, p_terminal=None) -> Node:
@@ -455,7 +486,7 @@ class Grammar:
         i = int(self.rng.integers(len(sites)))
         node = sites[i][0]
         if isinstance(node, Feat):
-            new = Feat(str(self.rng.choice(self.features)))
+            new = Feat(str(self.rng.choice(self.features, p=self._p)))
         elif isinstance(node, Const):
             new = Const(round(float(node.value + self.rng.normal(0, 0.5)), 4))
         elif isinstance(node, Bin):

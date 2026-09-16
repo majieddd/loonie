@@ -1,80 +1,115 @@
 {
-  "cash": 10435.009884999989,
+  "cash": 0.0,
   "positions": {
-    "BKNG": {
-      "qty": 34.213856807386314,
-      "avg_price": 175.4376811065674,
-      "market_price": 175.35000610351562
-    },
     "BKR": {
       "qty": 105.66044608982102,
       "avg_price": 56.80838877868651,
-      "market_price": 56.779998779296875
-    },
-    "CEG": {
-      "qty": 20.896661930484473,
-      "avg_price": 264.70229232788085,
-      "market_price": 264.57000732421875
-    },
-    "DLTR": {
-      "qty": 50.34320795654247,
-      "avg_price": 119.22958316802979,
-      "market_price": 119.16999816894531
+      "market_price": 56.720001220703125
     },
     "LRCX": {
       "qty": 21.936451841833936,
       "avg_price": 273.62673522949217,
-      "market_price": 273.489990234375
+      "market_price": 270.8699951171875
     },
     "MU": {
       "qty": 6.492646136798327,
       "avg_price": 924.4920443115234,
-      "market_price": 924.030029296875
+      "market_price": 927.5999755859375
     },
     "SNDK": {
       "qty": 3.8656177151593587,
       "avg_price": 1552.7659852294921,
-      "market_price": 1551.989990234375
+      "market_price": 1530.89501953125
     },
     "AMGN": {
       "qty": 15.725819134993445,
       "avg_price": 381.69075,
-      "market_price": 381.5
+      "market_price": 375.6499938964844
     },
     "CASY": {
-      "qty": 9.651389362104492,
+      "qty": 3.621044921686689e-07,
       "avg_price": 621.9207903442383,
-      "market_price": 621.6099853515625
+      "market_price": 587.1400146484375
     },
     "COO": {
-      "qty": 110.64920444356639,
+      "qty": 4.4356639250509033e-07,
       "avg_price": 54.247111221313475,
-      "market_price": 54.220001220703125
+      "market_price": 53.27000045776367
     },
     "HWM": {
       "qty": 26.413947391474693,
       "avg_price": 227.24356988525392,
-      "market_price": 227.1300048828125
+      "market_price": 224.6699981689453
     },
     "KLAC": {
       "qty": 35.4805141045214,
       "avg_price": 169.17454133605958,
-      "market_price": 169.08999633789062
+      "market_price": 168.02000427246094
     },
     "NRG": {
-      "qty": 55.30930148874124,
+      "qty": 4.887412430321092e-07,
       "avg_price": 108.52423622131347,
-      "market_price": 108.47000122070312
-    },
-    "ORCL": {
-      "qty": 41.4351839090429,
-      "avg_price": 144.86238828277587,
-      "market_price": 144.7899932861328
+      "market_price": 105.98999786376953
     },
     "VRT": {
       "qty": 25.27233672616795,
       "avg_price": 237.50869438934325,
-      "market_price": 237.38999938964844
+      "market_price": 234.61000061035156
+    },
+    "AAPL": {
+      "qty": 14.085139287684315,
+      "avg_price": 331.50566633605956,
+      "market_price": 331.3399963378906
+    },
+    "ABBV": {
+      "qty": 17.742434034338075,
+      "avg_price": 263.17152854919436,
+      "market_price": 263.0400085449219
+    },
+    "ABNB": {
+      "qty": 27.726769230769232,
+      "avg_price": 168.40416732788086,
+      "market_price": 168.32000732421875
+    },
+    "ABT": {
+      "qty": 45.74115510963806,
+      "avg_price": 102.08101377868653,
+      "market_price": 102.02999877929688
+    },
+    "ACGL": {
+      "qty": 48.09326005739185,
+      "avg_price": 97.08852091598511,
+      "market_price": 97.04000091552734
+    },
+    "ACN": {
+      "qty": 24.131179665382795,
+      "avg_price": 193.49669389343262,
+      "market_price": 193.39999389648438
+    },
+    "ADBE": {
+      "qty": 18.105872994975304,
+      "avg_price": 257.88888977050783,
+      "market_price": 257.760009765625
+    },
+    "ADI": {
+      "qty": 12.915372689001858,
+      "avg_price": 361.5306811065674,
+      "market_price": 361.3500061035156
+    },
+    "ADM": {
+      "qty": 53.88488589205953,
+      "avg_price": 86.65330561065674,
+      "market_price": 86.61000061035156
+    },
+    "ADP": {
+      "qty": 16.87690312299457,
+      "avg_price": 276.66826377868654,
+      "market_price": 276.5299987792969
+    },
+    "ADSK": {
+      "qty": 17.34714852223563,
+      "avg_price": 226.61325,
+      "market_price": 226.5
     }
   },
   "blotter": [
@@ -413,7 +448,295 @@
       "note": "target 0.060 from 0.000",
       "fee": 0.0,
       "at": "2026-09-15T08:00:33+00:00"
+    },
+    {
+      "symbol": "BKNG",
+      "side": "sell",
+      "qty": 34.213857,
+      "type": "market",
+      "tif": "day",
+      "notional": null,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 34.213856807386314,
+      "filled_price": 171.23434732055665,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.000 from 0.060",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "CASY",
+      "side": "sell",
+      "qty": 9.651389,
+      "type": "market",
+      "tif": "day",
+      "notional": null,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 9.651389,
+      "filled_price": 586.8464446411133,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.000 from 0.058",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "CEG",
+      "side": "sell",
+      "qty": 20.896662,
+      "type": "market",
+      "tif": "day",
+      "notional": null,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 20.896661930484473,
+      "filled_price": 259.76006964111326,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.000 from 0.055",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "COO",
+      "side": "sell",
+      "qty": 110.649204,
+      "type": "market",
+      "tif": "day",
+      "notional": null,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 110.649204,
+      "filled_price": 53.24336545753479,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.000 from 0.060",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "DLTR",
+      "side": "sell",
+      "qty": 50.343208,
+      "type": "market",
+      "tif": "day",
+      "notional": null,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 50.34320795654247,
+      "filled_price": 112.73360591506957,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.000 from 0.058",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "NRG",
+      "side": "sell",
+      "qty": 55.309301,
+      "type": "market",
+      "tif": "day",
+      "notional": null,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 55.309301,
+      "filled_price": 105.93700286483765,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.000 from 0.060",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ORCL",
+      "side": "sell",
+      "qty": 41.435184,
+      "type": "market",
+      "tif": "day",
+      "notional": null,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 41.4351839090429,
+      "filled_price": 140.27983110046387,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.000 from 0.059",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 14.085139287684315,
+      "filled_price": 331.50566633605956,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ABBV",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 17.742434034338075,
+      "filled_price": 263.17152854919436,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ABNB",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 27.726769230769232,
+      "filled_price": 168.40416732788086,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ABT",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 45.74115510963806,
+      "filled_price": 102.08101377868653,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ACGL",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 48.09326005739185,
+      "filled_price": 97.08852091598511,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ACN",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 24.131179665382795,
+      "filled_price": 193.49669389343262,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ADBE",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 18.105872994975304,
+      "filled_price": 257.88888977050783,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ADI",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 12.915372689001858,
+      "filled_price": 361.5306811065674,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ADM",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 53.88488589205953,
+      "filled_price": 86.65330561065674,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ADP",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 16.87690312299457,
+      "filled_price": 276.66826377868654,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "target 0.048 from 0.000",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
+    },
+    {
+      "symbol": "ADSK",
+      "side": "buy",
+      "qty": 0.0,
+      "type": "market",
+      "tif": "day",
+      "notional": 4666.97,
+      "client_id": "",
+      "status": "filled",
+      "filled_qty": 17.34714852223563,
+      "filled_price": 226.61325,
+      "submitted_at": "2026-09-16T06:38:22+00:00",
+      "note": "downsized to available cash",
+      "fee": 0.0,
+      "at": "2026-09-16T06:38:22+00:00"
     }
   ],
-  "updated": "2026-09-15T08:00:33+00:00"
+  "updated": "2026-09-16T06:38:22+00:00"
 }

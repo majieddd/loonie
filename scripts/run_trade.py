@@ -29,7 +29,8 @@ if hasattr(sys.stdout, "reconfigure"):
 import numpy as np  # noqa: E402
 
 from loonie import (allocator as alloc_mod, config, data, evolve,  # noqa: E402
-                    features, notify, portfolio, publish, risk, universe)
+                    features, notify, portfolio, publish, registry,
+                    risk, universe)
 from loonie.broker import get_broker  # noqa: E402
 from loonie.genome import Genome  # noqa: E402
 
@@ -141,6 +142,8 @@ def build_report(target, orders, account, decision, strategies, alloc, live):
 
 
 def session(cfg, args) -> int:
+    hb = registry.Worker("trade", "trade", "paper execution")
+    hb.beat(status="running", detail="loading market data")
     uni = universe.Universe.load(cfg)
     panel = data.load_panel(cfg, uni, progress=False)
     feats = features.build(panel)
@@ -228,6 +231,15 @@ def session(cfg, args) -> int:
         publish.publish(cfg)
     except Exception as e:
         print("[publish] skipped: %s: %s" % (type(e).__name__, e))
+
+    hb.beat(status="idle",
+            detail="%d orders, %d positions, equity $%s"
+                   % (len(orders), len(account.positions),
+                      format(account.equity, ",.2f")),
+            equity=round(account.equity, 2),
+            positions=len(account.positions),
+            orders=len(orders),
+            halted=bool(decision.halt))
 
     if cfg.report.enabled:
         p = notify.write_report("trade", build_report(

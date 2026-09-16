@@ -44,7 +44,7 @@ if hasattr(sys.stdout, "reconfigure"):
 import numpy as np  # noqa: E402
 
 from loonie import (backtest as bt, config, cv, data, evolve, features,  # noqa: E402
-                    metrics, notify, seal, universe)
+                    metrics, notify, registry, seal, universe)
 from loonie.genome import Genome  # noqa: E402
 
 TD = 252.0
@@ -99,6 +99,8 @@ def honest_walkforward(cfg, train, feats, bench, sl, a):
     edges = np.linspace(0, T, a.segments + 1).astype(int)
     rows, chained, chained_bench = [], [], []
 
+    hb = registry.Worker("validate", "validate", "honest walk-forward")
+    hb.beat(status="running", detail="fresh search per segment, past data only")
     print("  mode       HONEST — a fresh search per segment, past data only")
     print("  cost       %d searches x %d genomes; this takes a while"
           % (a.segments - 1, a.pop * a.gens))
@@ -146,6 +148,12 @@ def honest_walkforward(cfg, train, feats, bench, sl, a):
             "strat": ann(res.ret[:n]), "bench": ann(b[:n]),
             "excess": ann(res.ret[:n]) - ann(b[:n]),
         })
+        hb.beat(status="running",
+                detail="segment %d/%d — %s to %s" % (s + 1, a.segments,
+                                                      rows[-1]["from"], rows[-1]["to"]),
+                progress=s / max(1, a.segments - 1),
+                segments_done=len(rows),
+                last_excess=round(rows[-1]["excess"], 4))
         print("  seg %d  searched %d sessions, traded %s -> %s   %+7.2f%% vs %+7.2f%%"
               % (s + 1, train_hi, rows[-1]["from"], rows[-1]["to"],
                  100 * rows[-1]["strat"], 100 * rows[-1]["bench"]), flush=True)
@@ -153,7 +161,9 @@ def honest_walkforward(cfg, train, feats, bench, sl, a):
     if not rows:
         print("  not enough history to chain an honest walk-forward")
         return 1
-    return _report(rows, chained, chained_bench, sl, a.pop * a.gens, "honest")
+    rc = _report(rows, chained, chained_bench, sl, a.pop * a.gens, "honest")
+    hb.done("%d segments chained" % len(rows))
+    return rc
 
 
 def _report(rows, chained, chained_bench, sl, n_trials, mode):

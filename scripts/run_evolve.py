@@ -28,7 +28,7 @@ if hasattr(sys.stdout, "reconfigure"):
 import numpy as np  # noqa: E402
 
 from loonie import (config, data, evolve, features, notify, publish,  # noqa: E402
-                    seal, universe)
+                    registry, seal, universe)
 
 
 def build_report(ev: evolve.Evolver, panel) -> str:
@@ -159,11 +159,29 @@ def main() -> int:
 
     gens = a.generations or int(cfg.evolve.generations)
     n_done = 0
+    hb = registry.Worker("search", "search", "genetic program")
+    hb.beat(status="running", detail="seeding population")
     try:
         while True:
-            ev.step()
+            rec = ev.step()
             ev.save()
             n_done += 1
+
+            hb.beat(
+                status="running",
+                detail="gen %d | fit %+.3f | IR %+.2f | alpha t %+.2f"
+                       % (ev.generation, rec["best_fitness"], rec["best_ir"],
+                          rec["best_alpha_t"]),
+                progress=(n_done / gens) if not a.daemon and gens else None,
+                generation=ev.generation, trials=ev.trials,
+                trials_effective=rec.get("trials_effective"),
+                best_fitness=round(rec["best_fitness"], 4),
+                best_alpha_t=round(rec["best_alpha_t"], 3),
+                best_dsr=round(rec["best_dsr"], 3),
+                archive_cells=rec["archive_cells"],
+                promoted=len(ev.hall_of_fame),
+                demoted=len(getattr(ev, "demoted", [])),
+                seconds_per_gen=rec["seconds"])
 
             # Feed the dashboard. Cheap (a few hundred KB of JSON); the git
             # push, if enabled, is throttled inside publish_dashboard.py so a

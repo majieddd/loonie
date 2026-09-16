@@ -8,14 +8,6 @@
   Ctrl-C to stop
 
 
-  PUBLIC URL  https://mag-refrigerator-diamonds-psp.trycloudflare.com
+  PUBLIC URL  https://remained-exhibit-sunny-mills.trycloudflare.com
   (random, changes on restart; anyone with it can view)
 
-[serve] 404 /.env
-[serve] 404 /.env
-[serve] 404 /.env
-[serve] 404 /.env
-[serve] 404 /config.yaml
-[serve] 404 /config.yaml
-[serve] 404 /state/evolve_state.json
-[serve] 404 /state/evolve_state.json

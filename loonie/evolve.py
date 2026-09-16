@@ -197,6 +197,71 @@ class NullModel:
         }
 
 
+class FeatureBandit:
+    """Which INPUTS generalise forward — one level above the operator bandit.
+
+    The operator bandit learns which edits produce children that beat their
+    parent. It is blind to what those children are made of. This learns the
+    other half: for each feature family, a Beta posterior over "did strategies
+    built from me survive the held-back forward tail?"
+
+    The credit signal is deliberately forward validation and not fitness.
+    Crediting on fitness would just re-learn whatever the fitness function
+    already rewards, and the measured failure that prompted this whole layer
+    was a leader with alpha t 4.07 on full-window CV and 0.10 forward. Families
+    that look good in-sample and evaporate out of sample must be pushed down,
+    which only works if the credit comes from the window fitness cannot see.
+
+    Weights are sampled by Thompson draw and applied when the grammar picks a
+    terminal, so a family that stops generalising gets proposed less often
+    without ever being banned — it keeps a tail of draws and can come back if
+    the regime changes.
+    """
+
+    def __init__(self, families, prior=(1.0, 1.0), floor=0.15):
+        self.families = sorted(set(families))
+        self.a = {f: prior[0] for f in self.families}
+        self.b = {f: prior[1] for f in self.families}
+        self.seen = {f: 0 for f in self.families}
+        self.survived = {f: 0 for f in self.families}
+        self.floor = floor        # never starve a family completely
+
+    def update(self, fams, survived: bool, weight: float = 1.0):
+        for f in set(fams):
+            if f not in self.a:
+                continue
+            self.seen[f] += 1
+            if survived:
+                self.a[f] += weight
+                self.survived[f] += 1
+            else:
+                self.b[f] += weight
+
+    def decay(self, factor=0.997):
+        for f in self.families:
+            self.a[f] = 1.0 + (self.a[f] - 1.0) * factor
+            self.b[f] = 1.0 + (self.b[f] - 1.0) * factor
+
+    def weights(self, rng) -> dict:
+        """Thompson draw per family, floored so nothing is ever unreachable."""
+        return {f: self.floor + (1.0 - self.floor) * float(rng.beta(self.a[f], self.b[f]))
+                for f in self.families}
+
+    def table(self):
+        return {f: {"posterior_mean": self.a[f] / (self.a[f] + self.b[f]),
+                    "seen": self.seen[f], "survived": self.survived[f],
+                    "rate": self.survived[f] / max(1, self.seen[f])}
+                for f in self.families}
+
+    def to_dict(self):
+        return {"a": self.a, "b": self.b, "seen": self.seen,
+                "survived": self.survived}
+
+    def load(self, d):
+        for k in ("a", "b", "seen", "survived"):
+            getattr(self, k).update(d.get(k, {}))
+
+
 class OperatorBandit:
     """Thompson sampling over mutation operators, credited by OOS survival."""
 
@@ -259,6 +324,9 @@ class Evolver:
         self.grammar = Grammar(list(feats.keys()), self.rng,
                                int(cfg.evolve.max_tree_depth))
         self.bandit = OperatorBandit(Grammar.ALL_OPERATORS)
+        from . import features as featmod
+        self.family_of = featmod.family_map(list(feats.keys()))
+        self.features = FeatureBandit(set(self.family_of.values()))
         self.archive = MapElites()
         self.null = NullModel()
 
@@ -539,6 +607,12 @@ class Evolver:
             v = self.validate(ev.genome)
             ev.cv.update(v)
             if np.isfinite(v.get("val_alpha", np.nan)):
+                # Credit the families this genome is built from by whether it
+                # actually held up on the window fitness never saw.
+                self.features.update(
+                    [self.family_of.get(n, "other")
+                     for n in ev.genome.feature_names()],
+                    survived=v["val_alpha"] > 0)
                 checks.append(metrics.summarize_gate(
                     "forward_alpha", v["val_alpha"], ">=",
                     float(g.get("min_forward_alpha", 0.0))))
@@ -766,6 +840,10 @@ class Evolver:
         self.generation += 1
         n = int(self.cfg.evolve.population)
 
+        # Re-draw the terminal weights so the grammar proposes from families
+        # that have been surviving forward validation.
+        self.grammar.set_feature_weights(
+            self.features.weights(self.rng), self.family_of)
         self.sample_null(int(self.cfg.evolve.get("null_samples_per_gen", 12)))
         children = self.breed(n)
         merged = self.population + children
@@ -800,6 +878,7 @@ class Evolver:
                 have.add(e.genome.fingerprint)
         self.population = sorted(chosen, key=lambda e: -e.fitness)
         self.bandit.decay()
+        self.features.decay()
 
         # ---- promotion test on the current leader ------------------------
         top = self.population[0]
@@ -904,6 +983,8 @@ class Evolver:
             "stall": self.stall,
             "bandit": self.bandit.to_dict(),
             "operator_table": self.bandit.table(),
+            "feature_bandit": self.features.to_dict(),
+            "feature_table": self.features.table(),
             "null_summary": self.null.summary(),
             "null_pool": {"fitness": self.null.fitness[-1500:],
                           "ir": self.null.ir[-1500:],
@@ -935,6 +1016,7 @@ class Evolver:
         bf = d.get("best_fitness")
         self.best_fitness = float(bf) if bf is not None else -np.inf
         self.bandit.load(d.get("bandit", {}))
+        self.features.load(d.get("feature_bandit", {}))
         np_pool = d.get("null_pool", {})
         self.null.fitness = list(np_pool.get("fitness", []))
         self.null.ir = list(np_pool.get("ir", []))

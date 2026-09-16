@@ -1,8 +1,8 @@
 {
   "equity_high_water": 100000.0,
-  "day": "2026-09-15",
-  "day_start_equity": 100000.0,
-  "orders_today": 21,
+  "day": "2026-09-16",
+  "day_start_equity": 98252.05843488273,
+  "orders_today": 27,
   "halted": false,
   "halt_reason": "",
   "halted_at": "",

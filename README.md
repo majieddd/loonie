@@ -181,12 +181,14 @@ loonie/
   portfolio.py   target book -> orders, position caps, no-trade band
   risk.py        latching kill switches
   macro.py       16 causal regime series (VIX, curve, credit, breadth)
+  registry.py    per-worker heartbeats; liveness from timestamp age
+  orchestrator.py  supervisor: five jobs, staggered, restarted on death
   publish.py     JSON snapshot the dashboard reads
   broker/        paper (local) + Alpaca (paper/live)
 scripts/
   fetch_data.py  run_evolve.py  run_trade.py
   evaluate_holdout.py  status.py  clear_halt.py
-  walkforward.py serve.py
+  walkforward.py serve.py  run_system.py
   publish_dashboard.py  setup_pages.sh  install_scheduler.ps1
 docs/
   index.html     the dashboard (static; GitHub Pages)
@@ -211,6 +213,63 @@ count written down, instead of once at the end.
 
 Not investment advice. Backtested results are hypothetical. Paper trade for a
 long time.
+
+---
+
+## Running the whole system
+
+```bash
+python scripts/run_system.py --serve --tunnel
+```
+
+One supervisor, five jobs, each with a heartbeat:
+
+| job | cadence | what |
+|---|---|---|
+| `search` | continuous | genetic program; restarted with backoff if it dies |
+| `data` | every 6h | price and macro tails, incremental |
+| `validate` | every 8h | **honest walk-forward of the current champion** |
+| `trade` | weekdays | one paper rebalance |
+| `publish` | every 60s | dashboard snapshot |
+
+`validate` is the one that matters. Until it was scheduled, the only test that
+ever caught anything was something a person had to remember to type — the
+wrong shape for a system whose entire claim is that it improves itself. Its
+results accumulate in `state/validation_history.json`, which is what turns
+*"the search got a better score"* into *"the procedure did or did not keep
+working"*. Those are different claims, and this project has now confused them
+twice.
+
+First runs are staggered (data +60s, trade +5m, validate +15m) so the
+twenty-minute validation is not competing with the search for cores at the one
+moment the search can least spare them.
+
+**Live activity on the dashboard.** Every worker writes a heartbeat to
+`state/workers/<id>.json` — one file per worker, atomically replaced, no lock.
+A shared registry written by five processes needs a lock, and a lock held by a
+process that gets killed mid-write leaves the dashboard reading half a JSON
+object forever. Liveness is inferred from heartbeat *age*, never from a
+self-reported flag: a hung or SIGKILLed process leaves `running: true` behind
+forever but cannot fake a fresh timestamp.
+
+## The search learns which inputs generalise
+
+Two bandits now run, at different levels:
+
+- **operator bandit** — which *edits* produce children that beat their parent
+- **feature bandit** — which *input families* produce strategies that survive
+  the held-back forward tail
+
+The second is credited on forward validation rather than fitness, deliberately.
+Crediting on fitness would only re-learn what fitness already rewards, and the
+failure that prompted this layer was a leader with alpha t **4.07** in-sample
+and **0.10** forward. Families that look good in-sample and evaporate out of
+sample have to be pushed *down*, which only works if the credit signal comes
+from the window fitness cannot see.
+
+Weights are Thompson draws with a floor, so a family that stops generalising is
+proposed less often but never banned — it keeps a tail of draws and can return
+if the regime changes.
 
 ---
 
