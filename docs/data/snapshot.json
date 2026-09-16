@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-09-16T23:58:32+00:00",
+ "generated_at": "2026-09-16T23:59:32+00:00",
  "workers": {
   "workers": [
    {
     "id": "search",
     "kind": "search",
     "label": "genetic program",
-    "started_at": "2026-09-16T23:56:11+00:00",
+    "started_at": "2026-09-16T23:58:40+00:00",
     "status": "running",
     "detail": "seeding population",
     "progress": null,
@@ -14,10 +14,10 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T23:56:11+00:00",
-    "heartbeat_epoch": 1789602971.3124096,
+    "heartbeat": "2026-09-16T23:58:40+00:00",
+    "heartbeat_epoch": 1789603120.7996418,
     "uptime_s": 0.0,
-    "heartbeat_age_s": 141.2,
+    "heartbeat_age_s": 51.8,
     "liveness": "live"
    },
    {
@@ -26,19 +26,19 @@
     "label": "system supervisor",
     "started_at": "2026-09-16T23:53:32+00:00",
     "status": "supervising",
-    "detail": "running: search, trade, publish",
+    "detail": "running: search, publish",
     "progress": null,
     "metrics": {
-     "jobs_running": 3,
-     "failures": 5,
-     "code_reloads": 3
+     "jobs_running": 2,
+     "failures": 6,
+     "code_reloads": 4
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T23:58:32+00:00",
-    "heartbeat_epoch": 1789603112.343709,
-    "uptime_s": 300.2,
+    "heartbeat": "2026-09-16T23:59:32+00:00",
+    "heartbeat_epoch": 1789603172.3758726,
+    "uptime_s": 360.2,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -57,7 +57,30 @@
     "heartbeat": "2026-09-16T20:01:40+00:00",
     "heartbeat_epoch": 1789588900.3752224,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 14212.2,
+    "heartbeat_age_s": 14272.2,
+    "liveness": "finished"
+   },
+   {
+    "id": "trade",
+    "kind": "trade",
+    "label": "paper execution",
+    "started_at": "2026-09-16T23:58:33+00:00",
+    "status": "finished",
+    "detail": "23 orders, 22 positions, equity $97,800.25",
+    "progress": 1.0,
+    "metrics": {
+     "equity": 97800.25,
+     "positions": 22,
+     "orders": 23,
+     "halted": false
+    },
+    "cycle": 0,
+    "errors": 0,
+    "last_error": "",
+    "heartbeat": "2026-09-16T23:59:08+00:00",
+    "heartbeat_epoch": 1789603148.748595,
+    "uptime_s": 35.1,
+    "heartbeat_age_s": 23.8,
     "liveness": "finished"
    },
    {
@@ -78,14 +101,14 @@
     "heartbeat": "2026-09-16T23:50:49+00:00",
     "heartbeat_epoch": 1789602649.5047596,
     "uptime_s": 213.9,
-    "heartbeat_age_s": 463.0,
+    "heartbeat_age_s": 523.1,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-16T23:58:32+00:00"
+  "updated": "2026-09-16T23:59:32+00:00"
  },
  "experience": {
   "rows": 2385,
@@ -155,7 +178,7 @@
    "forward_rate": 1.0,
    "mean_fwd_alpha": 0.0013222162638455376,
    "labelled": 11,
-   "cycles": 11,
+   "cycles": 12,
    "established": false
   },
   {
