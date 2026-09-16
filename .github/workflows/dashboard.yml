@@ -1,0 +1,120 @@
+name: Trade and publish dashboard
+
+# Two things happen here:
+#
+#   refresh  -- on a weekday schedule, restore the price cache, pull only the
+#               missing tail, run one PAPER rebalance, regenerate the dashboard
+#               data and commit it. This is what keeps the dashboard alive when
+#               the local machine is off.
+#   deploy   -- publish docs/ to GitHub Pages.
+#
+# The evolution search does NOT run here. It is CPU-bound and stateful, and a
+# six-hour job limit is the wrong shape for something meant to run for weeks.
+# It runs locally and pushes its own snapshots; this job covers the trading
+# side and guarantees the page never goes more than a day stale.
+#
+# PAPER ONLY. `trade.mode` ships as `paper` and no secret in this workflow can
+# change that -- live trading additionally requires a config edit and a CLI
+# flag that is never passed here.
+
+on:
+  schedule:
+    # Weekdays shortly after the US close. Two entries cover EST and EDT
+    # without needing to know which one is in force; the second is a no-op
+    # when the first already traded that day.
+    - cron: "15 20 * * 1-5"
+    - cron: "15 21 * * 1-5"
+  push:
+    branches: [main]
+    paths: ["docs/**", ".github/workflows/dashboard.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: dashboard
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      # 75 MB of parquet. Restoring it turns a ten-minute full download into a
+      # tail fetch of a few hundred small requests.
+      - name: Restore price cache
+        uses: actions/cache@v4
+        with:
+          path: data/cache
+          key: prices-${{ github.run_id }}
+          restore-keys: |
+            prices-
+
+      - name: Restore paper account
+        uses: actions/cache@v4
+        with:
+          path: state
+          key: paper-${{ github.run_id }}
+          restore-keys: |
+            paper-
+
+      - name: Refresh data
+        run: python scripts/fetch_data.py --provider yfinance
+        continue-on-error: true
+
+      - name: Paper rebalance
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_API_SECRET: ${{ secrets.ALPACA_API_SECRET }}
+          ALPACA_MODE: paper
+        run: python scripts/run_trade.py --flatten-on-halt
+        continue-on-error: true
+
+      - name: Publish dashboard data
+        run: python scripts/publish_dashboard.py
+
+      - name: Commit
+        run: |
+          git config user.name  "loonie-bot"
+          git config user.email "noreply@github.com"
+          git add docs/data
+          if git diff --cached --quiet; then
+            echo "no data changes"
+          else
+            git commit -m "data: scheduled refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase --autostash
+            git push
+          fi
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [refresh]
+    # Deploy on a plain push too, when `refresh` was skipped entirely.
+    if: always() && (needs.refresh.result == 'success' || needs.refresh.result == 'skipped')
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4

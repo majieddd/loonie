@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>loonie</title>
+
+<!--
+  Direction A (Swiss Monochrome) as the shell, with three grafts:
+
+    · from B  — the threshold-margin chart. Each gate drawn as
+                (value − threshold) / |threshold|, sign-flipped for <= gates so
+                right is always safer. It is the only transform that puts a
+                t-statistic, a trade count and three probabilities on one axis.
+
+    · from robinhood.com (measured 2026-09-16, not recalled) — the hierarchy.
+                Portfolio value is the one large number, at the top, weight 400.
+                Ground #000 and zero box-shadows are theirs too; both were
+                measured, and both happen to agree with A.
+
+    · from tradingview.com (measured 2026-09-16) — the working scale. Every
+                figure that is not the hero sits at 11–14px, separated by 1px
+                hairlines rather than cards. Up/down is #22AB94 / #F23645, a
+                teal-shifted pair that survives deuteranopia where pure
+                red/green collapses.
+
+  Motif: every quantity this system reports is a measured value against a
+  declared limit. One element — a rule, a threshold tick, a value mark —
+  is reused for the gates, the risk limits, the sealed holdout, the trial
+  deflation and the universe coverage.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#000; --panel:#0a0a0b; --line:#1f1f22; --line-2:#2e2e33;
+  --fg:#fff; --fg-2:#8d8d96; --fg-3:#82828c;
+  --up:#22ab94; --down:#f23645; --live:#ccff00; --warn:#e3a008;
+  --sans:"Geist",ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;border-radius:0}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font:400 14px/1.5 var(--sans);-webkit-font-smoothing:antialiased;
+     font-variant-numeric:tabular-nums}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+
+/* ── masthead ─────────────────────────────────────────────────────── */
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+     padding:20px 0 18px;border-bottom:1px solid var(--line)}
+.mark{font-size:19px;font-weight:500;letter-spacing:-.035em}
+.tag{font:400 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+     color:var(--fg-2);border:1px solid var(--line-2);padding:5px 8px}
+.top .sp{flex:1}
+.live{display:inline-flex;align-items:center;gap:7px;font:400 11px/1 var(--mono);
+      letter-spacing:.1em;text-transform:uppercase;color:var(--fg-2)}
+.dot{width:6px;height:6px;background:var(--live);display:block}
+.dot.stale{background:var(--warn)} .dot.dead{background:var(--down)}
+@media(prefers-reduced-motion:no-preference){
+  .dot{animation:blip 2.4s ease-in-out infinite}
+  @keyframes blip{0%,100%{opacity:1}50%{opacity:.25}}
+}
+
+/* ── hero: the one large number ───────────────────────────────────── */
+.hero{padding:44px 0 8px}
+.hero .lbl{font:400 11px/1 var(--mono);letter-spacing:.14em;
+           text-transform:uppercase;color:var(--fg-2)}
+.value{font-size:clamp(46px,7.4vw,76px);font-weight:300;letter-spacing:-.035em;
+       line-height:1.02;margin:14px 0 0;font-variant-numeric:tabular-nums}
+.delta{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+       margin-top:12px;font-size:16px}
+.delta .amt{font-weight:500}
+.delta .since{color:var(--fg-2);font:400 12px/1 var(--mono);letter-spacing:.04em}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--fg-2)}
+
+.spark{margin:26px 0 0;width:100%;height:132px;display:block}
+.spark-x{display:flex;justify-content:space-between;
+         font:400 11px/1 var(--mono);color:var(--fg-3);
+         padding-top:8px;border-top:1px solid var(--line)}
+
+/* ── stat strip ───────────────────────────────────────────────────── */
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+       border-top:1px solid var(--line);margin-top:34px}
+.stat{padding:16px 18px 18px;border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat .k{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+         color:var(--fg-2)}
+.stat .v{font-size:23px;font-weight:400;letter-spacing:-.02em;margin-top:9px}
+.stat .s{font:400 11px/1.4 var(--mono);color:var(--fg-3);margin-top:5px}
+
+/* ── sections ─────────────────────────────────────────────────────── */
+section{padding-top:56px}
+.head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+      padding-bottom:10px;border-bottom:1px solid var(--line-2)}
+.num{font:400 11px/1 var(--mono);color:var(--fg-3);letter-spacing:.1em}
+h2{font-size:20px;font-weight:400;letter-spacing:-.02em;margin:0}
+.head .note{margin-left:auto;font:400 11px/1 var(--mono);color:var(--fg-2);
+            letter-spacing:.06em;text-transform:uppercase}
+.lede{color:var(--fg-2);font-size:14.5px;max-width:68ch;margin:16px 0 26px}
+.lede b{color:var(--fg);font-weight:500}
+
+/* ── tables (tradingview working scale) ───────────────────────────── */
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font:400 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+   color:var(--fg-2);text-align:left;padding:0 12px 9px 0;
+   border-bottom:1px solid var(--line-2);white-space:nowrap}
+td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line);
+   white-space:nowrap;vertical-align:baseline}
+th.r,td.r{text-align:right;padding-right:0;padding-left:20px}
+tbody tr:hover{background:var(--panel)}
+.sym{font:500 13px/1 var(--mono);letter-spacing:.02em}
+.mono{font-family:var(--mono);font-size:12.5px}
+.dim{color:var(--fg-2)}
+.expr{font-family:var(--mono);font-size:11.5px;color:var(--fg-2);
+      white-space:normal;word-break:break-all;line-height:1.5;
+      max-width:430px;min-width:260px}
+.why{font-family:var(--mono);font-size:11px;color:var(--down);
+     white-space:normal;line-height:1.5;max-width:230px;padding-left:20px}
+
+/* ── gate: threshold-margin chart (from direction B) ──────────────── */
+.gate-row{display:grid;grid-template-columns:168px 88px 1fr 84px;
+          align-items:center;gap:14px;padding:11px 0;
+          border-bottom:1px solid var(--line)}
+.gate-row .name{font:400 12px/1.3 var(--mono);letter-spacing:.02em}
+.gate-row .rd{font:400 12.5px/1 var(--mono);text-align:right}
+.gate-row .mg{font:500 12px/1 var(--mono);text-align:right}
+.bar{position:relative;height:16px}
+.bar .axis{position:absolute;left:50%;top:-6px;bottom:-6px;width:1px;
+           background:var(--line-2)}
+.bar .fill{position:absolute;top:3px;height:10px;background:var(--up)}
+.bar .fill.bad{background:var(--down)}
+.bar .clip{position:absolute;top:0;width:9px;height:16px;
+           border-left:1px solid var(--bg);border-right:1px solid var(--bg);
+           background:repeating-linear-gradient(115deg,var(--bg) 0 2px,transparent 2px 4px)}
+.gate-scale{display:flex;justify-content:space-between;
+            font:400 11px/1 var(--mono);color:var(--fg-3);
+            letter-spacing:.08em;padding-top:10px}
+.fail-row{background:rgba(242,54,69,.07)}
+.void-row .name,.void-row .rd{color:var(--fg-3)}
+
+/* ── misc ─────────────────────────────────────────────────────────── */
+.grid2{display:grid;gap:34px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:9px 0;
+    border-bottom:1px solid var(--line);font-size:13px}
+.kv .k{color:var(--fg-2);font-family:var(--mono);font-size:12px}
+.kv .v{font-family:var(--mono);font-size:12.5px;text-align:right}
+.pill{display:inline-block;font:400 11px/1 var(--mono);letter-spacing:.1em;
+      text-transform:uppercase;padding:4px 7px;border:1px solid var(--line-2);
+      color:var(--fg-2)}
+.pill.ok{color:var(--up);border-color:var(--up)}
+.pill.bad{color:var(--down);border-color:var(--down)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.meter{height:6px;background:var(--line);margin-top:9px;position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--fg-2);display:block}
+.meter i.bad{background:var(--down)}
+.foot{margin-top:72px;padding-top:22px;border-top:1px solid var(--line);
+      color:var(--fg-3);font:400 11.5px/1.7 var(--mono)}
+.foot b{color:var(--fg-2);font-weight:400}
+.err{border:1px solid var(--down);color:var(--down);padding:14px 16px;
+     margin:24px 0;font:400 13px/1.6 var(--mono)}
+#boot{padding:80px 0;color:var(--fg-2);font-family:var(--mono);font-size:13px}
+@media(max-width:720px){
+  .wrap{padding:0 16px 72px}
+  .gate-row{grid-template-columns:1fr 78px;gap:6px 12px}
+  .gate-row .bar,.gate-row .mg{grid-column:1/-1}
+  .gate-row .mg{text-align:left}
+  .stat{border-right:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="mark">loonie</span>
+    <span class="tag" id="mode">paper</span>
+    <span class="tag" id="nolive">not live money</span>
+    <span class="sp"></span>
+    <span class="live"><i class="dot" id="dot"></i><span id="age">connecting…</span></span>
+  </div>
+  <div id="boot">loading live state…</div>
+  <main id="app" hidden></main>
+</div>
+
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+const el = (t, c, txt) => { const n=document.createElement(t); if(c)n.className=c;
+  if(txt!=null)n.textContent=txt; return n; };
+
+const money = v => (v<0?"−":"")+"$"+Math.abs(v).toLocaleString("en-US",
+  {minimumFractionDigits:2, maximumFractionDigits:2});
+const pct = (v,d=2) => (v>0?"+":v<0?"−":"")+Math.abs(v*100).toFixed(d)+"%";
+const num = (v,d=2) => v==null||!isFinite(v) ? "—" : Number(v).toFixed(d);
+const int = v => v==null ? "—" : Number(v).toLocaleString("en-US");
+const dirC = v => v>0?"up":v<0?"down":"flat";
+
+function ago(iso){
+  if(!iso) return "unknown";
+  const s = (Date.now()-new Date(iso).getTime())/1000;
+  if (s < 0) return "just now";
+  if (s < 90) return Math.round(s)+"s ago";
+  if (s < 5400) return Math.round(s/60)+"m ago";
+  if (s < 172800) return Math.round(s/3600)+"h ago";
+  return Math.round(s/86400)+"d ago";
+}
+
+/* ── sparkline ────────────────────────────────────────────────────── */
+function sparkline(values, {w=1120, h=132, color="var(--up)"}={}){
+  const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  svg.setAttribute("preserveAspectRatio","none");
+  svg.setAttribute("class","spark");
+  const v = values.filter(x => isFinite(x));
+  if (v.length < 2) return svg;
+
+  const lo = Math.min(...v), hi = Math.max(...v), span = (hi-lo) || 1;
+  const pad = 6;
+  const x = i => (i/(v.length-1))*w;
+  const y = d => pad + (1-(d-lo)/span)*(h-pad*2);
+  const pts = v.map((d,i)=>`${x(i).toFixed(2)},${y(d).toFixed(2)}`).join(" ");
+
+  // Baseline = first value, so the fill reads as gain/loss against the start.
+  const base = y(v[0]);
+  const zero = document.createElementNS(svg.namespaceURI,"line");
+  zero.setAttribute("x1",0); zero.setAttribute("x2",w);
+  zero.setAttribute("y1",base); zero.setAttribute("y2",base);
+  zero.setAttribute("stroke","var(--line-2)");
+  zero.setAttribute("stroke-width","1");
+  zero.setAttribute("stroke-dasharray","2 4");
+  svg.appendChild(zero);
+
+  const area = document.createElementNS(svg.namespaceURI,"polygon");
+  area.setAttribute("points", `0,${base} ${pts} ${w},${base}`);
+  area.setAttribute("fill", color);
+  area.setAttribute("opacity","0.10");
+  svg.appendChild(area);
+
+  const line = document.createElementNS(svg.namespaceURI,"polyline");
+  line.setAttribute("points", pts);
+  line.setAttribute("fill","none");
+  line.setAttribute("stroke", color);
+  line.setAttribute("stroke-width","1.5");
+  line.setAttribute("vector-effect","non-scaling-stroke");
+  svg.appendChild(line);
+  return svg;
+}
+
+function miniLine(values, {w=300,h=40,color="var(--fg-2)"}={}){
+  const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute("viewBox",`0 0 ${w} ${h}`);
+  svg.setAttribute("preserveAspectRatio","none");
+  svg.style.width="100%"; svg.style.height=h+"px"; svg.style.display="block";
+  const v = values.filter(x=>isFinite(x));
+  if (v.length<2) return svg;
+  const lo=Math.min(...v), hi=Math.max(...v), span=(hi-lo)||1;
+  const pts = v.map((d,i)=>`${(i/(v.length-1)*w).toFixed(2)},${(3+(1-(d-lo)/span)*(h-6)).toFixed(2)}`).join(" ");
+  const p = document.createElementNS(svg.namespaceURI,"polyline");
+  p.setAttribute("points",pts); p.setAttribute("fill","none");
+  p.setAttribute("stroke",color); p.setAttribute("stroke-width","1.25");
+  p.setAttribute("vector-effect","non-scaling-stroke");
+  svg.appendChild(p);
+  return svg;
+}
+
+/* ── the threshold-margin transform (direction B) ─────────────────── */
+// Every gate becomes (value − threshold)/|threshold|, sign-flipped for "<="
+// gates so that right of the rule is always safer. A t-statistic, a trade
+// count and three probabilities cannot otherwise share an axis.
+function margin(g){
+  const t = Number(g.threshold), v = Number(g.value);
+  if (!isFinite(v) || !isFinite(t)) return null;
+  if (Math.abs(t) < 1e-9){
+    // A margin relative to a zero threshold is not a ratio. Return the raw
+    // signed distance and let the caller label it as such, rather than
+    // printing a percentage that divides by an arbitrary 1.
+    return { m: g.op === "<=" ? -v : v, absolute: true };
+  }
+  const m = (v - t) / Math.abs(t);
+  return { m: g.op === "<=" ? -m : m, absolute: false };
+}
+
+function gateRows(gates){
+  const box = el("div");
+  gates.forEach(g => {
+    const mr = margin(g);
+    const m = mr && mr.m;
+    const unmeasured = mr === null;
+    const row = el("div","gate-row" + (unmeasured ? " void-row"
+                  : g.pass ? "" : " fail-row"));
+    row.appendChild(el("div","name", g.name));
+    row.appendChild(el("div","rd", unmeasured ? "—"
+      : (Math.abs(g.value) >= 1000 ? int(g.value) : num(g.value, 3))
+        + "  " + g.op + " " + num(g.threshold, g.threshold >= 100 ? 0 : 2)));
+
+    const bar = el("div","bar");
+    bar.appendChild(el("i","axis"));
+    if (!unmeasured){
+          const cap = 1;                   // ±100% of the threshold
+      const clipped = Math.abs(m) > cap;
+      // Absolute-distance gates have no ratio scale; clamp them to the full
+      // half-width so the bar still shows direction without implying a ratio.
+      const frac = mr.absolute ? 1 : Math.min(Math.abs(m), cap) / cap;
+      const fill = el("i","fill" + (g.pass ? "" : " bad"));
+      const half = frac * 50;
+      if (m >= 0){ fill.style.left = "50%"; fill.style.width = half + "%"; }
+      else { fill.style.left = (50 - half) + "%"; fill.style.width = half + "%"; }
+      bar.appendChild(fill);
+      if (clipped && !mr.absolute){
+        // Broken-axis notation: this bar runs off the scale, true value printed.
+        const c = el("i","clip");
+        c.style.left = m >= 0 ? "calc(100% - 11px)" : "2px";
+        bar.appendChild(c);
+      }
+    }
+    row.appendChild(bar);
+    row.appendChild(el("div","mg " + (unmeasured ? "dim" : g.pass ? "up" : "down"),
+      unmeasured ? "not measured"
+        : mr.absolute ? (m>0?"+":"−") + num(Math.abs(m),3) + " abs"
+        : Math.abs(m) > 9.99 ? (m>0?"+":"−") + Math.round(Math.abs(m)*100) + "%"
+        : pct(m, 1)));
+    box.appendChild(row);
+  });
+  const sc = el("div","gate-scale");
+  ["−100% of threshold","THRESHOLD","+100%"].forEach(t => sc.appendChild(el("span",null,t)));
+  box.appendChild(sc);
+  return box;
+}
+
+/* ── table helper ─────────────────────────────────────────────────── */
+function table(cols, rows){
+  const wrap = el("div","scroll"), t = el("table");
+  const thead = el("thead"), tr = el("tr");
+  cols.forEach(c => {
+    // Header cells need the column class too, or their padding does not match
+    // the body and adjacent headings run together.
+    const th = el("th", [c.r?"r":"", c.cls||""].join(" ").trim() || null, c.h);
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr); t.appendChild(thead);
+  const tb = el("tbody");
+  if (!rows.length){
+    const r = el("tr"), td = el("td","dim","nothing to show");
+    td.colSpan = cols.length; r.appendChild(td); tb.appendChild(r);
+  }
+  rows.forEach(row => {
+    const tr = el("tr");
+    cols.forEach(c => {
+      const td = el("td", [c.r?"r":"", c.cls||""].join(" ").trim() || null);
+      const out = c.f(row);
+      if (out instanceof Node) td.appendChild(out); else td.innerHTML = out;
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb); wrap.appendChild(t); return wrap;
+}
+
+function section(n, title, note){
+  const s = el("section"), h = el("div","head");
+  h.appendChild(el("span","num", n));
+  h.appendChild(el("h2", null, title));
+  if (note) h.appendChild(el("span","note", note));
+  s.appendChild(h);
+  return s;
+}
+
+/* ── render ───────────────────────────────────────────────────────── */
+function render(snap, series){
+  const app = $("#app");
+  app.textContent = "";
+  const P = snap.portfolio, S = snap.search, R = snap.risk, SE = snap.seal;
+
+  $("#mode").textContent = (P.mode || "paper") + " · " + (P.broker || "—");
+  $("#nolive").textContent = P.is_live ? "LIVE MONEY" : "not live money";
+
+  /* hero — the one large number, first (robinhood.com hierarchy) */
+  const hero = el("div","hero");
+  hero.appendChild(el("div","lbl","Paper portfolio"));
+  hero.appendChild(el("div","value", money(P.equity)));
+
+  const start = P.equity / (1 + (P.total_return || 0));
+  const abs = P.equity - start;
+  const d = el("div","delta");
+  d.appendChild(el("span","amt " + dirC(abs), money(abs)));
+  d.appendChild(el("span", dirC(abs), pct(P.total_return || 0)));
+  d.appendChild(el("span","since","since inception · " + int(P.n_positions) +
+    " positions · " + pct(P.gross_exposure,1).replace("+","") + " invested"));
+  hero.appendChild(d);
+
+  const eq = (series.equity || []).map(p => p.equity);
+  const curve = eq.length > 1 ? eq : [start, P.equity];
+  hero.appendChild(sparkline(curve,
+    {color: abs >= 0 ? "var(--up)" : "var(--down)"}));
+  const xs = el("div","spark-x");
+  xs.appendChild(el("span",null, money(start) + " at open"));
+  xs.appendChild(el("span",null, (series.equity||[]).length > 1
+    ? (series.equity.length + " samples") : "awaiting second sample"));
+  hero.appendChild(xs);
+  app.appendChild(hero);
+
+  /* stat strip */
+  const strip = el("div","strip");
+  const gPass = (snap.gates||[]).filter(g => g.pass).length;
+  const gAll  = (snap.gates||[]).length;
+  const stats = [
+    ["Generation", int(S.generation), num(S.seconds_per_gen,1)+"s per gen"],
+    ["Trials", int(S.trials), int(S.trials_effective)+" independent"],
+    ["Gate", gPass+" / "+gAll, (snap.gates||[]).filter(g=>!g.pass)
+        .map(g=>g.name).join(", ") || "all clear"],
+    ["Promoted", int(S.promoted_count),
+        (S.demoted_count ? int(S.demoted_count)+" demoted" : "none demoted")],
+    ["Kill switch", R.halted ? "TRIPPED" : "CLEAR",
+        "drawdown "+pct(R.drawdown||0,2)],
+    ["Holdout", SE.evaluations+" / "+SE.max_evaluations,
+        SE.remaining ? "unopened" : "spent"],
+  ];
+  stats.forEach(([k,v,s]) => {
+    const b = el("div","stat");
+    b.appendChild(el("div","k",k));
+    const vv = el("div","v",v);
+    if (k==="Kill switch" && R.halted) vv.classList.add("down");
+    if (k==="Kill switch" && !R.halted) vv.classList.add("up");
+    b.appendChild(vv); b.appendChild(el("div","s",s));
+    strip.appendChild(b);
+  });
+  app.appendChild(strip);
+
+  if (R.halted){
+    const e = el("div","err","KILL SWITCH TRIPPED — "+R.halt_reason+
+      "  ·  latched at "+(R.halted_at||"?")+
+      "  ·  clear with: python scripts/clear_halt.py --note \"…\"");
+    app.appendChild(e);
+  }
+
+  /* 01 positions */
+  const s1 = section("01","Positions", int(P.n_positions)+" held");
+  s1.appendChild(Object.assign(el("p","lede"),{innerHTML:
+    "Marked at the most recent daily close. Unrealised P&L on a freshly opened "+
+    "book is mostly the <b>"+num(snap.config.slippage_bps,1)+" bps</b> slippage "+
+    "charged on entry, not market movement."}));
+  s1.appendChild(table([
+    {h:"Symbol", f:r=>el("span","sym",r.symbol)},
+    {h:"Qty", r:true, cls:"mono", f:r=>num(r.qty,4)},
+    {h:"Avg", r:true, cls:"mono", f:r=>money(r.avg_price)},
+    {h:"Last", r:true, cls:"mono", f:r=>money(r.market_price)},
+    {h:"Value", r:true, cls:"mono", f:r=>money(r.market_value)},
+    {h:"Weight", r:true, cls:"mono", f:r=>num(r.weight*100,2)+"%"},
+    {h:"P&L", r:true, f:r=>el("span",dirC(r.unrealized)+" mono",money(r.unrealized))},
+    {h:"P&L %", r:true, f:r=>el("span",dirC(r.unrealized)+" mono",pct(r.unrealized_pct,3))},
+  ], P.positions||[]));
+  app.appendChild(s1);
+
+  /* 02 the gate */
+  const failing = (snap.gates||[]).filter(g=>!g.pass).map(g=>g.name);
+  const s2 = section("02","The promotion gate", gPass+" of "+gAll+" clear");
+  s2.appendChild(Object.assign(el("p","lede"),{innerHTML:
+    "A strategy may not touch the portfolio until it clears <b>every</b> test. "+
+    "Each gate is drawn as its margin from its own threshold — "+
+    "<span class='mono'>(value − limit) / |limit|</span>, sign-flipped for "+
+    "<span class='mono'>≤</span> gates — which is the only way a t-statistic, a "+
+    "trade count and three probabilities can share one axis. "+
+    (failing.length
+      ? "Right now <b>"+failing.join(", ")+"</b> "+(failing.length>1?"fail":"fails")+"."
+      : "Everything clears, which after <b>"+int(S.trials)+"</b> attempts is "+
+        "exactly the profile a lucky search also produces — hence the deflation below.")}));
+  s2.appendChild(gateRows(snap.gates||[]));
+  app.appendChild(s2);
+
+  /* 03 search */
+  const gens = series.generations || [];
+  const s3 = section("03","Search", "generation "+int(S.generation));
+  s3.appendChild(Object.assign(el("p","lede"),{innerHTML:
+    "The engine has evaluated <b>"+int(S.trials)+"</b> strategies. They are not "+
+    "independent — a genetic program's children are near-copies of their "+
+    "parents — so the deflated Sharpe is charged for <b>"+int(S.trials_effective)+
+    "</b> effective hypotheses, "+num((S.independence||0)*100,1)+"% of the raw count. "+
+    "More searching buys a better score and a weaker claim at the same time."}));
+
+  const g2 = el("div","grid2");
+  const mk = (title, key, fmt) => {
+    const box = el("div");
+    box.appendChild(el("div","k stat-k", title));
+    Object.assign(box.querySelector(".k").style,
+      {font:"400 11px/1 var(--mono)", letterSpacing:".13em",
+       textTransform:"uppercase", color:"var(--fg-2)", display:"block",
+       marginBottom:"10px"});
+    box.appendChild(miniLine(gens.map(x=>x[key]),
+      {color: key==="dsr" ? "var(--down)" : "var(--up)"}));
+    const f = el("div","spark-x");
+    f.appendChild(el("span",null, gens.length ? fmt(gens[0][key]) : "—"));
+    f.appendChild(el("span",null, "gen "+(gens.length?int(gens[0].g):"?")+
+      " → "+(gens.length?int(gens[gens.length-1].g):"?")));
+    f.appendChild(el("span",null, gens.length ? fmt(gens[gens.length-1][key]) : "—"));
+    box.appendChild(f);
+    return box;
+  };
+  g2.appendChild(mk("Best fitness","fitness", v=>num(v,3)));
+  g2.appendChild(mk("Deflated Sharpe of that same strategy","dsr", v=>num(v,3)));
+  s3.appendChild(g2);
+
+  const dfl = el("div"); dfl.style.marginTop = "34px";
+  const kv = (k,v) => { const r=el("div","kv"); r.appendChild(el("span","k",k));
+    r.appendChild(el("span","v",v)); return r; };
+  dfl.appendChild(kv("strategies evaluated", int(S.trials)));
+  dfl.appendChild(kv("effective independent hypotheses", int(S.trials_effective)));
+  dfl.appendChild(kv("behaviour archive cells", int(S.archive_cells)));
+  dfl.appendChild(kv("exploration rate", num(S.explore,3)));
+  const m = el("div","meter");
+  const i = el("i"); i.style.width = ((S.independence||0)*100).toFixed(2)+"%";
+  m.appendChild(i); dfl.appendChild(m);
+  const cap = el("div","spark-x");
+  cap.appendChild(el("span",null, num((S.independence||0)*100,2)+"% independent"));
+  cap.appendChild(el("span",null, "the rest are near-copies"));
+  dfl.appendChild(cap);
+  s3.appendChild(dfl);
+  app.appendChild(s3);
+
+  /* 04 strategies */
+  const s4 = section("04","Strategies", int(S.promoted_count)+" promoted");
+  s4.appendChild(Object.assign(el("p","lede"),{innerHTML:
+    "Promotion is not permanent. The deflation threshold rises with every "+
+    "hypothesis tested, so the hall of fame is re-tested against today's bar "+
+    "each generation and anything that no longer clears is demoted with its "+
+    "reason recorded."}));
+  const strat = c => [
+    {h:"Expression", cls:"expr", f:r=>r.expression||"—"},
+    {h:"IR", r:true, cls:"mono", f:r=>num(r.ir,3)},
+    {h:"Alpha t", r:true, cls:"mono", f:r=>num(r.alpha_t,2)},
+    {h:"DSR", r:true, cls:"mono", f:r=>num(r.dsr,3)},
+    {h:"PBO", r:true, f:r=>el("span",(r.pbo>snap.config.gate.max_pbo?"down ":"")+"mono",num(r.pbo,3))},
+    {h:"Trades", r:true, cls:"mono", f:r=>int(r.trades)},
+    ...(c||[]),
+  ];
+  s4.appendChild(table(strat(), snap.promoted||[]));
+  if ((snap.demoted||[]).length){
+    const h = el("div","head"); h.style.marginTop="40px";
+    h.appendChild(el("span","num","04b"));
+    h.appendChild(el("h2",null,"Demoted"));
+    h.appendChild(el("span","note", int(snap.demoted.length)+" no longer clear"));
+    s4.appendChild(h);
+    s4.appendChild(table(strat([
+      {h:"Why it was demoted", cls:"why", f:r=>(r.demoted_because||[]).join("; ")||"—"},
+    ]), snap.demoted));
+  }
+  app.appendChild(s4);
+
+  /* 05 risk + 06 seal */
+  const s5 = section("05","Risk and seal");
+  const g3 = el("div","grid2");
+
+  const risk = el("div");
+  risk.appendChild(el("div","pill "+(R.halted?"bad":"ok"),
+    R.halted ? "halted" : "armed · not tripped"));
+  const L = R.limits||{};
+  const lim = [
+    ["daily P&L", R.day_pl, -Math.abs(L.max_daily_loss_pct), pct],
+    ["drawdown from peak", R.drawdown, -Math.abs(L.max_drawdown_pct), pct],
+    ["orders today", R.orders_today, L.max_orders_per_day, int],
+    ["max position", Math.max(0,...(P.positions||[]).map(p=>p.weight)),
+      L.max_position_pct, v=>num(v*100,2)+"%"],
+  ];
+  const lw = el("div"); lw.style.marginTop="16px";
+  lim.forEach(([k,v,cap,f]) => {
+    const r = el("div","kv");
+    r.appendChild(el("span","k",k));
+    const used = cap ? Math.min(Math.abs(v/cap),1) : 0;
+    r.appendChild(el("span","v " + (used>=1?"down":""),
+      f(v) + "   of   " + f(cap)));
+    lw.appendChild(r);
+    const m = el("div","meter"); const i=el("i", used>=1?"bad":null);
+    i.style.width=(used*100).toFixed(1)+"%"; m.appendChild(i);
+    lw.appendChild(m);
+  });
+  risk.appendChild(lw);
+  if ((R.breaches||[]).length){
+    const b = el("div"); b.style.marginTop="22px";
+    R.breaches.slice(-3).forEach(x => {
+      const r=el("div","kv");
+      r.appendChild(el("span","k",(x.at||"").slice(0,16).replace("T"," ")));
+      r.appendChild(el("span","v",(x.reason||"").slice(0,78)));
+      b.appendChild(r);
+    });
+    risk.appendChild(b);
+  }
+  g3.appendChild(risk);
+
+  const seal = el("div");
+  seal.appendChild(el("div","pill "+(SE.remaining?"ok":"warn"),
+    SE.remaining ? "sealed · "+SE.remaining+" evaluation left" : "spent"));
+  const sw = el("div"); sw.style.marginTop="16px";
+  sw.appendChild(kv("window", (SE.start||"?")+" → "+(SE.stop||"?")));
+  sw.appendChild(kv("digest (SHA-256, first 32 hex)", SE.digest||"—"));
+  sw.appendChild(kv("sealed at", (SE.created||"—").replace("T"," ").replace("+00:00","Z")));
+  sw.appendChild(kv("evaluations used", SE.evaluations+" of "+SE.max_evaluations));
+  seal.appendChild(sw);
+  const note = el("p","lede"); note.style.marginTop="20px";
+  note.innerHTML = "The holdout may be scored exactly "+SE.max_evaluations+
+    " time. Opening it is recorded in an append-only ledger before the result "+
+    "can be reacted to, and the manifest hash breaks if the underlying data "+
+    "changes. A window opened once means something; one opened eleven times "+
+    "does not, and this is how you tell them apart.";
+  seal.appendChild(note);
+  g3.appendChild(seal);
+  s5.appendChild(g3);
+  app.appendChild(s5);
+
+  /* 06 provenance */
+  const D = snap.data||{};
+  const s6 = section("06","Data provenance");
+  const cov = D.coverage||0;
+  s6.appendChild(Object.assign(el("p","lede"),{innerHTML:
+    "Point-in-time S&P 500 membership: on any date the backtest may only buy "+
+    "what was in the index that day. Free providers carry only securities that "+
+    "still exist, so <b>"+int(D.missing_departed)+"</b> names that left the "+
+    "index are missing from this cache — and every one of them is a loser the "+
+    "backtest cannot see. Results are optimistic by that much."}));
+  const pw = el("div");
+  pw.appendChild(kv("provider", D.provider||"—"));
+  pw.appendChild(kv("tickers ever in window", int(D.universe_size)));
+  pw.appendChild(kv("with usable price history", int(D.fetched)));
+  pw.appendChild(kv("departed and missing", int(D.missing_departed)));
+  const cm = el("div","meter"); const ci = el("i", cov<0.8?"bad":null);
+  ci.style.width=(cov*100).toFixed(1)+"%"; cm.appendChild(ci);
+  pw.appendChild(cm);
+  const cc = el("div","spark-x");
+  cc.appendChild(el("span",null, num(cov*100,1)+"% universe coverage"));
+  cc.appendChild(el("span",null, cov<0.8 ? "below the configured floor"
+                                         : "above the 80% floor"));
+  pw.appendChild(cc);
+  s6.appendChild(pw);
+  app.appendChild(s6);
+
+  /* colophon */
+  const f = el("div","foot");
+  f.innerHTML =
+    "<b>loonie</b> — a genetic program searching stock-picking rules, gated on "+
+    "statistical evidence, paper-traded only.<br>"+
+    "Snapshot <b>"+(snap.generated_at||"?")+"</b> · book written <b>"+
+    (P.updated||"?")+"</b> · universe from <b>"+snap.config.universe_start+
+    "</b> · holdout sealed from <b>"+snap.config.holdout_start+"</b>.<br>"+
+    "Backtested and paper results are hypothetical and carry no real money. "+
+    "Not investment advice.";
+  app.appendChild(f);
+
+  $("#boot").hidden = true;
+  app.hidden = false;
+}
+
+/* ── polling ──────────────────────────────────────────────────────── */
+let lastGen = null;
+async function tick(){
+  try{
+    const bust = "?t=" + Date.now();
+    const [snap, series] = await Promise.all([
+      fetch("data/snapshot.json"+bust, {cache:"no-store"}).then(r=>{
+        if(!r.ok) throw new Error("snapshot "+r.status); return r.json(); }),
+      fetch("data/series.json"+bust, {cache:"no-store"})
+        .then(r=>r.ok?r.json():{}).catch(()=>({})),
+    ]);
+    if (snap.search.generation !== lastGen){
+      lastGen = snap.search.generation;
+      render(snap, series);
+    } else {
+      render(snap, series);
+    }
+    const s = (Date.now()-new Date(snap.generated_at).getTime())/1000;
+    const dot = $("#dot");
+    dot.className = "dot" + (s > 86400 ? " dead" : s > 3600 ? " stale" : "");
+    $("#age").textContent = "updated " + ago(snap.generated_at);
+  } catch(e){
+    $("#dot").className = "dot dead";
+    $("#age").textContent = "feed unreachable";
+    if ($("#app").hidden){
+      $("#boot").innerHTML = "<div class='err'>Could not load "+
+        "<span class='mono'>data/snapshot.json</span> — "+e.message+
+        "<br><br>Serve this page over HTTP rather than opening the file "+
+        "directly:<br><span class='mono'>python scripts/serve.py</span></div>";
+    }
+  }
+}
+tick();
+setInterval(tick, 30000);
+addEventListener("visibilitychange", () => { if (!document.hidden) tick(); });
+</script>
+</body>
+</html>

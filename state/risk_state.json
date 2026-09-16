@@ -1,0 +1,19 @@
+{
+  "equity_high_water": 100000.0,
+  "day": "2026-09-15",
+  "day_start_equity": 100000.0,
+  "orders_today": 21,
+  "halted": false,
+  "halt_reason": "",
+  "halted_at": "",
+  "breaches": [
+    {
+      "at": "2026-09-15T07:52:36+00:00",
+      "reason": "most recent bar is 15 days old (limit 5) -- the data cache is not updating"
+    },
+    {
+      "at": "2026-09-15T07:53:52+00:00",
+      "reason": "CLEARED: data cache was stale; incremental tail fetch added and running"
+    }
+  ]
+}

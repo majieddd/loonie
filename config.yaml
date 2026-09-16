@@ -1,0 +1,118 @@
+# ============================================================================
+#  Self-improving cross-sectional equity strategy search.
+#  Every number here is a decision. Read docs/WHY.md before changing gates.
+# ============================================================================
+
+universe:
+  # Point-in-time S&P 500 membership. This is what makes the backtest honest:
+  # on 2007-06-01 we can only buy what was IN the index on 2007-06-01.
+  source: sp500_pit
+  pit_url: "https://raw.githubusercontent.com/fja05680/sp500/master/S%26P%20500%20Historical%20Components%20%26%20Changes%20(Updated).csv"
+  start: "2016-01-01"      # Alpaca free-tier history begins 2016-01
+  end:   "2026-12-31"   # a future date = "through today"; the cache
+                        # extends its tail incrementally each run
+  min_price: 3.0           # no sub-$3 names (spreads destroy the backtest)
+  min_dollar_volume: 2.0e6 # 20d median; liquidity we could actually transact
+
+data:
+  provider: alpaca         # alpaca | yfinance | massive | polygon
+  fallback: yfinance
+  cache_dir: data/cache
+  # Refuse to run a backtest whose universe coverage is below this. Guards
+  # against silently backtesting on survivors only. 1.0 = perfect coverage.
+  min_survivorship_coverage: 0.80
+  adjust: true             # split/dividend adjusted
+
+holdout:
+  # The sealed window. Enforced by SHA-256 manifest + access ledger, not by
+  # good intentions. See loonie/seal.py.
+  start: "2024-09-01"
+  end:   "2026-09-01"
+  max_evaluations: 1       # the holdout may be scored EXACTLY this many times
+
+backtest:
+  rebalance_days: 5
+  n_positions: 25
+  weighting: equal         # equal | score
+  commission_bps: 0.0      # Alpaca equities are commission-free
+  slippage_bps: 5.0        # half-spread + impact, conservative for S&P names
+  borrow_bps_annual: 50.0  # only charged on short legs
+  benchmark: equal_weight_universe   # equal_weight_universe | SPY
+  initial_capital: 100000
+
+evolve:
+  population: 300
+  generations: 200
+  elite_frac: 0.15
+  max_tree_depth: 6
+  parsimony_penalty: 0.01  # per-node penalty on fitness; fights bloat
+  seed: 20260915
+
+  # Per generation, evaluate this many fresh random genomes purely to maintain
+  # an empirical null distribution. They cost search time and buy calibration.
+  null_samples_per_gen: 12
+  null_shuffles: 24        # time-shifted replicas per candidate in the null test
+  cost_stress_multiplier: 3.0   # re-price at 3x assumed slippage/commission
+
+  # ---- The promotion gate. This is the whole ballgame. --------------------
+  # A candidate is only "an improvement" if it clears EVERY one of these on
+  # purged, embargoed, combinatorial cross-validation -- never on a single path.
+  gate:
+    min_cv_folds_positive: 0.60   # fraction of CV splits with positive alpha
+    min_deflated_sharpe: 0.50     # DSR prob, corrected for trials actually run
+    max_pbo: 0.40                 # prob. of backtest overfitting (CSCV)
+    min_alpha_tstat: 2.0          # Newey-West t on residual vs benchmark
+    min_trades: 100               # tiny-sample "edges" are noise
+    # Loose sanity bound only. Costs are already charged inside the backtest,
+    # so high turnover is not per se disqualifying -- min_stress_alpha below
+    # is the real economic test. (Note: a full in-and-out rotation counts 2.0,
+    # so a monthly-rebalanced strategy that fully rotates sits near 24.)
+    max_annual_turnover: 30.0
+    # Alpha must stay positive when slippage and commission are tripled. A
+    # strategy that fails this was trading the cost model, not an anomaly.
+    min_stress_alpha: 0.0
+    # A 25-name long-only book drawn from a 500-name index correlates ~0.95
+    # with it by construction -- that is arithmetic, not index-hugging. So
+    # this is a loose sanity bound, and the real "did picking add anything"
+    # tests are min_alpha_tstat and min_null_percentile below.
+    max_benchmark_corr: 0.98
+    # THE TEST THE VIDEO ENDED ON. Beat your own signal with its timing
+    # destroyed, in >= this fraction of time-shifted replicas. A strategy that
+    # cannot beat itself decoupled from the future has no timing information,
+    # however good its CAGR looks.
+    min_null_percentile: 0.95
+
+cv:
+  n_splits: 8
+  embargo_days: 10         # gap between train/test to kill leakage
+  cscv_partitions: 8       # S in the CSCV algorithm (must be even)
+
+trade:
+  broker: alpaca
+  mode: paper              # paper | live
+  allow_live: false        # second lock; --i-understand-this-is-real-money is third
+  capital_pct: 0.95
+  max_position_pct: 0.06
+  max_gross_exposure: 1.00
+  min_order_notional: 25
+  # ---- Kill switches. Any breach flattens the book and halts. -------------
+  risk:
+    max_daily_loss_pct: 0.03
+    max_drawdown_pct: 0.15
+    max_orders_per_day: 120
+    halt_on_data_staleness_min: 90   # intraday quotes
+    max_data_age_days: 5             # newest daily bar; catches a dead cache
+
+allocator:
+  # Thompson-sampling bandit over live strategies. The OUTER learning loop:
+  # capital flows toward whatever is actually working in live paper trading.
+  enabled: true
+  prior_mean: 0.0
+  prior_std: 0.02
+  min_weight: 0.0
+  max_weight: 0.50
+  halflife_days: 60
+
+report:
+  enabled: true
+  on: [evolve_promotion, daily_close, kill_switch]

@@ -1,0 +1,16 @@
+{
+  "start": "2024-09-01",
+  "stop": "2026-09-01",
+  "digest": "6e3eb2f41651a1c168065a145dd5e572",
+  "created": "2026-09-15T07:35:11+00:00",
+  "evaluations": 0,
+  "max_evaluations": 1,
+  "ledger": [
+    {
+      "event": "created",
+      "at": "2026-09-15T07:35:11+00:00",
+      "sessions": 500,
+      "tickers": 615
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14
+scipy>=1.11
+PyYAML>=6
+requests>=2.31
+python-dotenv>=1.0
+# optional data / broker providers
+yfinance>=0.2.40        # free, SURVIVORSHIP-BIASED (see docs/DATA.md)
+alpaca-py>=0.21         # broker + survivorship-reduced data (2016+)
