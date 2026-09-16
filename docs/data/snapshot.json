@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T17:26:23+00:00",
+ "generated_at": "2026-09-16T17:27:41+00:00",
  "workers": {
   "workers": [
    {
@@ -28,7 +28,7 @@
     "heartbeat": "2026-09-16T17:26:23+00:00",
     "heartbeat_epoch": 1789579583.7318068,
     "uptime_s": 24.4,
-    "heartbeat_age_s": 0.0,
+    "heartbeat_age_s": 77.2,
     "liveness": "live"
    },
    {
@@ -37,20 +37,20 @@
     "label": "system supervisor",
     "started_at": "2026-09-16T15:31:37+00:00",
     "status": "supervising",
-    "detail": "running: search",
+    "detail": "running: publish",
     "progress": null,
     "metrics": {
      "jobs_running": 1,
-     "failures": 18,
-     "code_reloads": 9
+     "failures": 19,
+     "code_reloads": 10
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T17:26:20+00:00",
-    "heartbeat_epoch": 1789579580.6790454,
-    "uptime_s": 6883.5,
-    "heartbeat_age_s": 3.1,
+    "heartbeat": "2026-09-16T17:27:40+00:00",
+    "heartbeat_epoch": 1789579660.7173004,
+    "uptime_s": 6963.6,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -68,7 +68,7 @@
     "heartbeat": "2026-09-16T16:01:38+00:00",
     "heartbeat_epoch": 1789574498.790694,
     "uptime_s": 0.5,
-    "heartbeat_age_s": 5084.9,
+    "heartbeat_age_s": 5162.1,
     "liveness": "finished"
    },
    {
@@ -89,14 +89,14 @@
     "heartbeat": "2026-09-16T15:50:00+00:00",
     "heartbeat_epoch": 1789573800.946725,
     "uptime_s": 192.6,
-    "heartbeat_age_s": 5782.8,
+    "heartbeat_age_s": 5859.9,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-16T17:26:23+00:00"
+  "updated": "2026-09-16T17:27:40+00:00"
  },
  "experience": {
   "rows": 245,
@@ -1411,7 +1411,7 @@
   },
   "universe_start": "2016-01-01",
   "holdout_start": "2024-09-01",
-  "population": 250,
+  "population": 300,
   "slippage_bps": 5.0
  }
 }
