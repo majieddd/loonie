@@ -182,6 +182,7 @@ loonie/
   risk.py        latching kill switches
   macro.py       16 causal regime series (VIX, curve, credit, breadth)
   experience.py  parquet corpus: every candidate + its forward outcome
+  knowledge.py   external theses as dated, falsifiable claims
   methods.py     bandit over six ways of searching
   registry.py    per-worker heartbeats; liveness from timestamp age
   orchestrator.py  supervisor: five jobs, staggered, restarted on death
@@ -217,6 +218,43 @@ count written down, instead of once at the end.
 
 Not investment advice. Backtested results are hypothetical. Paper trade for a
 long time.
+
+---
+
+## External theses: measured, not believed
+
+Someone sends you a compelling argument about where the market is going. The
+tempting thing is to absorb it. `loonie/knowledge.py` records it instead, with
+four things an opinion does not have: a **capture date**, a **measurable
+proxy**, a **horizon**, and a **trailing read** of what that proxy did *before*
+the claim was made.
+
+```bash
+python scripts/review_theses.py
+```
+
+The trailing read carries the weight. First thesis recorded — a
+semiconductor-supply argument, transcribed from a 108-second video:
+
+| claim | trailing 1y excess | |
+|---|---:|---|
+| memory/HBM constrains AI to 2028 | **+352%** | already moved |
+| advanced packaging & photonics | **+115%** | already moved |
+| compute-scaling era is over | **+46%** | already moved |
+| custom/edge silicon displaces general-purpose | +15% | |
+
+The reasoning is largely sound — the memory wall is real, CoWoS packaging is a
+genuine bottleneck, Dennard scaling ended in 2006. **That is precisely why
+those names already ran.** MU +489%, WDC +303%, STX +269% over the trailing
+year, against NVDA at +20%. The market expressed this view violently and some
+time ago; correct analysis of a completed move is not a forecast.
+
+Forward performance is measured from the capture date onward, which is the only
+side that tests anything. It reads `n/a — too early` today, by construction.
+
+**Theses never reach the strategy search.** A test asserts that no module in
+the search path imports the store: a narrative that steers the hypothesis space
+is a narrative that has escaped its own test.
 
 ---
 

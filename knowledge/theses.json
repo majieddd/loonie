@@ -1,0 +1,98 @@
+{
+ "updated": "2026-09-16T17:25:24+00:00",
+ "theses": [
+  {
+   "id": "tiktok-semi-supply-2026-09",
+   "source": {
+    "platform": "tiktok",
+    "account": "@0j250o7h",
+    "url": "https://www.tiktok.com/@0j250o7h/video/7686045635732081934",
+    "duration_s": 108,
+    "captured_via": "yt-dlp + faster-whisper transcript",
+    "sourced": "anonymous account, no citations given"
+   },
+   "captured": "2026-09-16",
+   "summary": "Four claims: (1) HBM/memory supply constrains AI until 2028; (2) the compute-scaling era is over, software-hardware co-design wins next; (3) general-purpose chips give way to custom silicon; (4) the opportunity has moved to 'logistics' -- advanced packaging, new storage, silicon photonics, edge/dedicated chips -- and to integrating AI into industries rather than building the largest models.",
+   "claims": [
+    {
+     "id": "hbm-constraint",
+     "horizon": "2028-01-01",
+     "type": "forecast",
+     "statement": "Memory/HBM supply constrains AI development through 2028",
+     "proxy": {
+      "kind": "basket_excess",
+      "tickers": [
+       "MU",
+       "WDC",
+       "STX"
+      ]
+     },
+     "assessment": "Mechanism well supported -- the memory wall is a decades-old architectural fact and HBM capacity is genuinely tight. But the named date is a forecast, not a fact, and capacity expansions are announced."
+    },
+    {
+     "id": "compute-scaling-over",
+     "horizon": "2028-01-01",
+     "type": "forecast",
+     "statement": "Piling on compute is over; software-hardware co-design wins",
+     "proxy": {
+      "kind": "basket_excess",
+      "tickers": [
+       "NVDA",
+       "AVGO",
+       "AMD"
+      ]
+     },
+     "assessment": "Dennard scaling ended ~2006 and Moore's law is slowing, so the premise is sound. 'Over' is overstated -- GPUs remain dominant and custom silicon coexists rather than replaces."
+    },
+    {
+     "id": "packaging-photonics",
+     "horizon": "2028-01-01",
+     "type": "forecast",
+     "statement": "Advanced packaging and silicon photonics are the golden tracks",
+     "proxy": {
+      "kind": "basket_excess",
+      "tickers": [
+       "AMAT",
+       "LRCX",
+       "KLAC",
+       "TER",
+       "COHR",
+       "GLW"
+      ]
+     },
+     "assessment": "CoWoS packaging being a real bottleneck is well documented. Photonics is earlier and more speculative."
+    },
+    {
+     "id": "edge-custom-silicon",
+     "horizon": "2028-01-01",
+     "type": "forecast",
+     "statement": "Custom and edge silicon displaces general-purpose chips",
+     "proxy": {
+      "kind": "basket_excess",
+      "tickers": [
+       "QCOM",
+       "MRVL",
+       "TXN",
+       "ADI",
+       "MCHP",
+       "NXPI"
+      ]
+     },
+     "assessment": "Custom silicon at Apple/Google/Amazon/Meta is real and growing. 'Displaces' is the overstatement; these coexist."
+    },
+    {
+     "id": "integration-over-scale",
+     "horizon": "2031-01-01",
+     "type": "unfalsifiable-as-stated",
+     "statement": "Biggest 5y growth is integrating AI into industries, not larger models",
+     "proxy": {
+      "kind": "none",
+      "tickers": []
+     },
+     "assessment": "Plausible and widely held, but as stated it has no observable consequence that could refute it. Recorded, not testable."
+    }
+   ],
+   "recorded": "2026-09-16T17:25:24+00:00"
+  }
+ ]
+}

@@ -15,7 +15,7 @@
   "elitist_ir": 1.0,
   "parsimony_hard": 2.0,
   "low_turnover": 1.0,
-  "novelty_search": 1.0,
+  "novelty_search": 2.0,
   "mdl_parsimony": 2.0,
   "wide_explore": 12.0
  },
@@ -25,7 +25,7 @@
   "elitist_ir": 0,
   "parsimony_hard": 2,
   "low_turnover": 0,
-  "novelty_search": 0,
+  "novelty_search": 1,
   "mdl_parsimony": 4,
   "wide_explore": 13
  },
@@ -45,21 +45,21 @@
   "elitist_ir": 0.0,
   "parsimony_hard": 0.01147264874643906,
   "low_turnover": 0.0,
-  "novelty_search": 0.0,
+  "novelty_search": -0.18525722478287515,
   "mdl_parsimony": 0.6820187408643944,
   "wide_explore": -0.3197515428720526
  },
  "cycles": {
   "qd_ir": 1,
   "qd_consistency": 1,
-  "elitist_ir": 6,
+  "elitist_ir": 7,
   "parsimony_hard": 0,
   "low_turnover": 4,
-  "novelty_search": 1,
+  "novelty_search": 2,
   "mdl_parsimony": 1,
   "wide_explore": 3
  },
- "updated": "2026-09-16T16:06:49+00:00",
+ "updated": "2026-09-16T17:25:34+00:00",
  "table": [
   {
    "id": "mdl_parsimony",
@@ -118,7 +118,7 @@
    "forward_rate": null,
    "mean_fwd_alpha": null,
    "labelled": 0,
-   "cycles": 6,
+   "cycles": 7,
    "established": false
   },
   {
@@ -134,11 +134,11 @@
   {
    "id": "novelty_search",
    "summary": "novelty over objective (Stanley & Lehman)",
-   "posterior": 0.5,
-   "forward_rate": null,
-   "mean_fwd_alpha": null,
-   "labelled": 0,
-   "cycles": 1,
+   "posterior": 0.3333333333333333,
+   "forward_rate": 0.0,
+   "mean_fwd_alpha": -0.18525722478287515,
+   "labelled": 1,
+   "cycles": 2,
    "established": false
   }
  ]

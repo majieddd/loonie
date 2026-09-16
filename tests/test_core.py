@@ -1651,3 +1651,67 @@ def test_peer_rank_is_bounded_and_peer_corr_is_a_correlation():
     assert pm.PEER_NAMES and all(n.startswith("peer_") for n in pm.PEER_NAMES)
     from loonie.features import family_of
     assert family_of("peer_rel_mom_21") == "peer"
+
+
+# =============================================================================
+#  External theses
+# =============================================================================
+def test_thesis_scoring_separates_trailing_from_forward(tmp_path, monkeypatch):
+    """A forecast is tested by what happens AFTER it was made, not before.
+
+    This is the whole point of the capture date. A thesis whose proxy already
+    ran several hundred percent is describing a completed move, however sound
+    its reasoning — and that is invisible unless both sides of the capture date
+    are measured separately.
+    """
+    from loonie import knowledge as kn
+
+    monkeypatch.setattr(kn, "resolve", lambda q: tmp_path / Path(q).name)
+
+    p = synthetic_panel(T=1000, N=20, seed=161)
+    # Make T00/T01 rip in the FIRST half only, then go flat.
+    c = p.bars["close"].copy()
+    ramp = np.linspace(1.0, 6.0, 500).astype(np.float32)
+    for j in (0, 1):
+        c[:500, j] *= ramp
+        c[500:, j] *= ramp[-1]
+    p.bars["close"] = c
+
+    kn.add({"id": "t1", "captured": str(p.dates[500].date()),
+            "summary": "already happened",
+            "claims": [{"id": "c1", "statement": "these go up",
+                        "proxy": {"tickers": ["T00", "T01"]}}]})
+
+    scored = kn.score(p)
+    claim = scored[0]["claims"][0]
+    assert claim["trailing_excess"] > 0.2, "the completed move must show trailing"
+    assert claim["already_moved"] is True
+    assert claim["forward_excess"] is not None
+    assert claim["forward_excess"] < claim["trailing_excess"], \
+        "forward must be measured separately from the move that already ran"
+
+
+def test_thesis_store_round_trips_and_replaces(tmp_path, monkeypatch):
+    from loonie import knowledge as kn
+
+    monkeypatch.setattr(kn, "resolve", lambda q: tmp_path / Path(q).name)
+    kn.add({"id": "a", "summary": "first", "claims": []})
+    kn.add({"id": "b", "summary": "second", "claims": []})
+    assert len(kn.load()) == 2
+    kn.add({"id": "a", "summary": "revised", "claims": []})
+    got = {t["id"]: t["summary"] for t in kn.load()}
+    assert len(got) == 2 and got["a"] == "revised", "same id must replace"
+    assert all("recorded" in t for t in kn.load()), "capture time must be stamped"
+
+
+def test_theses_never_reach_the_strategy_search():
+    """A narrative that steers the hypothesis space has escaped its own test.
+
+    The search must not import or read recorded theses — if it could, a
+    compelling story would quietly bias what gets proposed, which is the exact
+    failure this store exists to prevent.
+    """
+    for mod in ("evolve", "genome", "features", "peers", "methods", "backtest"):
+        src = (Path("D:/trader") / "loonie" / (mod + ".py")).read_text(encoding="utf-8")
+        assert "knowledge" not in src, \
+            "loonie/%s.py references the thesis store" % mod
