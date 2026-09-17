@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T17:19:10+00:00",
+ "generated_at": "2026-09-17T17:35:11+00:00",
  "workers": {
   "workers": [
    {
@@ -18,9 +18,9 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T17:19:10+00:00",
-    "heartbeat_epoch": 1789665550.420984,
-    "uptime_s": 26534.5,
+    "heartbeat": "2026-09-17T17:35:10+00:00",
+    "heartbeat_epoch": 1789666510.9812033,
+    "uptime_s": 27495.1,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -39,7 +39,7 @@
     "heartbeat": "2026-09-17T14:27:00+00:00",
     "heartbeat_epoch": 1789655220.2108197,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 10330.4,
+    "heartbeat_age_s": 11291.0,
     "liveness": "finished"
    },
    {
@@ -68,7 +68,7 @@
     "heartbeat": "2026-09-17T16:51:29+00:00",
     "heartbeat_epoch": 1789663889.8556385,
     "uptime_s": 36.8,
-    "heartbeat_age_s": 1660.8,
+    "heartbeat_age_s": 2621.3,
     "liveness": "finished"
    },
    {
@@ -91,7 +91,7 @@
     "heartbeat": "2026-09-17T10:02:31+00:00",
     "heartbeat_epoch": 1789639351.7214437,
     "uptime_s": 34.3,
-    "heartbeat_age_s": 26198.9,
+    "heartbeat_age_s": 27159.5,
     "liveness": "finished"
    },
    {
@@ -112,14 +112,14 @@
     "heartbeat": "2026-09-17T10:15:31+00:00",
     "heartbeat_epoch": 1789640131.0609217,
     "uptime_s": 182.3,
-    "heartbeat_age_s": 25419.6,
+    "heartbeat_age_s": 26380.1,
     "liveness": "finished"
    }
   ],
   "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T17:19:10+00:00"
+  "updated": "2026-09-17T17:35:11+00:00"
  },
  "experience": {
   "rows": 3121,
