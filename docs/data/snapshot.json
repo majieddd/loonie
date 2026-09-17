@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T09:19:19+00:00",
+ "generated_at": "2026-09-17T09:35:20+00:00",
  "workers": {
   "workers": [
    {
@@ -13,15 +13,33 @@
     "metrics": {
      "jobs_running": 1,
      "failures": 0,
-     "code_reloads": 0
+     "code_reloads": 1
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T09:19:19+00:00",
-    "heartbeat_epoch": 1789636759.023424,
-    "uptime_s": 14106.8,
+    "heartbeat": "2026-09-17T09:35:19+00:00",
+    "heartbeat_epoch": 1789637719.495319,
+    "uptime_s": 15067.3,
     "heartbeat_age_s": 0.2,
+    "liveness": "live"
+   },
+   {
+    "id": "trade",
+    "kind": "trade",
+    "label": "paper execution",
+    "started_at": "2026-09-17T09:35:13+00:00",
+    "status": "running",
+    "detail": "loading market data",
+    "progress": null,
+    "metrics": {},
+    "cycle": 0,
+    "errors": 0,
+    "last_error": "",
+    "heartbeat": "2026-09-17T09:35:13+00:00",
+    "heartbeat_epoch": 1789637713.440194,
+    "uptime_s": 0.0,
+    "heartbeat_age_s": 6.3,
     "liveness": "live"
    },
    {
@@ -39,7 +57,7 @@
     "heartbeat": "2026-09-17T05:54:13+00:00",
     "heartbeat_epoch": 1789624453.6981816,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 12305.5,
+    "heartbeat_age_s": 13266.0,
     "liveness": "finished"
    },
    {
@@ -68,30 +86,7 @@
     "heartbeat": "2026-09-17T05:26:08+00:00",
     "heartbeat_epoch": 1789622768.869833,
     "uptime_s": 52.9,
-    "heartbeat_age_s": 13990.3,
-    "liveness": "finished"
-   },
-   {
-    "id": "trade",
-    "kind": "trade",
-    "label": "paper execution",
-    "started_at": "2026-09-17T05:29:13+00:00",
-    "status": "finished",
-    "detail": "86 orders, 22 positions, equity $97,800.25",
-    "progress": 1.0,
-    "metrics": {
-     "equity": 97800.25,
-     "positions": 22,
-     "orders": 86,
-     "halted": false
-    },
-    "cycle": 0,
-    "errors": 0,
-    "last_error": "",
-    "heartbeat": "2026-09-17T05:29:44+00:00",
-    "heartbeat_epoch": 1789622984.2348976,
-    "uptime_s": 30.6,
-    "heartbeat_age_s": 13775.0,
+    "heartbeat_age_s": 14950.9,
     "liveness": "finished"
    },
    {
@@ -112,14 +107,14 @@
     "heartbeat": "2026-09-17T05:42:45+00:00",
     "heartbeat_epoch": 1789623765.0286531,
     "uptime_s": 180.4,
-    "heartbeat_age_s": 12994.2,
+    "heartbeat_age_s": 13954.7,
     "liveness": "finished"
    }
   ],
-  "live": 1,
+  "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T09:19:19+00:00"
+  "updated": "2026-09-17T09:35:19+00:00"
  },
  "experience": {
   "rows": 2816,
