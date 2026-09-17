@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-09-16T23:59:32+00:00",
+ "generated_at": "2026-09-17T00:00:33+00:00",
  "workers": {
   "workers": [
    {
     "id": "search",
     "kind": "search",
     "label": "genetic program",
-    "started_at": "2026-09-16T23:58:40+00:00",
+    "started_at": "2026-09-17T00:00:01+00:00",
     "status": "running",
     "detail": "seeding population",
     "progress": null,
@@ -14,10 +14,10 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T23:58:40+00:00",
-    "heartbeat_epoch": 1789603120.7996418,
+    "heartbeat": "2026-09-17T00:00:01+00:00",
+    "heartbeat_epoch": 1789603201.6790524,
     "uptime_s": 0.0,
-    "heartbeat_age_s": 51.8,
+    "heartbeat_age_s": 31.0,
     "liveness": "live"
    },
    {
@@ -30,15 +30,15 @@
     "progress": null,
     "metrics": {
      "jobs_running": 2,
-     "failures": 6,
+     "failures": 7,
      "code_reloads": 4
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T23:59:32+00:00",
-    "heartbeat_epoch": 1789603172.3758726,
-    "uptime_s": 360.2,
+    "heartbeat": "2026-09-17T00:00:32+00:00",
+    "heartbeat_epoch": 1789603232.4305036,
+    "uptime_s": 420.3,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -57,7 +57,7 @@
     "heartbeat": "2026-09-16T20:01:40+00:00",
     "heartbeat_epoch": 1789588900.3752224,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 14272.2,
+    "heartbeat_age_s": 14332.3,
     "liveness": "finished"
    },
    {
@@ -80,7 +80,7 @@
     "heartbeat": "2026-09-16T23:59:08+00:00",
     "heartbeat_epoch": 1789603148.748595,
     "uptime_s": 35.1,
-    "heartbeat_age_s": 23.8,
+    "heartbeat_age_s": 83.9,
     "liveness": "finished"
    },
    {
@@ -101,14 +101,14 @@
     "heartbeat": "2026-09-16T23:50:49+00:00",
     "heartbeat_epoch": 1789602649.5047596,
     "uptime_s": 213.9,
-    "heartbeat_age_s": 523.1,
+    "heartbeat_age_s": 583.2,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-16T23:59:32+00:00"
+  "updated": "2026-09-17T00:00:32+00:00"
  },
  "experience": {
   "rows": 2385,
