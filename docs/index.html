@@ -862,7 +862,13 @@ function render(snap, series){
     const h = el("div","head"); h.style.marginTop="40px";
     h.appendChild(el("span","num","06b"));
     h.appendChild(el("h2",null,"Demoted"));
-    h.appendChild(el("span","note", int(snap.demoted.length)+" no longer clear"));
+    /* The snapshot carries only the most recent demotions, so the count has
+       to come from demoted_total or the page would report the size of its own
+       truncation as the number of failures. */
+    const dTot = int(snap.demoted_total || snap.demoted.length);
+    const dShown = snap.demoted.length;
+    h.appendChild(el("span","note", dTot+" no longer clear"
+      + (dTot > dShown ? "  ·  showing latest "+dShown : "")));
     s4.appendChild(h);
     s4.appendChild(table(strat([
       {h:"Why it was demoted", cls:"why", f:r=>(r.demoted_because||[]).join("; ")||"—"},

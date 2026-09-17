@@ -32,6 +32,7 @@ from .config import ROOT, resolve
 
 OUT = "docs/data"
 MAX_SERIES = 3000
+MAX_DEMOTED = 25      # display copy only; the full record lives in state/
 
 
 def _read(path: str):
@@ -342,11 +343,18 @@ def build_snapshot(cfg) -> dict:
         "gates": gates,
         "leader": _strategy(leader) if leader else None,
         "promoted": [_strategy(h) for h in hof],
+        # Most recent demotions only. This list grows for the life of the
+        # search and never shrinks -- at 227 entries it was 210 KB, 55% of a
+        # snapshot the page re-fetches every 30 seconds, to show a scrolling
+        # record nobody reads past the top of. The full history stays in
+        # state/evolve_state.json and the experience corpus; this is the
+        # display copy.
+        "demoted_total": len(ev.get("demoted") or []),
         "demoted": [{**_strategy(h),
                      "demoted_at_generation": h.get("demoted_at_generation"),
                      "demoted_at_trials": h.get("demoted_at_trials"),
                      "demoted_because": h.get("demoted_because") or []}
-                    for h in (ev.get("demoted") or [])],
+                    for h in (ev.get("demoted") or [])[-MAX_DEMOTED:]],
         "elites": [_strategy(e) for e in archive[:12]],
         "portfolio": portfolio,
         "risk": risk_out,
