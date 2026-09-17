@@ -77,11 +77,30 @@ class MarketPanel:
     def shape(self):
         return self.close.shape
 
-    def returns(self) -> np.ndarray:
+    # Daily moves beyond this are dropped, not clipped. They are not returns.
+    #
+    # yfinance back-adjusts for splits, so a company that has done several
+    # reverse splits has its history multiplied up astronomically: JAGX peaks
+    # at an adjusted $714,285,696 and GNLN spans a 9,342,787x range. Reverse
+    # splits happen BECAUSE a stock collapsed, so these cluster entirely in
+    # the illiquid end of the universe -- which is how "long illiquid, short
+    # liquid" came back at t -3.47 and "low turnover" at t -7.59. Both were
+    # measuring a handful of reverse-split artifacts, not a market effect.
+    #
+    # The min_price floor cannot catch them: in adjusted terms they look
+    # expensive rather than cheap.
+    MAX_DAILY_MOVE = 0.60
+
+    def returns(self, sanitise: bool = True) -> np.ndarray:
         c = np.asarray(self.close, dtype=np.float64)
         prev = np.vstack([np.full((1, c.shape[1]), np.nan), c[:-1]])
         with np.errstate(invalid="ignore", divide="ignore"):
             r = (c - prev) / np.where(np.abs(prev) > 1e-12, prev, np.nan)
+        if sanitise and self.market != "crypto":
+            # Crypto genuinely moves more than 60% in a day; equities and FX
+            # do not, and a "return" that large in this data is an adjustment
+            # artefact rather than something anyone could have traded.
+            r = np.where(np.abs(r) > self.MAX_DAILY_MOVE, np.nan, r)
         return np.nan_to_num(r)
 
     def describe(self) -> str:

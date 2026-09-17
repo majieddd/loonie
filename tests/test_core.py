@@ -3456,3 +3456,88 @@ def test_strategy_ids_are_unique_and_results_are_distinguishable():
     assert len(ids) == len(set(ids))
     titles = [v["title"] for v in REGISTRY.values()]
     assert len(titles) == len(set(titles)), "duplicate strategy titles"
+
+
+# =============================================================================
+#  Warehouse
+# =============================================================================
+def test_reverse_split_artifacts_are_dropped_from_returns():
+    """The data corruption the warehouse found.
+
+    yfinance back-adjusts for splits, so a company that has done several
+    reverse splits has its history multiplied up astronomically -- JAGX peaks
+    at an adjusted $714,285,696 and GNLN spans a 9,342,787x range. Reverse
+    splits happen BECAUSE a stock collapsed, so these sit entirely in the
+    illiquid tail. A 500,000% daily "return" is not something anyone traded.
+    """
+    import pandas as pd
+
+    from loonie.markets import MarketPanel
+
+    close = np.array([[100.0], [101.0], [5_000_000.0], [5_050_000.0]])
+    p = MarketPanel(market="stocks",
+                    dates=pd.bdate_range("2020-01-01", periods=4),
+                    symbols=["JUNK"], close=close)
+    r = p.returns()
+    assert abs(r[1, 0] - 0.01) < 1e-9, "an ordinary 1% move was altered"
+    assert r[2, 0] == 0.0, "a 5,000,000% jump survived into the returns"
+    assert abs(r[3, 0] - 0.01) < 1e-9, "the move after the artefact was lost"
+
+    # Crypto is exempt: it genuinely moves more than 60% in a day.
+    pc = MarketPanel(market="crypto",
+                     dates=pd.bdate_range("2020-01-01", periods=2),
+                     symbols=["X"], close=np.array([[100.0], [200.0]]))
+    assert abs(pc.returns()[1, 0] - 1.0) < 1e-9, \
+        "a real 100% crypto day was discarded"
+
+
+def test_warehouse_rebuilds_from_source_and_owns_nothing(tmp_path, monkeypatch):
+    """The warehouse is derived and disposable.
+
+    An analytical store that becomes the only copy of something has stopped
+    being an analytical store -- so every table must be reconstructible, and
+    deleting the file must lose nothing.
+    """
+    import pandas as pd
+
+    from loonie import markets as M
+    from loonie import warehouse as W
+
+    monkeypatch.setattr(W, "resolve", lambda q: tmp_path / Path(q).name)
+
+    con = W.connect()
+    dates = pd.bdate_range("2024-01-01", periods=30)
+    close = np.random.default_rng(3).uniform(10, 100, (30, 4)).astype("float32")
+    panel = M.MarketPanel(market="testmkt", dates=dates,
+                          symbols=["A", "B", "C", "D"], close=close,
+                          tradable=np.ones((30, 4), bool),
+                          meta={"source": "unit test", "caveat": "synthetic"})
+    n = W.load_market(con, "testmkt", panel)
+    assert n == 120, "long format should be rows x symbols, got %d" % n
+
+    got = con.execute("SELECT COUNT(*) FROM symbols WHERE market='testmkt'"
+                      ).fetchone()[0]
+    assert got == 4
+
+    # The caveat must survive into the database; a market without one would
+    # let a cross-market query quietly compare incomparable things.
+    cav = con.execute("SELECT caveat FROM markets WHERE market='testmkt'"
+                      ).fetchone()[0]
+    assert cav == "synthetic"
+
+    # Reloading the same market replaces rather than duplicates.
+    W.load_market(con, "testmkt", panel)
+    assert con.execute("SELECT COUNT(*) FROM prices WHERE market='testmkt'"
+                       ).fetchone()[0] == 120
+    con.close()
+
+
+def test_prices_are_stored_long_with_market_as_a_column():
+    """Wide is right for computing and wrong for asking questions."""
+    from loonie import warehouse as W
+
+    assert "market      VARCHAR," in W.SCHEMA
+    assert "CREATE TABLE IF NOT EXISTS prices" in W.SCHEMA
+    # Every market in one table, so a query can compare them without a union.
+    assert W.SCHEMA.count("CREATE TABLE") >= 7
+    assert "caveat" in W.SCHEMA, "markets table must carry its caveat"

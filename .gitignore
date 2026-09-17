@@ -42,3 +42,4 @@ tools/
 data/universe/wide_panel.npz
 data/congress/ptr/
 data/markets/
+data/loonie.duckdb
