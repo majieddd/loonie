@@ -3249,3 +3249,47 @@ def test_amount_bands_are_midpoints_of_the_disclosed_range():
         if len(nums) == 2:
             assert nums[0] <= mid <= nums[1], \
                 "%s midpoint %d is outside the band" % (band, mid)
+
+
+def test_event_study_benchmarks_against_the_universe():
+    """Without subtracting the market, a month when everything rose reads as
+    disclosure alpha."""
+    src = (Path(__file__).resolve().parent.parent / "scripts"
+           / "congress_event_study.py").read_text(encoding="utf-8")
+    assert "nancumsum" in src and "nanmean" in src, \
+        "the event study no longer nets out the universe return"
+    assert "filing_date" in src and "transaction_date" not in src, \
+        "the event study must key on the filing date only"
+
+
+def test_clustered_tstat_is_not_the_naive_one():
+    """1,988 events are not 1,988 independent observations: members file in
+    batches and neighbouring events share overlapping return windows.
+
+    Here the correction happens to RAISE the t-stat, because averaging within
+    a cluster removes noise faster than it removes sample. That is a fact
+    about this data, not a reason to skip it -- with different clustering it
+    would cut the other way, and the naive number would be the flattering one.
+    """
+    import importlib.util
+
+    p = (Path(__file__).resolve().parent.parent / "scripts"
+         / "congress_event_study.py")
+    spec = importlib.util.spec_from_file_location("_ces", p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    rng = np.random.default_rng(3)
+    # Twenty clusters of ten, with the signal at cluster level and pure noise
+    # within: the naive t-stat sees 200 observations that are really 20.
+    base = rng.normal(0.004, 0.01, 20)
+    rows = []
+    for k, b in enumerate(base):
+        for _ in range(10):
+            rows.append({"date": k, "y": b + rng.normal(0, 0.05)})
+    d = pd.DataFrame(rows)
+
+    naive = mod.tstat(d["y"])
+    clustered = mod.tstat(d.groupby("date")["y"].mean())
+    assert abs(naive - clustered) > 0.3, \
+        "clustering changed nothing; the correction is not being applied"
