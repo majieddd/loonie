@@ -2228,3 +2228,57 @@ def test_gate_never_reuses_another_genomes_scores():
     both = np.isfinite(served) & np.isfinite(truth)
     assert both.any()
     assert np.allclose(served[both], truth[both]),         "gate was served another genome's scores"
+
+
+def test_diagnostics_do_not_load_the_unsealed_panel():
+    """The failure this guards against actually happened.
+
+    attribute.py, feature_ic.py and power.py each called load_panel(cfg) with
+    no date range, which returns everything on disk -- holdout included -- and
+    read straight through the sealed window while the evaluation counter went
+    on reporting 0 of 1. The counter guards one door; nothing guarded this one.
+
+    Analysis scripts must go through seal.training_panel(), which defaults to
+    the training range and logs an override to the ledger.
+    """
+    import ast
+
+    root = Path(__file__).resolve().parent.parent / "scripts"
+    for name in ("attribute.py", "feature_ic.py", "power.py"):
+        tree = ast.parse((root / name).read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            fn = node.func
+            called = (fn.id if isinstance(fn, ast.Name)
+                      else fn.attr if isinstance(fn, ast.Attribute) else "")
+            if called != "load_panel":
+                continue
+            kw = {k.arg for k in node.keywords}
+            assert "start" in kw, \
+                "%s calls load_panel without a start date" % name
+
+
+def test_recording_an_exposure_marks_the_seal_contaminated(tmp_path, monkeypatch):
+    """A look that is not written down leaves the ledger claiming a
+    cleanliness the data no longer has."""
+    import pandas as pd
+
+    from loonie import seal as S
+
+    monkeypatch.setattr(S, "resolve", lambda q: tmp_path / Path(q).name)
+    s = S.Seal(start=pd.Timestamp("2024-09-01"), stop=pd.Timestamp("2026-09-01"),
+               digest="d", created="now", evaluations=0, max_evaluations=1,
+               ledger=[], path=tmp_path / "holdout_seal.json")
+    s.save()
+    assert not s.contaminated
+    assert "CONTAMINATED" not in s.describe()
+
+    s.record_exposure(by="a script", what="read the window")
+    assert s.contaminated
+    assert "CONTAMINATED" in s.describe()
+    assert s.ledger[-1]["event"] == "exposed"
+
+    # It must survive a reload, and there is deliberately no way to clear it.
+    again = S.Seal.load(object())
+    assert again.contaminated, "contamination did not persist"

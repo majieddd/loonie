@@ -55,6 +55,7 @@ class Seal:
     max_evaluations: int
     ledger: list
     path: Path
+    contaminated: bool = False
 
     # ------------------------------------------------------------------ io
     @classmethod
@@ -75,6 +76,7 @@ class Seal:
             evaluations=int(d["evaluations"]),
             max_evaluations=int(d["max_evaluations"]),
             ledger=d.get("ledger", []), path=p,
+            contaminated=bool(d.get("contaminated", False)),
         )
 
     def save(self):
@@ -84,6 +86,7 @@ class Seal:
             "evaluations": self.evaluations,
             "max_evaluations": self.max_evaluations,
             "ledger": self.ledger,
+            "contaminated": self.contaminated,
         }, indent=2), encoding="utf-8")
 
     # -------------------------------------------------------------- create
@@ -154,6 +157,28 @@ class Seal:
         self.save()
         return sub
 
+    def record_exposure(self, by: str, what: str, note: str = "") -> None:
+        """Record that the sealed window was READ outside a formal evaluation.
+
+        The evaluation counter guards the front door. It does nothing about an
+        analyst loading the full panel in a one-off script and looking -- which
+        is how this window was actually compromised: several diagnostics called
+        load_panel() without the sealed training range and read straight
+        through the holdout, while the counter went on reporting 0 of 1.
+
+        An unrecorded look is strictly worse than a recorded one, because the
+        ledger keeps claiming a cleanliness the data no longer has. So this
+        appends the exposure and sets `contaminated`, and nothing here ever
+        clears that flag -- the only honest way out is a new window over
+        market history that did not exist when the leak happened.
+        """
+        self.contaminated = True
+        self.ledger.append({
+            "event": "exposed", "at": _now(), "by": by,
+            "what": what, "note": note,
+        })
+        self.save()
+
     def record_result(self, stats: dict) -> None:
         if self.ledger and self.ledger[-1].get("event") == "opened":
             self.ledger[-1]["result"] = {
@@ -167,8 +192,12 @@ class Seal:
             "Holdout seal  [%s -> %s]\n"
             "  digest      : %s\n"
             "  created     : %s\n"
+            "%s"
             "  evaluations : %d / %d  (%d remaining)"
             % (self.start.date(), self.stop.date(), self.digest, self.created,
+               ("  CONTAMINATED: this window was read outside the ledger; the "
+                "evaluation\n                count below understates what has "
+                "been seen\n" if self.contaminated else ""),
                self.evaluations, self.max_evaluations, self.remaining())
         )
 
@@ -195,3 +224,32 @@ def train_window(cfg) -> tuple:
     start = pd.Timestamp(cfg.universe.start)
     stop = pd.Timestamp(cfg.holdout.start) - pd.Timedelta(days=1)
     return start, stop
+
+
+def training_panel(cfg, universe=None, progress: bool = False,
+                   include_holdout: bool = False, by: str = "unknown"):
+    """Load the panel the way a diagnostic is allowed to see it.
+
+    `load_panel(cfg)` returns everything on disk, holdout included. That is
+    correct for trading and for the holdout evaluator, and wrong for every
+    analysis script -- which is not a hypothetical: attribute.py, feature_ic.py
+    and power.py all called it plainly and read straight through the sealed
+    window while the evaluation counter went on reporting 0 of 1.
+
+    The counter guards one door. This guards the other. Diagnostics get the
+    training window unless they say otherwise, and saying otherwise is logged
+    to the ledger rather than being a quiet keyword argument.
+    """
+    from .data import load_panel
+    from .universe import Universe
+
+    universe = universe or Universe.load(cfg)
+    if include_holdout:
+        s = Seal.load(cfg)
+        if s is not None:
+            s.record_exposure(by=by, what="full panel including holdout",
+                              note="include_holdout=True")
+        return load_panel(cfg, universe, progress=progress)
+
+    s0, s1 = train_window(cfg)
+    return load_panel(cfg, universe, start=s0, end=s1, progress=progress)

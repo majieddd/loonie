@@ -33,7 +33,7 @@ from loonie import backtest as bt  # noqa: E402
 from loonie import factors  # noqa: E402
 from loonie import features as F  # noqa: E402
 from loonie.config import load, load_env, resolve  # noqa: E402
-from loonie.data import load_panel  # noqa: E402
+from loonie import seal  # noqa: E402
 from loonie.genome import Genome  # noqa: E402
 
 
@@ -56,6 +56,8 @@ def main() -> int:
     ap.add_argument("--top", type=int, default=12)
     ap.add_argument("--json", default="state/attribution.json")
     ap.add_argument("--state", default="state/evolve_state.json")
+    ap.add_argument("--include-holdout", action="store_true",
+                    help="read the sealed window too; logged to the ledger")
     args = ap.parse_args()
 
     load_env()
@@ -75,7 +77,10 @@ def main() -> int:
     print("[attr] generation %s, %d candidates"
           % (state.get("generation"), len(pool)))
 
-    panel = load_panel(cfg, progress=False)
+    # The sealed training window, not everything on disk. This script used
+    # to call load_panel(cfg) and read straight through the holdout.
+    panel = seal.training_panel(cfg, by="scripts/attribute.py",
+                                include_holdout=args.include_holdout)
     feats = F.build(panel)
     print("[attr] panel %s..%s, %d names"
           % (panel.dates[0].date(), panel.dates[-1].date(), len(panel.tickers)))

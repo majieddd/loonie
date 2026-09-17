@@ -42,7 +42,7 @@ import numpy as np  # noqa: E402
 from loonie import backtest as bt  # noqa: E402
 from loonie import features as F  # noqa: E402
 from loonie.config import load, load_env, resolve  # noqa: E402
-from loonie.data import load_panel  # noqa: E402
+from loonie import seal  # noqa: E402
 from loonie.genome import Genome  # noqa: E402
 
 TD = 252.0
@@ -92,11 +92,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--top", type=int, default=6)
     ap.add_argument("--json", default="state/power.json")
+    ap.add_argument("--include-holdout", action="store_true",
+                    help="read the sealed window too; logged to the ledger")
     a = ap.parse_args()
 
     load_env()
     cfg = load()
-    panel = load_panel(cfg, progress=False)
+    panel = seal.training_panel(cfg, by="scripts/power.py",
+                                include_holdout=a.include_holdout)
     feats = F.build(panel)
     rets = bt._to_returns(panel.close)
     bench = bt.equal_weight_benchmark(panel)

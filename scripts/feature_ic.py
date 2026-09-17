@@ -40,7 +40,7 @@ import numpy as np  # noqa: E402
 from loonie import backtest as bt  # noqa: E402
 from loonie import features as F  # noqa: E402
 from loonie.config import load, load_env, resolve  # noqa: E402
-from loonie.data import load_panel  # noqa: E402
+from loonie import seal  # noqa: E402
 
 
 def _rank(a: np.ndarray) -> np.ndarray:
@@ -87,11 +87,14 @@ def main() -> int:
     ap.add_argument("--horizon", type=int, default=5)
     ap.add_argument("--json", default="state/feature_ic.json")
     ap.add_argument("--min-obs", type=int, default=200)
+    ap.add_argument("--include-holdout", action="store_true",
+                    help="read the sealed window too; logged to the ledger")
     args = ap.parse_args()
 
     load_env()
     cfg = load()
-    panel = load_panel(cfg, progress=False)
+    panel = seal.training_panel(cfg, by="scripts/feature_ic.py",
+                                include_holdout=args.include_holdout)
     feats = F.build(panel)
     print("[ic] panel %s..%s | %d names | %d terminals"
           % (panel.dates[0].date(), panel.dates[-1].date(),
@@ -117,6 +120,7 @@ def main() -> int:
             # so its cross-section has no spread and a cross-sectional IC is
             # undefined -- not small, undefined. Saying "too few sessions"
             # would read as a data gap and send someone off to fix nothing.
+            #
             # "Constant" has to be judged against float32 resolution, not
             # against zero. A macro row holding one value 616 times has a
             # measured spread around 6e-08 -- the same rounding dust that
