@@ -1,35 +1,30 @@
 {
- "generated_at": "2026-09-17T22:54:31+00:00",
+ "generated_at": "2026-09-17T23:34:30+00:00",
  "workers": {
   "workers": [
    {
     "id": "trade",
     "kind": "trade",
     "label": "paper execution",
-    "started_at": "2026-09-17T22:54:14+00:00",
-    "status": "finished",
-    "detail": "19 orders, 22 positions, equity $98,848.69",
-    "progress": 1.0,
-    "metrics": {
-     "equity": 98848.69,
-     "positions": 22,
-     "orders": 19,
-     "halted": false
-    },
+    "started_at": "2026-09-17T23:34:17+00:00",
+    "status": "running",
+    "detail": "loading market data",
+    "progress": null,
+    "metrics": {},
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T22:54:30+00:00",
-    "heartbeat_epoch": 1789685670.4740174,
-    "uptime_s": 15.9,
-    "heartbeat_age_s": 0.3,
-    "liveness": "finished"
+    "heartbeat": "2026-09-17T23:34:17+00:00",
+    "heartbeat_epoch": 1789688057.65335,
+    "uptime_s": 0.0,
+    "heartbeat_age_s": 12.3,
+    "liveness": "live"
    }
   ],
-  "live": 0,
+  "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T22:54:30+00:00"
+  "updated": "2026-09-17T23:34:29+00:00"
  },
  "experience": {
   "rows": 0
