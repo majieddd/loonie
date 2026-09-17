@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T05:51:13+00:00",
+ "generated_at": "2026-09-17T06:07:14+00:00",
  "workers": {
   "workers": [
    {
@@ -18,9 +18,9 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T05:51:13+00:00",
-    "heartbeat_epoch": 1789624273.0406637,
-    "uptime_s": 1620.8,
+    "heartbeat": "2026-09-17T06:07:13+00:00",
+    "heartbeat_epoch": 1789625233.504764,
+    "uptime_s": 2581.3,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -28,18 +28,18 @@
     "id": "meta",
     "kind": "meta",
     "label": "method review",
-    "started_at": "2026-09-17T04:23:35+00:00",
+    "started_at": "2026-09-17T05:54:13+00:00",
     "status": "finished",
-    "detail": "8 methods, 88 labelled rows",
+    "detail": "8 methods, 106 labelled rows",
     "progress": 1.0,
     "metrics": {},
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T04:23:35+00:00",
-    "heartbeat_epoch": 1789619015.7774796,
+    "heartbeat": "2026-09-17T05:54:13+00:00",
+    "heartbeat_epoch": 1789624453.6981816,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 5257.4,
+    "heartbeat_age_s": 780.0,
     "liveness": "finished"
    },
    {
@@ -68,7 +68,7 @@
     "heartbeat": "2026-09-17T05:26:08+00:00",
     "heartbeat_epoch": 1789622768.869833,
     "uptime_s": 52.9,
-    "heartbeat_age_s": 1504.4,
+    "heartbeat_age_s": 2464.8,
     "liveness": "finished"
    },
    {
@@ -91,7 +91,7 @@
     "heartbeat": "2026-09-17T05:29:44+00:00",
     "heartbeat_epoch": 1789622984.2348976,
     "uptime_s": 30.6,
-    "heartbeat_age_s": 1289.0,
+    "heartbeat_age_s": 2249.5,
     "liveness": "finished"
    },
    {
@@ -112,14 +112,14 @@
     "heartbeat": "2026-09-17T05:42:45+00:00",
     "heartbeat_epoch": 1789623765.0286531,
     "uptime_s": 180.4,
-    "heartbeat_age_s": 508.2,
+    "heartbeat_age_s": 1468.7,
     "liveness": "finished"
    }
   ],
   "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T05:51:13+00:00"
+  "updated": "2026-09-17T06:07:13+00:00"
  },
  "experience": {
   "rows": 2816,
@@ -190,20 +190,20 @@
   {
    "id": "elitist_ir",
    "summary": "plain elitism, no quality-diversity",
-   "posterior": 0.8387096774193549,
-   "forward_rate": 0.8620689655172413,
-   "mean_fwd_alpha": 0.06922086999156783,
-   "labelled": 29,
+   "posterior": 0.84375,
+   "forward_rate": 0.8666666666666667,
+   "mean_fwd_alpha": 0.0747219182352413,
+   "labelled": 30,
    "cycles": 20,
    "established": true
   },
   {
    "id": "mdl_parsimony",
    "summary": "description-length complexity penalty",
-   "posterior": 0.6666666666666666,
-   "forward_rate": 0.75,
-   "mean_fwd_alpha": 0.1705046852160986,
-   "labelled": 4,
+   "posterior": 0.7142857142857143,
+   "forward_rate": 0.8,
+   "mean_fwd_alpha": 0.17712344682558853,
+   "labelled": 5,
    "cycles": 8,
    "established": false
   },
