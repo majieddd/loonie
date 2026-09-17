@@ -3004,3 +3004,52 @@ def test_config_is_part_of_the_reload_fingerprint():
 
     src = inspect.getsource(orc.source_fingerprint)
     assert "config.yaml" in src, "config.yaml is not watched for reloads"
+
+
+def test_averaging_ranks_not_raw_scores():
+    """Raw scores live on wildly different scales.
+
+    One genome returns log-dollars, another a z-score. Averaging them directly
+    lets whichever has the largest numbers dominate the blend, so the
+    "ensemble" is really just its loudest component wearing a committee's
+    name. Ranks make the average a vote rather than a sum.
+    """
+    rng = np.random.default_rng(31)
+    T, N = 50, 40
+    small = rng.normal(0, 0.001, (T, N))       # a z-score-ish signal
+    huge = rng.normal(0, 1000.0, (T, N))       # dollars
+
+    raw = (small + huge) / 2.0
+    # The raw average is essentially the large-scale series alone.
+    assert abs(np.corrcoef(raw.ravel(), huge.ravel())[0, 1]) > 0.99
+
+    r = lambda a: pd.DataFrame(a).rank(axis=1, pct=True).to_numpy()  # noqa: E731
+    blended = (r(small) + r(huge)) / 2.0
+    c_small = abs(np.corrcoef(blended.ravel(), r(small).ravel())[0, 1])
+    c_huge = abs(np.corrcoef(blended.ravel(), r(huge).ravel())[0, 1])
+    assert abs(c_small - c_huge) < 0.15, \
+        "ranked blend still favoured one component (%.2f vs %.2f)" % (c_small, c_huge)
+
+
+def test_ensemble_script_cannot_skip_the_out_of_sample_split():
+    """The in-sample ensemble reads t +4.49 against a best single of +2.93 --
+    a 53% gain that is entirely selection, and vanishes to +0.04 on a held-out
+    window. A tool that can produce the flattering number on request will
+    eventually be asked to, so there is no flag to skip the split.
+    """
+    import ast
+
+    src = (Path(__file__).resolve().parent.parent / "scripts"
+           / "ensemble.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    flags = set()
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Call)
+                and getattr(node.func, "attr", "") == "add_argument"):
+            for arg in node.args:
+                if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                    flags.add(arg.value)
+    banned = {"--no-split", "--in-sample", "--full", "--skip-split"}
+    assert not (flags & banned), "an escape hatch from the split was added"
+    assert "--split" in flags, "the split is no longer configurable at all"
+    assert "_slice_panel" in src, "the script no longer splits the panel"
