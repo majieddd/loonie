@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T09:35:20+00:00",
+ "generated_at": "2026-09-17T09:39:08+00:00",
  "workers": {
   "workers": [
    {
@@ -8,38 +8,20 @@
     "label": "system supervisor",
     "started_at": "2026-09-17T05:24:12+00:00",
     "status": "supervising",
-    "detail": "running: publish",
+    "detail": "running: idle",
     "progress": null,
     "metrics": {
-     "jobs_running": 1,
+     "jobs_running": 0,
      "failures": 0,
-     "code_reloads": 1
+     "code_reloads": 3
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T09:35:19+00:00",
-    "heartbeat_epoch": 1789637719.495319,
-    "uptime_s": 15067.3,
-    "heartbeat_age_s": 0.2,
-    "liveness": "live"
-   },
-   {
-    "id": "trade",
-    "kind": "trade",
-    "label": "paper execution",
-    "started_at": "2026-09-17T09:35:13+00:00",
-    "status": "running",
-    "detail": "loading market data",
-    "progress": null,
-    "metrics": {},
-    "cycle": 0,
-    "errors": 0,
-    "last_error": "",
-    "heartbeat": "2026-09-17T09:35:13+00:00",
-    "heartbeat_epoch": 1789637713.440194,
-    "uptime_s": 0.0,
-    "heartbeat_age_s": 6.3,
+    "heartbeat": "2026-09-17T09:39:04+00:00",
+    "heartbeat_epoch": 1789637944.6049294,
+    "uptime_s": 15292.4,
+    "heartbeat_age_s": 3.4,
     "liveness": "live"
    },
    {
@@ -57,7 +39,7 @@
     "heartbeat": "2026-09-17T05:54:13+00:00",
     "heartbeat_epoch": 1789624453.6981816,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 13266.0,
+    "heartbeat_age_s": 13494.3,
     "liveness": "finished"
    },
    {
@@ -86,7 +68,30 @@
     "heartbeat": "2026-09-17T05:26:08+00:00",
     "heartbeat_epoch": 1789622768.869833,
     "uptime_s": 52.9,
-    "heartbeat_age_s": 14950.9,
+    "heartbeat_age_s": 15179.2,
+    "liveness": "finished"
+   },
+   {
+    "id": "trade",
+    "kind": "trade",
+    "label": "paper execution",
+    "started_at": "2026-09-17T09:38:07+00:00",
+    "status": "finished",
+    "detail": "86 orders, 83 positions, equity $97,714.39",
+    "progress": 1.0,
+    "metrics": {
+     "equity": 97714.39,
+     "positions": 83,
+     "orders": 86,
+     "halted": false
+    },
+    "cycle": 0,
+    "errors": 0,
+    "last_error": "",
+    "heartbeat": "2026-09-17T09:38:41+00:00",
+    "heartbeat_epoch": 1789637921.6083794,
+    "uptime_s": 34.1,
+    "heartbeat_age_s": 26.4,
     "liveness": "finished"
    },
    {
@@ -107,14 +112,14 @@
     "heartbeat": "2026-09-17T05:42:45+00:00",
     "heartbeat_epoch": 1789623765.0286531,
     "uptime_s": 180.4,
-    "heartbeat_age_s": 13954.7,
+    "heartbeat_age_s": 14183.0,
     "liveness": "finished"
    }
   ],
-  "live": 2,
+  "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T09:35:19+00:00"
+  "updated": "2026-09-17T09:39:08+00:00"
  },
  "experience": {
   "rows": 2816,
@@ -1671,588 +1676,1387 @@
   }
  ],
  "portfolio": {
-  "equity": 98206.65440867186,
-  "cash": 0.0,
-  "invested": 98206.65440867186,
-  "gross_exposure": 1.0,
-  "n_positions": 22,
-  "total_return": -0.017933455913281326,
+  "equity": 97714.38973230062,
+  "cash": 7020.89635504957,
+  "invested": 90693.49337725106,
+  "gross_exposure": 0.9281487979991064,
+  "n_positions": 83,
+  "total_return": -0.022856102676993784,
   "positions": [
    {
-    "symbol": "MU",
-    "qty": 6.492646136798327,
-    "avg_price": 924.4920443115234,
-    "market_price": 927.5999755859375,
-    "market_value": 6022.57839798226,
-    "unrealized": 20.178697982259497,
-    "unrealized_pct": 0.0033617717897491683,
-    "weight": 0.061325563264992486
+    "symbol": "WAT",
+    "qty": 14.016863641015789,
+    "avg_price": 418.8493346557617,
+    "market_price": 418.6400146484375,
+    "market_value": 5868.02,
+    "unrealized": -2.9340099999998603,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.06005277233042226
    },
    {
-    "symbol": "BKR",
-    "qty": 105.66044608982102,
-    "avg_price": 56.80838877868651,
-    "market_price": 56.720001220703125,
-    "market_value": 5993.060631194685,
-    "unrealized": -9.339068805314737,
-    "unrealized_pct": -0.0015558891896710891,
-    "weight": 0.06102499537613293
+    "symbol": "BRK.B",
+    "qty": 5.235994736275397,
+    "avg_price": 520.0598877868653,
+    "market_price": 519.7999877929688,
+    "market_value": 2721.67,
+    "unrealized": -1.3608350000001381,
+    "unrealized_pct": -0.0004997501249376368,
+    "weight": 0.02785331830302902
    },
    {
-    "symbol": "KLAC",
-    "qty": 35.4805141045214,
-    "avg_price": 169.17454133605958,
-    "market_price": 168.02000427246094,
-    "market_value": 5961.436131430795,
-    "unrealized": -40.96356856920422,
-    "unrealized_pct": -0.006824531956644675,
-    "weight": 0.060702975448315315
+    "symbol": "CMCSA",
+    "qty": 114.69321755172307,
+    "avg_price": 23.741864542007445,
+    "market_price": 23.729999542236328,
+    "market_value": 2721.67,
+    "unrealized": -1.3608349999998273,
+    "unrealized_pct": -0.0004997501249374148,
+    "weight": 0.02785331830302902
+   },
+   {
+    "symbol": "CNC",
+    "qty": 41.23117576004706,
+    "avg_price": 66.04300713729859,
+    "market_price": 66.01000213623047,
+    "market_value": 2721.67,
+    "unrealized": -1.3608350000001594,
+    "unrealized_pct": -0.0004997501249376368,
+    "weight": 0.02785331830302902
+   },
+   {
+    "symbol": "EG",
+    "qty": 7.204569127119042,
+    "avg_price": 377.9588740081787,
+    "market_price": 377.7699890136719,
+    "market_value": 2721.67,
+    "unrealized": -1.3608350000001015,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.02785331830302902
+   },
+   {
+    "symbol": "EXPE",
+    "qty": 9.48416206719397,
+    "avg_price": 287.11348622131345,
+    "market_price": 286.9700012207031,
+    "market_value": 2721.67,
+    "unrealized": -1.3608349999997584,
+    "unrealized_pct": -0.0004997501249374148,
+    "weight": 0.02785331830302902
+   },
+   {
+    "symbol": "IBKR",
+    "qty": 31.377335335822227,
+    "avg_price": 86.78336786270141,
+    "market_price": 86.73999786376953,
+    "market_value": 2721.67,
+    "unrealized": -1.3608349999998397,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.02785331830302902
+   },
+   {
+    "symbol": "SPG",
+    "qty": 13.411205121010152,
+    "avg_price": 203.04147244262694,
+    "market_price": 202.94000244140625,
+    "market_value": 2721.67,
+    "unrealized": -1.3608349999998264,
+    "unrealized_pct": -0.0004997501249374148,
+    "weight": 0.02785331830302902
+   },
+   {
+    "symbol": "SYF",
+    "qty": 36.34709000841699,
+    "avg_price": 74.91743725204468,
+    "market_price": 74.87999725341797,
+    "market_value": 2721.67,
+    "unrealized": -1.3608350000000125,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.02785331830302902
+   },
+   {
+    "symbol": "TSN",
+    "qty": 52.21930268181567,
+    "avg_price": 52.14605893135071,
+    "market_price": 52.119998931884766,
+    "market_value": 2721.67,
+    "unrealized": -1.3608350000000298,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.02785331830302902
+   },
+   {
+    "symbol": "UAL",
+    "qty": 25.60366812665857,
+    "avg_price": 106.35315305328369,
+    "market_price": 106.30000305175781,
+    "market_value": 2721.67,
+    "unrealized": -1.3608349999999914,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.02785331830302902
    },
    {
     "symbol": "LRCX",
-    "qty": 21.936451841833936,
+    "qty": 8.660548841833936,
     "avg_price": 273.62673522949217,
-    "market_price": 270.8699951171875,
-    "market_value": 5941.926603285977,
-    "unrealized": -60.47309671402326,
-    "unrealized_pct": -0.010074820028067033,
-    "weight": 0.060504317544100066
-   },
-   {
-    "symbol": "HWM",
-    "qty": 26.413947391474693,
-    "avg_price": 227.24356988525392,
-    "market_price": 224.6699981689453,
-    "market_value": 5934.421512077237,
-    "unrealized": -67.97818792276277,
-    "unrealized_pct": -0.011325168485991188,
-    "weight": 0.060427896131987714
-   },
-   {
-    "symbol": "VRT",
-    "qty": 25.27233672616795,
-    "avg_price": 237.50869438934325,
-    "market_price": 234.61000061035156,
-    "market_value": 5929.142934751273,
-    "unrealized": -73.25676524872613,
-    "unrealized_pct": -0.012204579653155356,
-    "weight": 0.06037414644101466
+    "market_price": 269.2300109863281,
+    "market_value": 2331.679659834582,
+    "unrealized": -38.078045051997556,
+    "unrealized_pct": -0.01606832840905148,
+    "weight": 0.023862193339409643
    },
    {
     "symbol": "SNDK",
-    "qty": 3.8656177151593587,
+    "qty": 1.486698715159359,
     "avg_price": 1552.7659852294921,
-    "market_price": 1530.89501953125,
-    "market_value": 5917.854907549233,
-    "unrealized": -84.5447924507674,
-    "unrealized_pct": -0.014085165379900899,
-    "weight": 0.060259204869386865
+    "market_price": 1519.969970703125,
+    "market_value": 2259.7374025251443,
+    "unrealized": -48.75779265869766,
+    "unrealized_pct": -0.02112102843463559,
+    "weight": 0.02312594295186149
    },
    {
-    "symbol": "AMGN",
-    "qty": 15.725819134993445,
-    "avg_price": 381.69075,
+    "symbol": "GLW",
+    "qty": 15.581783732920393,
+    "avg_price": 144.23208366394044,
+    "market_price": 144.16000366210938,
+    "market_value": 2246.27,
+    "unrealized": -1.1231350000002127,
+    "unrealized_pct": -0.0004997501249376368,
+    "weight": 0.02298811880372896
+   },
+   {
+    "symbol": "WDC",
+    "qty": 4.843513907685223,
+    "avg_price": 417.17848622131345,
+    "market_price": 416.9700012207031,
+    "market_value": 2019.6,
+    "unrealized": -1.0097999999998657,
+    "unrealized_pct": -0.0004997501249374148,
+    "weight": 0.020668399050875898
+   },
+   {
+    "symbol": "SMCI",
+    "qty": 49.11967638943495,
+    "avg_price": 36.868423473358156,
+    "market_price": 36.849998474121094,
+    "market_value": 1810.0599999999997,
+    "unrealized": -0.905030000000092,
+    "unrealized_pct": -0.0004997501249376368,
+    "weight": 0.0185239861289505
+   },
+   {
+    "symbol": "NVDA",
+    "qty": 8.31075292531468,
+    "avg_price": 214.0069438934326,
+    "market_price": 213.89999389648438,
+    "market_value": 1777.6699999999998,
+    "unrealized": -0.8888349999999055,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.018192509873623766
+   },
+   {
+    "symbol": "DVN",
+    "qty": 35.686210755729824,
+    "avg_price": 48.46421862602234,
+    "market_price": 48.439998626708984,
+    "market_value": 1728.64,
+    "unrealized": -0.864319999999929,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.0176907414019143
+   },
+   {
+    "symbol": "COO",
+    "qty": 31.1234207146481,
+    "avg_price": 54.63730560509575,
+    "market_price": 54.61000061035156,
+    "market_value": 1699.6500242231612,
+    "unrealized": -0.8498248390345186,
+    "unrealized_pct": -0.0004997500232082341,
+    "weight": 0.01739406067908258
+   },
+   {
+    "symbol": "CEG",
+    "qty": 6.235849449435984,
+    "avg_price": 259.6597637786865,
+    "market_price": 259.5299987792969,
+    "market_value": 1618.39,
+    "unrealized": -0.8091949999999206,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.016562453129306324
+   },
+   {
+    "symbol": "STX",
+    "qty": 1.941111895371598,
+    "avg_price": 783.5715826721191,
+    "market_price": 783.1799926757812,
+    "market_value": 1520.24,
+    "unrealized": -0.7601199999999612,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.015557995134236273
+   },
+   {
+    "symbol": "AMAT",
+    "qty": 3.54090226469844,
+    "avg_price": 415.5876948852539,
+    "market_price": 415.3800048828125,
+    "market_value": 1470.82,
+    "unrealized": -0.735409999999913,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.015052235438705333
+   },
+   {
+    "symbol": "TER",
+    "qty": 4.072490179851993,
+    "avg_price": 341.3205688934326,
+    "market_price": 341.1499938964844,
+    "market_value": 1389.33,
+    "unrealized": -0.6946649999999611,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.014218274338162711
+   },
+   {
+    "symbol": "ALB",
+    "qty": 12.690965419823685,
+    "avg_price": 109.52473622131347,
+    "market_price": 109.47000122070312,
+    "market_value": 1389.28,
+    "unrealized": -0.6946399999999798,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.014217762642800984
+   },
+   {
+    "symbol": "MU",
+    "qty": 1.2625011367983268,
+    "avg_price": 924.4920443115234,
+    "market_price": 926.5499877929688,
+    "market_value": 1169.770412889099,
+    "unrealized": 2.5981559847914775,
+    "unrealized_pct": 0.002226026166593842,
+    "weight": 0.011971321891215964
+   },
+   {
+    "symbol": "PANW",
+    "qty": 3.0589911318264345,
+    "avg_price": 375.8378188934326,
     "market_price": 375.6499938964844,
-    "market_value": 5907.4038620775045,
-    "unrealized": -94.99583792249415,
-    "unrealized_pct": -0.015826309921096127,
-    "weight": 0.06015278595577397
-   },
-   {
-    "symbol": "AAPL",
-    "qty": 14.085139287684315,
-    "avg_price": 331.50566633605956,
-    "market_price": 331.3399963378906,
-    "market_value": 4666.97,
-    "unrealized": -2.333484999999885,
+    "market_value": 1149.11,
+    "unrealized": -0.5745549999999402,
     "unrealized_pct": -0.0004997501249375258,
-    "weight": 0.04752193248106308
+    "weight": 0.01175988514228164
    },
    {
-    "symbol": "ABBV",
-    "qty": 17.742434034338075,
-    "avg_price": 263.17152854919436,
-    "market_price": 263.0400085449219,
-    "market_value": 4666.97,
-    "unrealized": -2.333485000000484,
+    "symbol": "JBHT",
+    "qty": 4.608288006119759,
+    "avg_price": 236.84836072540284,
+    "market_price": 236.72999572753906,
+    "market_value": 1090.92,
+    "unrealized": -0.545460000000043,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.011164374080303793
+   },
+   {
+    "symbol": "BKR",
+    "qty": 18.91537708982102,
+    "avg_price": 56.80838877868651,
+    "market_price": 56.31999969482422,
+    "market_value": 1065.314031926205,
+    "unrealized": -9.238063687807525,
+    "unrealized_pct": -0.008597129655709024,
+    "weight": 0.010902324978385993
+   },
+   {
+    "symbol": "ORCL",
+    "qty": 7.394593272703203,
+    "avg_price": 143.23158366394043,
+    "market_price": 143.16000366210938,
+    "market_value": 1058.61,
+    "unrealized": -0.529304999999978,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.01083371653755582
+   },
+   {
+    "symbol": "EQT",
+    "qty": 20.87542160653316,
+    "avg_price": 50.43520484733582,
+    "market_price": 50.40999984741211,
+    "market_value": 1052.33,
+    "unrealized": -0.5261650000000557,
     "unrealized_pct": -0.0004997501249376368,
-    "weight": 0.04752193248106308
+    "weight": 0.010769447600122913
    },
    {
-    "symbol": "ABNB",
-    "qty": 27.726769230769232,
-    "avg_price": 168.40416732788086,
-    "market_price": 168.32000732421875,
-    "market_value": 4666.97,
-    "unrealized": -2.3334849999999054,
+    "symbol": "HUM",
+    "qty": 2.6596485671484684,
+    "avg_price": 384.91236122131346,
+    "market_price": 384.7200012207031,
+    "market_value": 1023.2200000000001,
+    "unrealized": -0.5116099999999577,
     "unrealized_pct": -0.0004997501249375258,
-    "weight": 0.04752193248106308
+    "weight": 0.01047153856052547
    },
    {
-    "symbol": "ABT",
-    "qty": 45.74115510963806,
-    "avg_price": 102.08101377868653,
-    "market_price": 102.02999877929688,
-    "market_value": 4666.97,
-    "unrealized": -2.3334850000000937,
+    "symbol": "MGM",
+    "qty": 26.653295552692907,
+    "avg_price": 38.40919438934326,
+    "market_price": 38.38999938964844,
+    "market_value": 1023.2200000000001,
+    "unrealized": -0.5116100000000289,
     "unrealized_pct": -0.0004997501249375258,
-    "weight": 0.04752193248106308
+    "weight": 0.01047153856052547
    },
    {
-    "symbol": "ACGL",
-    "qty": 48.09326005739185,
-    "avg_price": 97.08852091598511,
-    "market_price": 97.04000091552734,
-    "market_value": 4666.97,
-    "unrealized": -2.3334850000003335,
+    "symbol": "CBOE",
+    "qty": 3.783677948868413,
+    "avg_price": 270.56520767211913,
+    "market_price": 270.42999267578125,
+    "market_value": 1023.22,
+    "unrealized": -0.5116099999999569,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.01047153856052547
+   },
+   {
+    "symbol": "CME",
+    "qty": 3.7554871617497776,
+    "avg_price": 272.5962214508057,
+    "market_price": 272.4599914550781,
+    "market_value": 1023.22,
+    "unrealized": -0.511610000000029,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.01047153856052547
+   },
+   {
+    "symbol": "DAL",
+    "qty": 13.140104840241738,
+    "avg_price": 77.90893774795532,
+    "market_price": 77.87000274658203,
+    "market_value": 1023.22,
+    "unrealized": -0.5116099999999791,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.01047153856052547
+   },
+   {
+    "symbol": "F",
+    "qty": 76.64569069378197,
+    "avg_price": 13.35667538166046,
+    "market_price": 13.350000381469727,
+    "market_value": 1023.22,
+    "unrealized": -0.5116099999999401,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.01047153856052547
+   },
+   {
+    "symbol": "MET",
+    "qty": 10.523706311556277,
+    "avg_price": 97.27861835861206,
+    "market_price": 97.2300033569336,
+    "market_value": 1023.22,
+    "unrealized": -0.5116100000000395,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.01047153856052547
+   },
+   {
+    "symbol": "T",
+    "qty": 39.56767114655105,
+    "avg_price": 25.872930610656738,
+    "market_price": 25.860000610351562,
+    "market_value": 1023.22,
+    "unrealized": -0.511609999999982,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.01047153856052547
+   },
+   {
+    "symbol": "SWKS",
+    "qty": 11.95490178502346,
+    "avg_price": 85.63279133605957,
+    "market_price": 85.58999633789062,
+    "market_value": 1023.2199999999999,
+    "unrealized": -0.5116099999999809,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.010471538560525469
+   },
+   {
+    "symbol": "HOOD",
+    "qty": 9.207527455080314,
+    "avg_price": 104.47220816802978,
+    "market_price": 104.41999816894531,
+    "market_value": 961.45,
+    "unrealized": -0.4807249999999571,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.009839390110647968
+   },
+   {
+    "symbol": "CVNA",
+    "qty": 13.969571539512621,
+    "avg_price": 65.43270152664185,
+    "market_price": 65.4000015258789,
+    "market_value": 913.61,
+    "unrealized": -0.45680500000005875,
     "unrealized_pct": -0.0004997501249376368,
-    "weight": 0.04752193248106308
+    "weight": 0.009349799988547599
    },
    {
-    "symbol": "ACN",
-    "qty": 24.131179665382795,
-    "avg_price": 193.49669389343262,
-    "market_price": 193.39999389648438,
-    "market_value": 4666.97,
-    "unrealized": -2.333485000000088,
+    "symbol": "VRT",
+    "qty": 3.4675287261679486,
+    "avg_price": 237.50869438934325,
+    "market_price": 239.41000366210938,
+    "market_value": 830.161065030338,
+    "unrealized": 6.592844520646039,
+    "unrealized_pct": 0.008005219672713837,
+    "weight": 0.008495791329246962
+   },
+   {
+    "symbol": "KLAC",
+    "qty": 4.334848104521399,
+    "avg_price": 169.17454133605958,
+    "market_price": 167.36000061035156,
+    "market_value": 725.4801814184826,
+    "unrealized": -7.865758425412267,
+    "unrealized_pct": -0.010725849831645151,
+    "weight": 0.0074244968771336114
+   },
+   {
+    "symbol": "LITE",
+    "qty": 0.7143027872101013,
+    "avg_price": 919.8597244262695,
+    "market_price": 919.4000244140625,
+    "market_value": 656.73,
+    "unrealized": -0.32836499999998375,
     "unrealized_pct": -0.0004997501249375258,
-    "weight": 0.04752193248106308
+    "weight": 0.0067209138981391015
    },
    {
-    "symbol": "ADBE",
-    "qty": 18.105872994975304,
-    "avg_price": 257.88888977050783,
-    "market_price": 257.760009765625,
-    "market_value": 4666.97,
-    "unrealized": -2.3334850000003295,
+    "symbol": "GOOG",
+    "qty": 1.5434347672351123,
+    "avg_price": 339.52966534423825,
+    "market_price": 339.3599853515625,
+    "market_value": 523.78,
+    "unrealized": -0.26188999999995716,
+    "unrealized_pct": -0.0004997501249374148,
+    "weight": 0.00536031593130708
+   },
+   {
+    "symbol": "GOOGL",
+    "qty": 1.5276344021324477,
+    "avg_price": 343.0414301147461,
+    "market_price": 342.8699951171875,
+    "market_value": 523.78,
+    "unrealized": -0.2618900000000188,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.00536031593130708
+   },
+   {
+    "symbol": "CRWD",
+    "qty": 2.0589161366561872,
+    "avg_price": 241.48068061065675,
+    "market_price": 241.36000061035156,
+    "market_value": 496.94000000000005,
+    "unrealized": -0.24847000000001968,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "DDOG",
+    "qty": 2.1532129401463918,
+    "avg_price": 230.90538828277587,
+    "market_price": 230.7899932861328,
+    "market_value": 496.94000000000005,
+    "unrealized": -0.24846999999998975,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "FICO",
+    "qty": 0.5012760500713016,
+    "avg_price": 991.8456505737305,
+    "market_price": 991.3499755859375,
+    "market_value": 496.94000000000005,
+    "unrealized": -0.24847000000001324,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "MRVL",
+    "qty": 2.163336317424785,
+    "avg_price": 229.8248617172241,
+    "market_price": 229.7100067138672,
+    "market_value": 496.94000000000005,
+    "unrealized": -0.24846999999997543,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "WDAY",
+    "qty": 2.6466766858682855,
+    "avg_price": 187.85387450408936,
+    "market_price": 187.75999450683594,
+    "market_value": 496.94000000000005,
+    "unrealized": -0.24847000000001626,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "AMD",
+    "qty": 0.9696390243902439,
+    "avg_price": 512.75625,
+    "market_price": 512.5,
+    "market_value": 496.94,
+    "unrealized": -0.24847000000002203,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "APP",
+    "qty": 1.521741804615354,
+    "avg_price": 326.723277557373,
+    "market_price": 326.55999755859375,
+    "market_value": 496.94,
+    "unrealized": -0.24846999999996472,
+    "unrealized_pct": -0.0004997501249374148,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "CHTR",
+    "qty": 3.681037037037037,
+    "avg_price": 135.0675,
+    "market_price": 135.0,
+    "market_value": 496.94,
+    "unrealized": -0.24846999999998326,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "CIEN",
+    "qty": 1.4594419970631425,
+    "avg_price": 340.67025,
+    "market_price": 340.5,
+    "market_value": 496.94,
+    "unrealized": -0.2484700000000146,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "COHR",
+    "qty": 1.7139999743169412,
+    "avg_price": 290.0749576721191,
+    "market_price": 289.92999267578125,
+    "market_value": 496.94,
+    "unrealized": -0.24846999999997507,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "COIN",
+    "qty": 3.0207283240736507,
+    "avg_price": 164.59224950408935,
+    "market_price": 164.50999450683594,
+    "market_value": 496.94,
+    "unrealized": -0.2484699999999904,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "DELL",
+    "qty": 0.8822099085453231,
+    "avg_price": 563.5716230163574,
+    "market_price": 563.2899780273438,
+    "market_value": 496.94,
+    "unrealized": -0.2484699999999992,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "FDXF",
+    "qty": 4.0823132037784085,
+    "avg_price": 121.79086835861206,
+    "market_price": 121.7300033569336,
+    "market_value": 496.94,
+    "unrealized": -0.24846999999999303,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "FLEX",
+    "qty": 4.605560639225877,
+    "avg_price": 107.95395152664184,
+    "market_price": 107.9000015258789,
+    "market_value": 496.94,
+    "unrealized": -0.2484699999999958,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "HONA",
+    "qty": 3.0267999888472725,
+    "avg_price": 164.26208267211913,
+    "market_price": 164.17999267578125,
+    "market_value": 496.94,
+    "unrealized": -0.2484699999999828,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "HPE",
+    "qty": 8.767466431269964,
+    "avg_price": 56.70834030532837,
+    "market_price": 56.68000030517578,
+    "market_value": 496.94,
+    "unrealized": -0.24847000000001046,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "INTC",
+    "qty": 4.917763334905268,
+    "avg_price": 101.1005280532837,
+    "market_price": 101.05000305175781,
+    "market_value": 496.94,
+    "unrealized": -0.24847000000002403,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "IT",
+    "qty": 2.5940386334013343,
+    "avg_price": 191.66579232788087,
+    "market_price": 191.57000732421875,
+    "market_value": 496.94,
+    "unrealized": -0.24847000000001535,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "MRNA",
+    "qty": 3.4125808038936425,
+    "avg_price": 145.6928051147461,
+    "market_price": 145.6199951171875,
+    "market_value": 496.94,
+    "unrealized": -0.24847000000004735,
     "unrealized_pct": -0.0004997501249376368,
-    "weight": 0.04752193248106308
+    "weight": 0.005085637861132041
    },
    {
-    "symbol": "ADI",
-    "qty": 12.915372689001858,
-    "avg_price": 361.5306811065674,
-    "market_price": 361.3500061035156,
-    "market_value": 4666.97,
-    "unrealized": -2.3334850000000356,
+    "symbol": "NOW",
+    "qty": 3.554140852300779,
+    "avg_price": 139.88991732788085,
+    "market_price": 139.82000732421875,
+    "market_value": 496.94,
+    "unrealized": -0.24846999999997332,
     "unrealized_pct": -0.0004997501249375258,
-    "weight": 0.04752193248106308
+    "weight": 0.005085637861132041
    },
    {
-    "symbol": "ADM",
-    "qty": 53.88488589205953,
-    "avg_price": 86.65330561065674,
-    "market_price": 86.61000061035156,
-    "market_value": 4666.97,
-    "unrealized": -2.3334850000003247,
-    "unrealized_pct": -0.0004997501249376368,
-    "weight": 0.04752193248106308
-   },
-   {
-    "symbol": "ADP",
-    "qty": 16.87690312299457,
-    "avg_price": 276.66826377868654,
-    "market_price": 276.5299987792969,
-    "market_value": 4666.97,
-    "unrealized": -2.33348500000023,
+    "symbol": "ON",
+    "qty": 7.461561732514109,
+    "avg_price": 66.63329847335815,
+    "market_price": 66.5999984741211,
+    "market_value": 496.94,
+    "unrealized": -0.24846999999998726,
     "unrealized_pct": -0.0004997501249375258,
-    "weight": 0.04752193248106308
+    "weight": 0.005085637861132041
    },
    {
-    "symbol": "ADSK",
-    "qty": 17.34714852223563,
-    "avg_price": 226.61325,
-    "market_price": 226.5,
-    "market_value": 3929.1291402863703,
-    "unrealized": -1.9645645701430747,
+    "symbol": "QCOM",
+    "qty": 2.688487393667685,
+    "avg_price": 184.93241633605956,
+    "market_price": 184.83999633789062,
+    "market_value": 496.94,
+    "unrealized": -0.2484699999999737,
     "unrealized_pct": -0.0004997501249375258,
-    "weight": 0.04000878722470175
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "RDDT",
+    "qty": 3.1531724667167675,
+    "avg_price": 157.67880610656738,
+    "market_price": 157.60000610351562,
+    "market_value": 496.94,
+    "unrealized": -0.2484699999999871,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "TTD",
+    "qty": 34.29537666318763,
+    "avg_price": 14.497244771003723,
+    "market_price": 14.489999771118164,
+    "market_value": 496.94,
+    "unrealized": -0.24847000000000635,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.005085637861132041
+   },
+   {
+    "symbol": "AKAM",
+    "qty": 4.756316845648547,
+    "avg_price": 104.53224335861206,
+    "market_price": 104.4800033569336,
+    "market_value": 496.93999999999994,
+    "unrealized": -0.24847000000001565,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.00508563786113204
+   },
+   {
+    "symbol": "AXON",
+    "qty": 1.060885499668484,
+    "avg_price": 468.6542234344482,
+    "market_price": 468.4200134277344,
+    "market_value": 496.93999999999994,
+    "unrealized": -0.2484699999999836,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.00508563786113204
+   },
+   {
+    "symbol": "PLTR",
+    "qty": 2.8504073100751595,
+    "avg_price": 174.42716633605957,
+    "market_price": 174.33999633789062,
+    "market_value": 496.93999999999994,
+    "unrealized": -0.24847000000000194,
+    "unrealized_pct": -0.0004997501249375258,
+    "weight": 0.00508563786113204
    },
    {
     "symbol": "CASY",
     "qty": 3.621044921686689e-07,
     "avg_price": 621.9207903442383,
-    "market_price": 587.1400146484375,
-    "market_value": 0.0002126060368361773,
-    "unrealized": -1.259427512056033e-05,
-    "unrealized_pct": -0.055924767648544704,
-    "weight": 2.164884224152979e-09
+    "market_price": 589.0,
+    "market_value": 0.000213279545887346,
+    "unrealized": -1.1920766069391627e-05,
+    "unrealized_pct": -0.052934056644120875,
+    "weight": 2.1826830876358017e-09
+   },
+   {
+    "symbol": "AAPL",
+    "qty": 2.876843154808739e-07,
+    "avg_price": 331.50566633605956,
+    "market_price": 332.4100036621094,
+    "market_value": 9.562914436252873e-05,
+    "unrealized": 2.6016366460844433e-07,
+    "unrealized_pct": 0.002727969437279709,
+    "weight": 9.786597923245015e-10
+   },
+   {
+    "symbol": "HWM",
+    "qty": 3.914746926625412e-07,
+    "avg_price": 227.24356988525392,
+    "market_price": 227.72999572753906,
+    "market_value": 8.915053008748018e-05,
+    "unrealized": 1.904234071116943e-07,
+    "unrealized_pct": 0.002140548322360658,
+    "weight": 9.123582548252914e-10
    },
    {
     "symbol": "NRG",
     "qty": 4.887412430321092e-07,
     "avg_price": 108.52423622131347,
-    "market_price": 105.98999786376953,
-    "market_value": 5.180168330490932e-05,
-    "unrealized": -1.2385868050056766e-06,
-    "unrealized_pct": -0.023351819333479296,
-    "weight": 5.274763061303829e-10
+    "market_price": 107.37999725341797,
+    "market_value": 5.248103333441997e-05,
+    "unrealized": -5.592367754950262e-07,
+    "unrealized_pct": -0.010543626085163682,
+    "weight": 5.370860267172273e-10
    },
    {
-    "symbol": "COO",
-    "qty": 4.4356639250509033e-07,
-    "avg_price": 54.247111221313475,
-    "market_price": 53.27000045776367,
-    "market_value": 2.3628781931794743e-05,
-    "unrealized": -4.334134964656803e-07,
-    "unrealized_pct": -0.018012217453634682,
-    "weight": 2.406026564500121e-10
+    "symbol": "AMGN",
+    "qty": 1.3499344575507166e-07,
+    "avg_price": 381.69075,
+    "market_price": 376.3500061035156,
+    "market_value": 5.0804784133855825e-05,
+    "unrealized": -7.209654214817908e-07,
+    "unrealized_pct": -0.013992332527011375,
+    "weight": 5.199314478966829e-10
+   },
+   {
+    "symbol": "ABNB",
+    "qty": 2.3076923127973714e-07,
+    "avg_price": 168.40416732788086,
+    "market_price": 167.50999450683594,
+    "market_value": 3.865615266401552e-05,
+    "unrealized": -2.063475745437698e-07,
+    "unrealized_pct": -0.005309683455184233,
+    "weight": 3.956034804077304e-10
+   },
+   {
+    "symbol": "ADP",
+    "qty": 1.229945709724234e-07,
+    "avg_price": 276.66826377868654,
+    "market_price": 273.19000244140625,
+    "market_value": 3.360088714423606e-05,
+    "unrealized": -4.2780726090875653e-07,
+    "unrealized_pct": -0.012571956355871161,
+    "weight": 3.4386836203234146e-10
+   },
+   {
+    "symbol": "ABT",
+    "qty": 1.0963805863184461e-07,
+    "avg_price": 102.08101377868653,
+    "market_price": 102.36000061035156,
+    "market_value": 1.1222551748473375e-05,
+    "unrealized": 3.058757460760389e-08,
+    "unrealized_pct": 0.002732994328111582,
+    "weight": 1.1485055352869518e-10
+   },
+   {
+    "symbol": "ABBV",
+    "qty": 3.433807549413359e-08,
+    "avg_price": 263.17152854919436,
+    "market_price": 262.510009765625,
+    "market_value": 9.014088533297777e-06,
+    "unrealized": -2.2715281930992215e-08,
+    "unrealized_pct": -0.0025136411496189393,
+    "weight": 9.224934585369534e-11
+   },
+   {
+    "symbol": "ACGL",
+    "qty": 5.739185127140445e-08,
+    "avg_price": 97.08852091598511,
+    "market_price": 96.97000122070312,
+    "market_value": 5.5652878878465015e-06,
+    "unrealized": -6.802064724356108e-09,
+    "unrealized_pct": -0.0012207384988854875,
+    "weight": 5.695463997772716e-11
    }
   ],
   "fills": [
    {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ADSK",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "WDC",
     "side": "buy",
-    "qty": 17.34714852223563,
-    "price": 226.61325,
-    "notional": 3931.093704856514,
-    "note": "downsized to available cash"
+    "qty": 4.843513907685223,
+    "price": 417.17848622131345,
+    "notional": 2020.6097999999997,
+    "note": "target 0.021 from 0.000"
    },
    {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ADP",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "WDAY",
     "side": "buy",
-    "qty": 16.87690312299457,
-    "price": 276.66826377868654,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
+    "qty": 2.6466766858682855,
+    "price": 187.85387450408936,
+    "notional": 497.18847000000005,
+    "note": "target 0.005 from 0.000"
    },
    {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ADM",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "WAT",
     "side": "buy",
-    "qty": 53.88488589205953,
-    "price": 86.65330561065674,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ADI",
-    "side": "buy",
-    "qty": 12.915372689001858,
-    "price": 361.5306811065674,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ADBE",
-    "side": "buy",
-    "qty": 18.105872994975304,
-    "price": 257.88888977050783,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ACN",
-    "side": "buy",
-    "qty": 24.131179665382795,
-    "price": 193.49669389343262,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ACGL",
-    "side": "buy",
-    "qty": 48.09326005739185,
-    "price": 97.08852091598511,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ABT",
-    "side": "buy",
-    "qty": 45.74115510963806,
-    "price": 102.08101377868653,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ABNB",
-    "side": "buy",
-    "qty": 27.726769230769232,
-    "price": 168.40416732788086,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ABBV",
-    "side": "buy",
-    "qty": 17.742434034338075,
-    "price": 263.17152854919436,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "AAPL",
-    "side": "buy",
-    "qty": 14.085139287684315,
-    "price": 331.50566633605956,
-    "notional": 4669.303485,
-    "note": "target 0.048 from 0.000"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "ORCL",
-    "side": "sell",
-    "qty": 41.4351839090429,
-    "price": 140.27983110046387,
-    "notional": 5812.5206003771955,
-    "note": "target 0.000 from 0.059"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "NRG",
-    "side": "sell",
-    "qty": 55.309301,
-    "price": 105.93700286483765,
-    "notional": 5859.301578489168,
-    "note": "target 0.000 from 0.060"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "DLTR",
-    "side": "sell",
-    "qty": 50.34320795654247,
-    "price": 112.73360591506957,
-    "notional": 5675.371366273254,
-    "note": "target 0.000 from 0.058"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "COO",
-    "side": "sell",
-    "qty": 110.649204,
-    "price": 53.24336545753479,
-    "notional": 5891.33600615732,
-    "note": "target 0.000 from 0.060"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "CEG",
-    "side": "sell",
-    "qty": 20.896661930484473,
-    "price": 259.76006964111326,
-    "notional": 5428.118358329447,
-    "note": "target 0.000 from 0.055"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "CASY",
-    "side": "sell",
-    "qty": 9.651389,
-    "price": 586.8464446411133,
-    "notional": 5663.883320498349,
-    "note": "target 0.000 from 0.058"
-   },
-   {
-    "at": "2026-09-16T06:38:22+00:00",
-    "symbol": "BKNG",
-    "side": "sell",
-    "qty": 34.213856807386314,
-    "price": 171.23434732055665,
-    "notional": 5858.587439731779,
-    "note": "target 0.000 from 0.060"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "VRT",
-    "side": "buy",
-    "qty": 25.27233672616795,
-    "price": 237.50869438934325,
-    "notional": 6002.399699999999,
+    "qty": 14.016863641015789,
+    "price": 418.8493346557617,
+    "notional": 5870.95401,
     "note": "target 0.060 from 0.000"
    },
    {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "SNDK",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "UAL",
     "side": "buy",
-    "qty": 1.2269409029580376,
-    "price": 1552.7659852294921,
-    "notional": 1905.1521,
-    "note": "target 0.060 from 0.041"
+    "qty": 25.60366812665857,
+    "price": 106.35315305328369,
+    "notional": 2723.030835,
+    "note": "target 0.028 from 0.000"
    },
    {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "ORCL",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "TTD",
     "side": "buy",
-    "qty": 41.4351839090429,
-    "price": 144.86238828277587,
-    "notional": 6002.399699999999,
-    "note": "target 0.060 from 0.000"
+    "qty": 34.29537666318763,
+    "price": 14.497244771003723,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
    },
    {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "NRG",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "TSN",
     "side": "buy",
-    "qty": 55.30930148874124,
-    "price": 108.52423622131347,
-    "notional": 6002.399699999999,
-    "note": "target 0.060 from 0.000"
+    "qty": 52.21930268181567,
+    "price": 52.14605893135071,
+    "notional": 2723.030835,
+    "note": "target 0.028 from 0.000"
    },
    {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "MU",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "TER",
     "side": "buy",
-    "qty": 5.839247458338255,
-    "price": 924.4920443115234,
-    "notional": 5398.33782,
-    "note": "target 0.060 from 0.006"
+    "qty": 4.072490179851993,
+    "price": 341.3205688934326,
+    "notional": 1390.024665,
+    "note": "target 0.014 from 0.000"
    },
    {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "LRCX",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "T",
     "side": "buy",
-    "qty": 4.7223666171226055,
-    "price": 273.62673522949217,
-    "notional": 1292.1657599999999,
-    "note": "target 0.060 from 0.047"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "KLAC",
-    "side": "buy",
-    "qty": 35.4805141045214,
-    "price": 169.17454133605958,
-    "notional": 6002.3997,
-    "note": "target 0.060 from 0.000"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "HWM",
-    "side": "buy",
-    "qty": 26.413947391474693,
-    "price": 227.24356988525392,
-    "notional": 6002.3997,
-    "note": "target 0.060 from 0.000"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "DLTR",
-    "side": "buy",
-    "qty": 41.54938387244435,
-    "price": 119.22958316802979,
-    "notional": 4953.91572,
-    "note": "target 0.060 from 0.010"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "COO",
-    "side": "buy",
-    "qty": 110.64920444356639,
-    "price": 54.247111221313475,
-    "notional": 6002.399699999999,
-    "note": "target 0.060 from 0.000"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "CASY",
-    "side": "buy",
-    "qty": 9.651389362104492,
-    "price": 621.9207903442383,
-    "notional": 6002.3997,
-    "note": "target 0.060 from 0.000"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "BKR",
-    "side": "buy",
-    "qty": 41.58312875591151,
-    "price": 56.80838877868652,
-    "notional": 2362.2705450000003,
-    "note": "target 0.060 from 0.036"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "BKNG",
-    "side": "buy",
-    "qty": 31.270201363797188,
-    "price": 175.4376811065674,
-    "notional": 5485.971615,
-    "note": "target 0.060 from 0.005"
-   },
-   {
-    "at": "2026-09-15T08:00:33+00:00",
-    "symbol": "AMGN",
-    "side": "buy",
-    "qty": 15.725819134993445,
-    "price": 381.69075,
-    "notional": 6002.399699999999,
-    "note": "target 0.060 from 0.000"
-   },
-   {
-    "at": "2026-09-15T07:59:02+00:00",
-    "symbol": "SNDK",
-    "side": "buy",
-    "qty": 2.638676812201321,
-    "price": 1552.7659852294921,
-    "notional": 4097.2476,
-    "note": "target 0.041 from 0.000"
-   },
-   {
-    "at": "2026-09-15T07:59:02+00:00",
-    "symbol": "MU",
-    "side": "buy",
-    "qty": 0.6533986784600723,
-    "price": 924.4920443115234,
-    "notional": 604.06188,
-    "note": "target 0.006 from 0.000"
-   },
-   {
-    "at": "2026-09-15T07:59:02+00:00",
-    "symbol": "LRCX",
-    "side": "buy",
-    "qty": 17.21408522471133,
-    "price": 273.62673522949217,
-    "notional": 4710.23394,
-    "note": "target 0.047 from 0.000"
-   },
-   {
-    "at": "2026-09-15T07:59:02+00:00",
-    "symbol": "DLTR",
-    "side": "buy",
-    "qty": 8.79382408409812,
-    "price": 119.22958316802979,
-    "notional": 1048.4839800000002,
+    "qty": 39.56767114655105,
+    "price": 25.872930610656738,
+    "notional": 1023.73161,
     "note": "target 0.010 from 0.000"
    },
    {
-    "at": "2026-09-15T07:59:02+00:00",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "SYF",
+    "side": "buy",
+    "qty": 36.34709000841699,
+    "price": 74.91743725204468,
+    "notional": 2723.030835,
+    "note": "target 0.028 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "SWKS",
+    "side": "buy",
+    "qty": 11.95490178502346,
+    "price": 85.63279133605957,
+    "notional": 1023.7316099999999,
+    "note": "target 0.010 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "STX",
+    "side": "buy",
+    "qty": 1.941111895371598,
+    "price": 783.5715826721191,
+    "notional": 1521.00012,
+    "note": "target 0.016 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "SPG",
+    "side": "buy",
+    "qty": 13.411205121010152,
+    "price": 203.04147244262694,
+    "notional": 2723.030835,
+    "note": "target 0.028 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "SMCI",
+    "side": "buy",
+    "qty": 49.11967638943495,
+    "price": 36.868423473358156,
+    "notional": 1810.9650299999998,
+    "note": "target 0.019 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "RDDT",
+    "side": "buy",
+    "qty": 3.1531724667167675,
+    "price": 157.67880610656738,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "QCOM",
+    "side": "buy",
+    "qty": 2.688487393667685,
+    "price": 184.93241633605956,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "PLTR",
+    "side": "buy",
+    "qty": 2.8504073100751595,
+    "price": 174.42716633605957,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "PANW",
+    "side": "buy",
+    "qty": 3.0589911318264345,
+    "price": 375.8378188934326,
+    "notional": 1149.6845549999998,
+    "note": "target 0.012 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "ORCL",
+    "side": "buy",
+    "qty": 7.394593272703203,
+    "price": 143.23158366394043,
+    "notional": 1059.139305,
+    "note": "target 0.011 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "ON",
+    "side": "buy",
+    "qty": 7.461561732514109,
+    "price": 66.63329847335815,
+    "notional": 497.18846999999994,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "NVDA",
+    "side": "buy",
+    "qty": 8.31075292531468,
+    "price": 214.0069438934326,
+    "notional": 1778.5588349999998,
+    "note": "target 0.018 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "NOW",
+    "side": "buy",
+    "qty": 3.554140852300779,
+    "price": 139.88991732788085,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "MRVL",
+    "side": "buy",
+    "qty": 2.163336317424785,
+    "price": 229.8248617172241,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "MRNA",
+    "side": "buy",
+    "qty": 3.4125808038936425,
+    "price": 145.6928051147461,
+    "notional": 497.18847000000005,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "MGM",
+    "side": "buy",
+    "qty": 26.653295552692907,
+    "price": 38.40919438934326,
+    "notional": 1023.7316100000002,
+    "note": "target 0.010 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "MET",
+    "side": "buy",
+    "qty": 10.523706311556277,
+    "price": 97.27861835861206,
+    "notional": 1023.73161,
+    "note": "target 0.010 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "LITE",
+    "side": "buy",
+    "qty": 0.7143027872101013,
+    "price": 919.8597244262695,
+    "notional": 657.058365,
+    "note": "target 0.007 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "JBHT",
+    "side": "buy",
+    "qty": 4.608288006119759,
+    "price": 236.84836072540284,
+    "notional": 1091.4654600000001,
+    "note": "target 0.011 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "IT",
+    "side": "buy",
+    "qty": 2.5940386334013343,
+    "price": 191.66579232788087,
+    "notional": 497.18847000000005,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "INTC",
+    "side": "buy",
+    "qty": 4.917763334905268,
+    "price": 101.1005280532837,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "IBKR",
+    "side": "buy",
+    "qty": 31.377335335822227,
+    "price": 86.78336786270141,
+    "notional": 2723.030835,
+    "note": "target 0.028 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "HUM",
+    "side": "buy",
+    "qty": 2.6596485671484684,
+    "price": 384.91236122131346,
+    "notional": 1023.73161,
+    "note": "target 0.010 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "HPE",
+    "side": "buy",
+    "qty": 8.767466431269964,
+    "price": 56.70834030532837,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "HOOD",
+    "side": "buy",
+    "qty": 9.207527455080314,
+    "price": 104.47220816802978,
+    "notional": 961.930725,
+    "note": "target 0.010 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "HONA",
+    "side": "buy",
+    "qty": 3.0267999888472725,
+    "price": 164.26208267211913,
+    "notional": 497.18846999999994,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "GOOGL",
+    "side": "buy",
+    "qty": 1.5276344021324477,
+    "price": 343.0414301147461,
+    "notional": 524.04189,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "GOOG",
+    "side": "buy",
+    "qty": 1.5434347672351123,
+    "price": 339.52966534423825,
+    "notional": 524.04189,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "GLW",
+    "side": "buy",
+    "qty": 15.581783732920393,
+    "price": 144.23208366394044,
+    "notional": 2247.3931350000003,
+    "note": "target 0.023 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "FLEX",
+    "side": "buy",
+    "qty": 4.605560639225877,
+    "price": 107.95395152664184,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "FICO",
+    "side": "buy",
+    "qty": 0.5012760500713016,
+    "price": 991.8456505737305,
+    "notional": 497.18847000000005,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "FDXF",
+    "side": "buy",
+    "qty": 4.0823132037784085,
+    "price": 121.79086835861206,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "F",
+    "side": "buy",
+    "qty": 76.64569069378197,
+    "price": 13.35667538166046,
+    "notional": 1023.7316099999999,
+    "note": "target 0.010 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "EXPE",
+    "side": "buy",
+    "qty": 9.48416206719397,
+    "price": 287.11348622131345,
+    "notional": 2723.030835,
+    "note": "target 0.028 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "EQT",
+    "side": "buy",
+    "qty": 20.87542160653316,
+    "price": 50.43520484733582,
+    "notional": 1052.8561650000001,
+    "note": "target 0.011 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "EG",
+    "side": "buy",
+    "qty": 7.204569127119042,
+    "price": 377.9588740081787,
+    "notional": 2723.030835,
+    "note": "target 0.028 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "DVN",
+    "side": "buy",
+    "qty": 35.686210755729824,
+    "price": 48.46421862602234,
+    "notional": 1729.50432,
+    "note": "target 0.018 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "DELL",
+    "side": "buy",
+    "qty": 0.8822099085453231,
+    "price": 563.5716230163574,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "DDOG",
+    "side": "buy",
+    "qty": 2.1532129401463918,
+    "price": 230.90538828277587,
+    "notional": 497.18847000000005,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "DAL",
+    "side": "buy",
+    "qty": 13.140104840241738,
+    "price": 77.90893774795532,
+    "notional": 1023.73161,
+    "note": "target 0.010 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "CVNA",
+    "side": "buy",
+    "qty": 13.969571539512621,
+    "price": 65.43270152664185,
+    "notional": 914.066805,
+    "note": "target 0.009 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "CRWD",
+    "side": "buy",
+    "qty": 2.0589161366561872,
+    "price": 241.48068061065675,
+    "notional": 497.18847000000005,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "COO",
+    "side": "buy",
+    "qty": 31.123420271081706,
+    "price": 54.63730561065674,
+    "notional": 1700.499825,
+    "note": "target 0.017 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "COIN",
+    "side": "buy",
+    "qty": 3.0207283240736507,
+    "price": 164.59224950408935,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "COHR",
+    "side": "buy",
+    "qty": 1.7139999743169412,
+    "price": 290.0749576721191,
+    "notional": 497.18847,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "CNC",
+    "side": "buy",
+    "qty": 41.23117576004706,
+    "price": 66.04300713729859,
+    "notional": 2723.0308350000005,
+    "note": "target 0.028 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "CME",
+    "side": "buy",
+    "qty": 3.7554871617497776,
+    "price": 272.5962214508057,
+    "notional": 1023.73161,
+    "note": "target 0.010 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "CMCSA",
+    "side": "buy",
+    "qty": 114.69321755172307,
+    "price": 23.741864542007445,
+    "notional": 2723.0308349999996,
+    "note": "target 0.028 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "CIEN",
+    "side": "buy",
+    "qty": 1.4594419970631425,
+    "price": 340.67025,
+    "notional": 497.18847000000005,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "CHTR",
+    "side": "buy",
+    "qty": 3.681037037037037,
+    "price": 135.0675,
+    "notional": 497.18846999999994,
+    "note": "target 0.005 from 0.000"
+   },
+   {
+    "at": "2026-09-17T09:38:41+00:00",
     "symbol": "CEG",
     "side": "buy",
-    "qty": 20.896661930484473,
-    "price": 264.70229232788085,
-    "notional": 5531.3943150000005,
-    "note": "target 0.055 from 0.000"
+    "qty": 6.235849449435984,
+    "price": 259.6597637786865,
+    "notional": 1619.1991950000001,
+    "note": "target 0.017 from 0.000"
    },
    {
-    "at": "2026-09-15T07:59:02+00:00",
-    "symbol": "BKR",
+    "at": "2026-09-17T09:38:41+00:00",
+    "symbol": "CBOE",
     "side": "buy",
-    "qty": 64.0773173339095,
-    "price": 56.80838877868652,
-    "notional": 3640.129155,
-    "note": "target 0.036 from 0.000"
-   },
-   {
-    "at": "2026-09-15T07:59:02+00:00",
-    "symbol": "BKNG",
-    "side": "buy",
-    "qty": 2.9436554435891242,
-    "price": 175.4376811065674,
-    "notional": 516.428085,
-    "note": "target 0.005 from 0.000"
+    "qty": 3.783677948868413,
+    "price": 270.56520767211913,
+    "notional": 1023.7316099999999,
+    "note": "target 0.010 from 0.000"
    }
   ],
-  "updated": "2026-09-16T06:38:22+00:00",
+  "updated": "2026-09-17T09:38:41+00:00",
   "broker": "alpaca",
   "mode": "paper",
   "is_live": false
@@ -2264,7 +3068,7 @@
   "equity_high_water": 100000.0,
   "day": "2026-09-17",
   "day_start_equity": 97800.25446284334,
-  "orders_today": 0,
+  "orders_today": 86,
   "breaches": [
    {
     "at": "2026-09-15T07:52:36+00:00",
@@ -2281,8 +3085,8 @@
    "max_orders_per_day": 120,
    "max_position_pct": 0.06
   },
-  "drawdown": -0.017933455913281358,
-  "day_pl": 0.004155407857174097
+  "drawdown": -0.02285610267699376,
+  "day_pl": -0.0008779601956489479
  },
  "seal": {
   "start": "2026-09-17",

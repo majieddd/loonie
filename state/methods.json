@@ -2,11 +2,11 @@
  "a": {
   "qd_ir": 8.0,
   "qd_consistency": 2.0,
-  "elitist_ir": 26.0,
+  "elitist_ir": 27.0,
   "parsimony_hard": 2.0,
   "low_turnover": 12.0,
   "novelty_search": 1.0,
-  "mdl_parsimony": 4.0,
+  "mdl_parsimony": 5.0,
   "wide_explore": 3.0
  },
  "b": {
@@ -22,31 +22,31 @@
  "seen": {
   "qd_ir": 10,
   "qd_consistency": 5,
-  "elitist_ir": 29,
+  "elitist_ir": 30,
   "parsimony_hard": 2,
   "low_turnover": 40,
   "novelty_search": 1,
-  "mdl_parsimony": 4,
+  "mdl_parsimony": 5,
   "wide_explore": 13
  },
  "survived": {
   "qd_ir": 7,
   "qd_consistency": 1,
-  "elitist_ir": 25,
+  "elitist_ir": 26,
   "parsimony_hard": 1,
   "low_turnover": 11,
   "novelty_search": 0,
-  "mdl_parsimony": 3,
+  "mdl_parsimony": 4,
   "wide_explore": 2
  },
  "fwd_alpha": {
   "qd_ir": 1.0500778018730839,
   "qd_consistency": -0.2193781924708327,
-  "elitist_ir": 2.007405229755467,
+  "elitist_ir": 2.241657547057239,
   "parsimony_hard": 0.01147264874643906,
   "low_turnover": 2.424669027179818,
   "novelty_search": -0.18525722478287515,
-  "mdl_parsimony": 0.6820187408643944,
+  "mdl_parsimony": 0.8856172341279427,
   "wide_explore": -0.3197515428720526
  },
  "cycles": {
@@ -59,25 +59,25 @@
   "mdl_parsimony": 8,
   "wide_explore": 3
  },
- "updated": "2026-09-17T05:24:13+00:00",
+ "updated": "2026-09-17T05:54:13+00:00",
  "table": [
   {
    "id": "elitist_ir",
    "summary": "plain elitism, no quality-diversity",
-   "posterior": 0.8387096774193549,
-   "forward_rate": 0.8620689655172413,
-   "mean_fwd_alpha": 0.06922086999156783,
-   "labelled": 29,
+   "posterior": 0.84375,
+   "forward_rate": 0.8666666666666667,
+   "mean_fwd_alpha": 0.0747219182352413,
+   "labelled": 30,
    "cycles": 20,
    "established": true
   },
   {
    "id": "mdl_parsimony",
    "summary": "description-length complexity penalty",
-   "posterior": 0.6666666666666666,
-   "forward_rate": 0.75,
-   "mean_fwd_alpha": 0.1705046852160986,
-   "labelled": 4,
+   "posterior": 0.7142857142857143,
+   "forward_rate": 0.8,
+   "mean_fwd_alpha": 0.17712344682558853,
+   "labelled": 5,
    "cycles": 8,
    "established": false
   },
