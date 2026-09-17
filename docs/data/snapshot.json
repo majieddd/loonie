@@ -1,34 +1,23 @@
 {
- "generated_at": "2026-09-17T03:50:41+00:00",
+ "generated_at": "2026-09-17T03:51:39+00:00",
  "workers": {
   "workers": [
    {
     "id": "search",
     "kind": "search",
     "label": "genetic program",
-    "started_at": "2026-09-17T03:48:41+00:00",
+    "started_at": "2026-09-17T03:51:10+00:00",
     "status": "running",
-    "detail": "gen 2082 | fit +0.169 | IR +1.97 | alpha t +4.49",
+    "detail": "seeding population",
     "progress": null,
-    "metrics": {
-     "generation": 2082,
-     "trials": 262948,
-     "trials_effective": 85619,
-     "best_fitness": 0.1686,
-     "best_alpha_t": 4.492,
-     "best_dsr": 0.754,
-     "archive_cells": 34,
-     "promoted": 0,
-     "demoted": 227,
-     "seconds_per_gen": 66.23
-    },
+    "metrics": {},
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T03:49:48+00:00",
-    "heartbeat_epoch": 1789616988.2317102,
-    "uptime_s": 66.3,
-    "heartbeat_age_s": 51.6,
+    "heartbeat": "2026-09-17T03:51:10+00:00",
+    "heartbeat_epoch": 1789617070.9843976,
+    "uptime_s": 0.0,
+    "heartbeat_age_s": 28.4,
     "liveness": "live"
    },
    {
@@ -41,16 +30,16 @@
     "progress": null,
     "metrics": {
      "jobs_running": 2,
-     "failures": 237,
+     "failures": 238,
      "code_reloads": 8
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T03:50:39+00:00",
-    "heartbeat_epoch": 1789617039.1904023,
-    "uptime_s": 14227.0,
-    "heartbeat_age_s": 0.6,
+    "heartbeat": "2026-09-17T03:51:39+00:00",
+    "heartbeat_epoch": 1789617099.2190595,
+    "uptime_s": 14287.1,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -68,7 +57,7 @@
     "heartbeat": "2026-09-17T00:23:33+00:00",
     "heartbeat_epoch": 1789604613.8602972,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 12426.0,
+    "heartbeat_age_s": 12485.6,
     "liveness": "finished"
    },
    {
@@ -91,7 +80,7 @@
     "heartbeat": "2026-09-16T23:59:08+00:00",
     "heartbeat_epoch": 1789603148.748595,
     "uptime_s": 35.1,
-    "heartbeat_age_s": 13891.1,
+    "heartbeat_age_s": 13950.7,
     "liveness": "finished"
    },
    {
@@ -112,14 +101,14 @@
     "heartbeat": "2026-09-17T00:11:56+00:00",
     "heartbeat_epoch": 1789603916.453543,
     "uptime_s": 169.9,
-    "heartbeat_age_s": 13123.4,
+    "heartbeat_age_s": 13183.0,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T03:50:39+00:00"
+  "updated": "2026-09-17T03:51:39+00:00"
  },
  "experience": {
   "rows": 2675,
