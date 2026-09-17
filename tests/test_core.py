@@ -3345,3 +3345,75 @@ def test_repeated_disclosure_does_not_double_a_position():
     w = mod.build_weights(df, dates, tickers, member, horizon=5,
                           mode="long_short", max_pos=1.0)
     assert np.nanmax(np.abs(w)) <= 1.0 + 1e-9, "position exceeded full weight"
+
+
+# =============================================================================
+#  Strategy registry
+# =============================================================================
+def test_annualisation_uses_the_strategy_period_not_the_calendar():
+    """The bug that reported 266% a year for something that made 6%.
+
+    A monthly options model returns one row per HOLDING PERIOD. Annualising
+    442 of those as 442 trading days compresses 36 years into 1.75 and
+    inflates CAGR by a factor of twenty. Every derived column inherits it, and
+    the number looks merely impressive rather than impossible.
+    """
+    import pandas as pd
+
+    from loonie.strategies import Result
+
+    n = 442
+    r = np.full(n, 0.005)                      # 0.5% per monthly period
+    dates = pd.bdate_range("1990-01-01", periods=n, freq="21D")
+    eq = np.cumprod(1.0 + r)
+
+    wrong = Result(id="x", title="x", market="options", description="",
+                   dates=dates, equity=eq, returns=r).stats()
+    right = Result(id="x", title="x", market="options", description="",
+                   dates=dates, equity=eq, returns=r,
+                   periods_per_year=252.0 / 21.0).stats()
+
+    assert right["years"] > 30, "36 years of monthly periods read as %.1f" % right["years"]
+    assert wrong["years"] < 3
+    assert right["cagr_pct"] < wrong["cagr_pct"] / 5, \
+        "the correction barely changed the annualised figure"
+    assert 3.0 < right["cagr_pct"] < 10.0
+
+
+def test_win_rate_counts_only_active_periods():
+    """A strategy that stands aside most of the time would otherwise report a
+    win rate made of days it did nothing."""
+    import pandas as pd
+
+    from loonie.strategies import Result
+
+    r = np.zeros(200)
+    r[:10] = 0.01
+    r[10:20] = -0.01                            # 10 wins, 10 losses, 180 flat
+    res = Result(id="x", title="x", market="stocks", description="",
+                 dates=pd.bdate_range("2020-01-01", periods=200),
+                 equity=np.cumprod(1.0 + r), returns=r)
+    st = res.stats()
+    assert abs(st["win_rate_pct"] - 50.0) < 1e-6, \
+        "flat periods were counted as wins (%.1f%%)" % st["win_rate_pct"]
+    assert st["active_periods"] == 20
+
+
+def test_every_strategy_declares_a_caveat():
+    """A modelled options P&L and a measured equity return are different kinds
+    of number. The difference has to be a field, not a footnote."""
+    from loonie import strategy_lib  # noqa: F401
+    from loonie.strategies import REGISTRY
+
+    assert len(REGISTRY) >= 10
+    for sid, spec in REGISTRY.items():
+        assert spec["caveat"].strip(), "%s has no caveat" % sid
+        assert spec["market"] in ("stocks", "crypto", "forex", "options")
+        assert len(spec["description"]) > 80, "%s description is too thin" % sid
+
+    # Anything modelled rather than measured must say so in capitals, where it
+    # cannot be skimmed past.
+    for sid, spec in REGISTRY.items():
+        if spec["market"] == "options":
+            assert "MODELLED" in spec["caveat"], \
+                "%s does not declare that it is modelled" % sid

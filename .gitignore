@@ -41,3 +41,4 @@ tools/
 #   docs/data/*.json           what GitHub Pages serves
 data/universe/wide_panel.npz
 data/congress/ptr/
+data/markets/

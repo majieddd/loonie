@@ -243,11 +243,25 @@ tbody tr:hover{background:var(--panel)}
    wrap at any width and pushes the whole page sideways -- the one element on
    this page that was doing so. max-width alone does not help; the break
    opportunity has to be granted explicitly. */
+.strat-name{font-size:14px;letter-spacing:-.01em;margin-bottom:5px}
+.strat-desc{font-size:12px;line-height:1.55;color:var(--fg-2);
+            white-space:normal;max-width:52ch;text-wrap:pretty}
+.strat-caveat{font-size:11px;line-height:1.5;color:var(--warn);
+              white-space:normal;max-width:52ch;margin-top:5px;text-wrap:pretty}
+.strat-hover{margin-top:22px;padding:16px;border:1px solid var(--line-2)}
+.strat-hover-lbl{font:400 11px/1 var(--mono);letter-spacing:.09em;
+                 text-transform:uppercase;color:var(--fg-3);margin-bottom:12px}
 .src-note code{font-family:var(--mono);font-size:11.5px;color:var(--fg-2);
                overflow-wrap:anywhere;word-break:break-word;line-height:1.55}
 @media(max-width:560px){
   .src-h{flex-direction:column;align-items:flex-start;gap:7px}
   .src-o{margin-left:0;display:block}
+  /* The right-hand figures are nowrap so they stay on one line on a wide
+     screen. At 375px "1999-01-04 -> 2026-09-17" alone is wider than the
+     viewport, so nowrap has to be released or it pushes the page sideways. */
+  .src-f{flex-direction:column;align-items:flex-start;gap:4px;
+         white-space:normal}
+  .src-p,.src-c{white-space:normal;word-break:break-word}
 }
 .foot{margin-top:72px;padding-top:22px;border-top:1px solid var(--line);
       color:var(--fg-3);font:400 11.5px/1.7 var(--mono)}
@@ -1088,6 +1102,128 @@ function render(snap, series){
   s6.appendChild(srcWrap);
   app.appendChild(s6);
 
+
+  /* 10 strategy library — every market, measured the same way */
+  if (window.__STRATS && (window.__STRATS.strategies||[]).length){
+    const SL = window.__STRATS;
+    const rows = (SL.strategies||[]).filter(r=>r.ok)
+                   .sort((a,b)=>b.cagr_pct-a.cagr_pct);
+    const dead = (SL.strategies||[]).filter(r=>!r.ok);
+    const s10 = section("10","Strategy library",
+      rows.length+" tested · "+new Set(rows.map(r=>r.market)).size+" markets");
+
+    s10.appendChild(Object.assign(el("p","lede"),{innerHTML:
+      "Pre-specified strategies drawn from documented effects, not search "+
+      "output, so they carry no multiple-testing debt beyond the handful "+
+      "listed. <b>Spans differ by market and totals are not comparable across "+
+      "rows</b> — forex reaches to 1999, crypto to 2014, equities to 2016. "+
+      "Win rate sits beside max drawdown deliberately: a high rate with a deep "+
+      "drawdown is the short-volatility shape, and read alone the win rate is "+
+      "the most misleading number in trading. Hover a row for its equity curve."}));
+
+    const mkt = m => el("span","pill "+(
+      m==="stocks"?"":m==="crypto"?"warn":m==="forex"?"ok":"bad"), m);
+
+    const spark = (curve, w, h) => {
+      const ns="http://www.w3.org/2000/svg";
+      const sv=document.createElementNS(ns,"svg");
+      sv.setAttribute("viewBox","0 0 "+w+" "+h);
+      sv.setAttribute("width",w); sv.setAttribute("height",h);
+      if(!curve || curve.length<2) return sv;
+      const ys=curve.map(p=>p[1]);
+      const lo=Math.min(...ys), hi=Math.max(...ys), rng=(hi-lo)||1;
+      const pts=curve.map((p,i)=>[
+        (i/(curve.length-1))*w, h-((p[1]-lo)/rng)*(h-4)-2]);
+      const path=document.createElementNS(ns,"path");
+      path.setAttribute("d","M"+pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join("L"));
+      path.setAttribute("fill","none");
+      path.setAttribute("stroke", ys[ys.length-1]>=ys[0]
+        ? "var(--up)" : "var(--down)");
+      path.setAttribute("stroke-width","1.4");
+      sv.appendChild(path);
+      /* a rule at 1.0 so the reader can see where break-even sits */
+      if(lo<1 && hi>1){
+        const y=h-((1-lo)/rng)*(h-4)-2;
+        const ln=document.createElementNS(ns,"line");
+        ln.setAttribute("x1",0); ln.setAttribute("x2",w);
+        ln.setAttribute("y1",y); ln.setAttribute("y2",y);
+        ln.setAttribute("stroke","var(--line-2)");
+        ln.setAttribute("stroke-dasharray","2 2");
+        sv.appendChild(ln);
+      }
+      return sv;
+    };
+
+    const tbl = table([
+      {h:"Strategy", f:r=>{
+        const w=el("div");
+        w.appendChild(el("div","strat-name", r.title));
+        w.appendChild(el("div","strat-desc", r.description||""));
+        if(r.caveat) w.appendChild(el("div","strat-caveat", r.caveat));
+        return w; }},
+      {h:"Type", f:r=>mkt(r.market)},
+      {h:"Total P/L", r:true, f:r=>el("span",dirC(r.total_pl_pct)+" mono",
+        (r.total_pl_pct>=0?"+":"")+num(r.total_pl_pct,1)+"%")},
+      {h:"Per year", r:true, f:r=>el("span",dirC(r.cagr_pct)+" mono",
+        (r.cagr_pct>=0?"+":"")+num(r.cagr_pct,1)+"%")},
+      {h:"Win rate", r:true, cls:"mono", f:r=>num(r.win_rate_pct,0)+"%"},
+      {h:"Max DD", r:true, f:r=>el("span","neg mono",num(r.max_drawdown_pct,0)+"%")},
+      {h:"Sharpe", r:true, cls:"mono", f:r=>num(r.sharpe,2)},
+      {h:"t", r:true, f:r=>el("span",(Math.abs(r.t_stat)>2?"":"dim")+" mono",
+        num(r.t_stat,2))},
+      {h:"Span", r:true, cls:"mono", f:r=>num(r.years,1)+"y"},
+    ], rows);
+
+    /* hover: draw the equity curve for that row */
+    const hover = el("div","strat-hover"); hover.hidden = true;
+    const hLbl = el("div","strat-hover-lbl"); hover.appendChild(hLbl);
+    const hBox = el("div"); hover.appendChild(hBox);
+    tbl.querySelectorAll("tbody tr").forEach((tr,i)=>{
+      const r = rows[i]; if(!r) return;
+      tr.style.cursor = "crosshair";
+      tr.addEventListener("mouseenter", ()=>{
+        hBox.innerHTML = "";
+        hBox.appendChild(spark(r.curve, 560, 120));
+        hLbl.textContent = r.title + "  ·  " + r.market + "  ·  growth of 1.00"
+          + (r.curve && r.curve.length
+             ? "  ·  " + r.curve[0][0] + " → " + r.curve[r.curve.length-1][0] : "");
+        hover.hidden = false;
+      });
+    });
+    s10.appendChild(tbl);
+    s10.appendChild(hover);
+
+    if(dead.length){
+      const d = el("p","src-note dim"); d.style.marginTop="14px";
+      d.innerHTML = dead.length+" not runnable: "+dead.map(r=>
+        r.title+" ("+(r.reason||"?")+")").join("; ");
+      s10.appendChild(d);
+    }
+
+    /* the per-market data stores behind all of it */
+    const mh = el("div","head"); mh.style.marginTop="44px";
+    mh.appendChild(el("span","num","10b"));
+    mh.appendChild(el("h2",null,"Market data stores"));
+    s10.appendChild(mh);
+    (SL.markets||[]).forEach(m=>{
+      if(!m.present){ s10.appendChild(el("p","src-note dim",
+        m.market+" — not fetched")); return; }
+      const w = el("div","src");
+      const top = el("div","src-h");
+      const lhs = el("div");
+      lhs.appendChild(el("span","src-n", m.market));
+      lhs.appendChild(el("span","src-o", m.source||""));
+      const rhs = el("div","src-f");
+      rhs.appendChild(el("span","src-c", int(m.symbols)+" symbols · "
+        +int(m.sessions)+" sessions"));
+      rhs.appendChild(el("span","src-p", m.start+" → "+m.end));
+      top.appendChild(lhs); top.appendChild(rhs); w.appendChild(top);
+      if(m.caveat) w.appendChild(el("p","src-note", m.caveat));
+      s10.appendChild(w);
+    });
+    app.appendChild(s10);
+  }
+
   /* colophon */
   const f = el("div","foot");
   f.innerHTML =
@@ -1109,11 +1245,14 @@ let lastGen = null;
 async function tick(){
   try{
     const bust = "?t=" + Date.now();
-    const [snap, series] = await Promise.all([
+    const [snap, series, _strats] = await Promise.all([
       fetch("data/snapshot.json"+bust, {cache:"no-store"}).then(r=>{
         if(!r.ok) throw new Error("snapshot "+r.status); return r.json(); }),
       fetch("data/series.json"+bust, {cache:"no-store"})
         .then(r=>r.ok?r.json():{}).catch(()=>({})),
+      fetch("data/strategies_table.json", {cache:"no-store"})
+        .then(r=>r.ok?r.json():null).then(v=>{window.__STRATS=v; return v;})
+        .catch(()=>null),
     ]);
     if (snap.search.generation !== lastGen){
       lastGen = snap.search.generation;
