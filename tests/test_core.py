@@ -2462,3 +2462,46 @@ def test_registered_candidates_cannot_be_silently_replaced(tmp_path,
     reloaded = S.Seal.load(object())
     assert {r["fingerprint"] for r in reloaded.registered} == {"aaaa", "bbbb"}, \
         "the commitment must survive a reload intact"
+
+
+def test_a_worker_that_stopped_on_purpose_is_not_respawned():
+    """Otherwise the supervisor loops forever on a finished search.
+
+    A continuous worker returning 0 gets respawned by design. The search now
+    exits when its own pre-committed stopping rule fires, and without a
+    distinct code that exit is indistinguishable from an ordinary finish: the
+    supervisor restarts it, it resumes, the rule fires again, and the cycle
+    repeats every couple of minutes -- rebuilding the entire panel each time
+    to reach a conclusion it already reached.
+    """
+    from loonie import orchestrator as orc
+
+    assert orc.RC_STOPPED_BY_RULE not in (0, 1, 2), \
+        "the stop code must not collide with success or ordinary failure"
+
+    j = orc.Job(name="search", every_s=0, argv=[])
+    assert j.continuous and not j.completed
+
+    class FakeProc:
+        def __init__(self, rc):
+            self._rc = rc
+
+        def poll(self):
+            return self._rc
+
+    sup = orc.Orchestrator.__new__(orc.Orchestrator)
+    sup.jobs = {"search": j}
+    sup.children = {}
+    sup._log = lambda *a, **k: None
+    j.proc = FakeProc(orc.RC_STOPPED_BY_RULE)
+    sup._reap(j)
+
+    assert j.completed, "a rule-driven stop was not recorded as completed"
+    assert j.failures == 0, "stopping on purpose is not a failure"
+
+    # And an ordinary crash must still be a crash.
+    j2 = orc.Job(name="search", every_s=0, argv=[])
+    sup.jobs = {"search": j2}
+    j2.proc = FakeProc(1)
+    sup._reap(j2)
+    assert not j2.completed and j2.failures == 1

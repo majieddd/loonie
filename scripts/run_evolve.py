@@ -30,6 +30,7 @@ import numpy as np  # noqa: E402
 from loonie import (config, data, evolve, experience, features,  # noqa: E402
                     methods, notify, publish, registry, seal, universe)
 from loonie import ic as icmod  # noqa: E402
+from loonie import orchestrator  # noqa: E402
 
 
 def build_report(ev: evolve.Evolver, panel) -> str:
@@ -189,6 +190,7 @@ def main() -> int:
     gens = a.generations or int(cfg.evolve.generations)
     n_done = 0
     ic_best_seen, ic_stall = -9e9, 0
+    stopped_by_rule = False
     hb = registry.Worker("search", "search", "genetic program")
     hb.beat(status="running", detail="seeding population")
     try:
@@ -272,6 +274,7 @@ def main() -> int:
                          icmod.null_bar(rec.get("trials_effective") or ev.trials),
                          ic_best_seen))
                 hb.done("stopped: %s" % reason)
+                stopped_by_rule = True
                 break
 
             if not a.daemon and n_done >= gens:
@@ -310,7 +313,11 @@ def main() -> int:
         print("\n  Nothing cleared the promotion gate. That is a real result,")
         print("  not a bug -- see docs/WHY.md. Most searches end here.")
     print("=" * 72)
-    return 0
+    # Distinct from 0 so the supervisor can tell "finished on purpose" from
+    # "finished a bounded run". A continuous worker returning 0 is respawned;
+    # one that stopped on its own pre-committed rule must stay stopped, or it
+    # resumes, re-stops, and loops forever rebuilding the panel each time.
+    return orchestrator.RC_STOPPED_BY_RULE if stopped_by_rule else 0
 
 
 if __name__ == "__main__":

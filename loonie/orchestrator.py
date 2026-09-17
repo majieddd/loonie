@@ -70,6 +70,10 @@ def source_fingerprint() -> str:
     return h.hexdigest()[:16]
 
 
+# Exit code meaning "my stopping rule fired": finished, not failed.
+RC_STOPPED_BY_RULE = 3
+
+
 @dataclass
 class Job:
     name: str
@@ -85,6 +89,12 @@ class Job:
     # Set when WE stop a worker deliberately (a source-change reload), so the
     # reaper does not record our own restart as a crash.
     terminating: bool = False
+    # A continuous worker that finished because its own pre-committed stopping
+    # rule fired is DONE, not dead. Without this the supervisor respawns it,
+    # it resumes, the rule fires again, and the loop repeats every couple of
+    # minutes forever -- rebuilding the whole panel each time to reach the
+    # same conclusion.
+    completed: bool = False
     enabled: bool = True
     meta: dict = field(default_factory=dict)
 
@@ -183,6 +193,10 @@ class Orchestrator:
             job.last_status = "reloaded"
             job.last_detail = "stopped for reload"
             job.terminating = False
+        elif rc == RC_STOPPED_BY_RULE:
+            job.completed = True
+            job.last_status = "completed"
+            job.last_detail = "stopped by its own rule; not respawning"
         else:
             job.last_status = "ok" if rc == 0 else "failed"
             if rc != 0:
@@ -297,6 +311,8 @@ class Orchestrator:
             if job.continuous:
                 # Restart a dead continuous worker, but back off so a job that
                 # crashes on startup does not spin the CPU respawning forever.
+                if job.completed:
+                    continue          # finished on purpose; leave it finished
                 if job.proc is None:
                     # A reload restarts immediately; only genuine crashes back off.
                     reloaded = job.last_status == "reloaded"
