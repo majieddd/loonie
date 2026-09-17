@@ -1,0 +1,24 @@
+{
+  "start": "2024-09-01",
+  "stop": "2026-09-01",
+  "digest": "6e3eb2f41651a1c168065a145dd5e572",
+  "created": "2026-09-15T07:35:11+00:00",
+  "evaluations": 0,
+  "max_evaluations": 1,
+  "ledger": [
+    {
+      "event": "created",
+      "at": "2026-09-15T07:35:11+00:00",
+      "sessions": 500,
+      "tickers": 615
+    },
+    {
+      "event": "exposed",
+      "at": "2026-09-17T03:49:38+00:00",
+      "by": "assistant (Claude), session 2026-09-16",
+      "what": "sealed window 2024-09-01..2026-09-01 read by diagnostics that called load_panel(cfg) without the sealed training range",
+      "note": "Affected: scripts/attribute.py, scripts/feature_ic.py, scripts/power.py, and ad-hoc IC measurements. The reported forward-tail IC (+0.0244 median, best t +2.61 over 2024-08-07..2026-09-16) was measured ON this window and is therefore a holdout reading, not an independent forward check. The RUNNING SEARCH was never affected: its panel ends 2024-08-30 and its validation tail is 2022-12-20..2024-08-30, entirely before the seal."
+    }
+  ],
+  "contaminated": true
+}

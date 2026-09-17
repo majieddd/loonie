@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -56,6 +56,10 @@ class Seal:
     ledger: list
     path: Path
     contaminated: bool = False
+    kind: str = "historical"      # historical | forward
+    committed_at: str = ""        # when the commitment was made (forward only)
+    min_sessions: int = 0         # refuse to evaluate before this much accrues
+    registered: list = field(default_factory=list)
 
     # ------------------------------------------------------------------ io
     @classmethod
@@ -77,6 +81,10 @@ class Seal:
             max_evaluations=int(d["max_evaluations"]),
             ledger=d.get("ledger", []), path=p,
             contaminated=bool(d.get("contaminated", False)),
+            kind=d.get("kind", "historical"),
+            committed_at=d.get("committed_at", ""),
+            min_sessions=int(d.get("min_sessions", 0)),
+            registered=d.get("registered", []),
         )
 
     def save(self):
@@ -87,6 +95,10 @@ class Seal:
             "max_evaluations": self.max_evaluations,
             "ledger": self.ledger,
             "contaminated": self.contaminated,
+            "kind": self.kind,
+            "committed_at": self.committed_at,
+            "min_sessions": self.min_sessions,
+            "registered": self.registered,
         }, indent=2), encoding="utf-8")
 
     # -------------------------------------------------------------- create
@@ -114,6 +126,93 @@ class Seal:
         seal.save()
         return seal
 
+    @classmethod
+    def create_forward(cls, cfg, start=None, min_sessions: int = 250,
+                       archive_existing: bool = True) -> "Seal":
+        """Seal a window that does not exist yet.
+
+        Every historical window here is now either training data or
+        contaminated, so there is nothing clean left to hash. A forward seal
+        solves that by moving the integrity guarantee from the data to the
+        clock: the commitment is timestamped, and at evaluation time every
+        session scored must be dated after that timestamp. Data that did not
+        exist when the commitment was made cannot have influenced it.
+
+        That is a stronger guarantee than the hash it replaces. A digest
+        proves bytes did not change; it cannot prove nobody looked. A date
+        that had not happened yet proves nobody could have.
+
+        The cost is patience -- roughly 250 sessions a year -- which is the
+        honest price of a test that cannot be gamed.
+        """
+        prior = cls.load(cfg)
+        if prior is not None and archive_existing:
+            arch = prior.path.with_suffix(".retired.json")
+            arch.write_text(prior.path.read_text(encoding="utf-8"),
+                            encoding="utf-8")
+
+        # utcnow() is tz-aware in current pandas; every date this is compared
+        # against (panel dates, the other seal fields) is naive, so it is made
+        # naive once here rather than at each comparison.
+        start = _naive(start or pd.Timestamp.utcnow().normalize()).normalize()
+        now = _now()
+        seal = cls(
+            start=start,
+            # Deliberately open-ended, NOT cfg.holdout.end -- that is the old
+            # historical window's close, which sits in the past and would give
+            # this seal a stop date before its own start.
+            stop=pd.Timestamp("2099-12-31"),
+            digest="",                       # nothing exists to hash yet
+            created=now, evaluations=0,
+            max_evaluations=int(cfg.holdout.max_evaluations),
+            ledger=[{
+                "event": "sealed_forward", "at": now,
+                "start": str(start.date()),
+                "min_sessions": min_sessions,
+                "supersedes": (str(prior.start.date()) + ".." +
+                               str(prior.stop.date())) if prior else None,
+                "why": ("every historical window is training data or "
+                        "contaminated; integrity now rests on the commitment "
+                        "predating the data"),
+            }],
+            path=cls._path(), kind="forward", committed_at=now,
+            min_sessions=int(min_sessions), registered=[],
+        )
+        seal.save()
+        return seal
+
+    def register(self, genomes, note: str = "") -> None:
+        """Pre-register the candidates this window will test.
+
+        Fixing the set before the data exists is what collapses the
+        multiple-testing penalty: the bar is sqrt(2 ln k) on the number of
+        hypotheses actually tested, and testing five pre-committed candidates
+        is k=5, not the ninety thousand the search evaluated to find them.
+        """
+        for g in genomes:
+            self.registered.append({
+                "fingerprint": getattr(g, "fingerprint", str(g)),
+                "canonical": getattr(g, "canonical", lambda: "")(),
+                "registered_at": _now(),
+            })
+        self.ledger.append({
+            "event": "registered", "at": _now(),
+            "n": len(list(genomes)), "note": note,
+        })
+        self.save()
+
+    def forward_ready(self, panel) -> tuple:
+        """(ready, reason, n) for a forward seal, given current data."""
+        if self.kind != "forward":
+            return True, "", 0
+        dates = pd.DatetimeIndex(panel.dates)
+        committed = _naive(self.committed_at)
+        n = int((dates > max(_naive(self.start), committed)).sum())
+        if n < self.min_sessions:
+            return False, ("%d of %d sessions accrued since the commitment on "
+                           "%s" % (n, self.min_sessions, committed.date())), n
+        return True, "", n
+
     # --------------------------------------------------------------- guard
     def assert_train_clean(self, panel) -> None:
         """Raise if a panel handed to the search contains sealed dates."""
@@ -139,13 +238,42 @@ class Seal:
                    json.dumps(self.ledger, indent=2))
             )
         sub = full_panel.slice_dates(self.start, self.stop)
-        d = digest_panel(sub)
-        if d != self.digest:
-            raise SealBroken(
-                "holdout data changed since sealing.\n  sealed: %s\n  now:    %s\n"
-                "Either the cache was refreshed or the window moved. Any result "
-                "computed now is not the test you sealed." % (self.digest, d)
-            )
+
+        if self.kind == "forward":
+            # A forward window accrues sessions, so its bytes change legitimately
+            # every day and a digest cannot be the check. The guarantee is the
+            # clock instead: every session scored must postdate the commitment.
+            ready, why, n = self.forward_ready(full_panel)
+            if not ready:
+                raise SealBroken(
+                    "forward holdout is not ready: %s.\nThe commitment stands; "
+                    "it simply has not been earned yet." % why)
+            committed = _naive(self.committed_at)
+            dates = pd.DatetimeIndex(sub.dates)
+            if len(dates) and _naive(dates.min()) <= committed:
+                raise SealBroken(
+                    "forward holdout contains %s, on or before the commitment "
+                    "at %s. Data that already existed when the commitment was "
+                    "made cannot test it."
+                    % (dates.min().date(), committed.date()))
+        else:
+            d = digest_panel(sub)
+            if d != self.digest:
+                raise SealBroken(
+                    "holdout data changed since sealing.\n  sealed: %s\n  now:    %s\n"
+                    "Either the cache was refreshed or the window moved. Any result "
+                    "computed now is not the test you sealed." % (self.digest, d)
+                )
+
+        if self.registered:
+            fps = {r["fingerprint"] for r in self.registered}
+            fp = getattr(genome, "fingerprint", str(genome))
+            if fp not in fps:
+                raise SealBroken(
+                    "genome %s was not pre-registered against this window.\n"
+                    "Registered: %s\nTesting a candidate chosen after the data "
+                    "existed is the search all over again, with one sample."
+                    % (fp[:12], ", ".join(sorted(f[:8] for f in fps))))
         self.evaluations += 1
         self.ledger.append({
             "event": "opened", "at": _now(),
@@ -213,6 +341,19 @@ def digest_panel(panel) -> str:
         h.update(f.encode())
         h.update(np.ascontiguousarray(a).tobytes())
     return h.hexdigest()[:32]
+
+
+def _naive(ts) -> pd.Timestamp:
+    """A tz-naive Timestamp, whichever kind you hand it.
+
+    `committed_at` is an ISO string carrying +00:00, so pd.Timestamp() returns
+    a tz-AWARE value and tz_localize(None) raises on it -- localize is for
+    naive input, convert is for aware. Comparing that against the tz-naive
+    panel dates raises too. The same confusion once made this project's cache
+    freshness check compute a negative age and silently disable itself.
+    """
+    t = pd.Timestamp(ts)
+    return t.tz_convert(None) if t.tzinfo is not None else t
 
 
 def _now() -> str:

@@ -2282,3 +2282,102 @@ def test_recording_an_exposure_marks_the_seal_contaminated(tmp_path, monkeypatch
     # It must survive a reload, and there is deliberately no way to clear it.
     again = S.Seal.load(object())
     assert again.contaminated, "contamination did not persist"
+
+
+def test_forward_seal_rests_on_the_clock_not_a_hash(tmp_path, monkeypatch):
+    """Every historical window here is training data or contaminated, so a
+    digest has nothing clean to hash. A forward seal moves the guarantee to
+    the commitment timestamp: data that did not exist cannot have been seen.
+    """
+    import pandas as pd
+
+    from loonie import seal as S
+
+    monkeypatch.setattr(S, "resolve", lambda q: tmp_path / Path(q).name)
+    cfg = config.load()
+    s = S.Seal.create_forward(cfg, start="2026-09-17", min_sessions=250,
+                              archive_existing=False)
+    assert s.kind == "forward"
+    assert s.digest == "", "a forward window must not claim a digest"
+    # Open-ended. Inheriting cfg.holdout.end gave it a stop date in the past,
+    # before its own start -- a window that could never contain anything.
+    assert s.stop > s.start, "forward seal closed before it opened"
+    assert s.committed_at
+
+    # Not enough history yet -> refuses, and says so as "not earned".
+    thin = synthetic_panel(T=30, N=5)
+    thin.dates = pd.bdate_range("2026-09-18", periods=30)
+    ready, why, n = s.forward_ready(thin)
+    assert not ready and "sessions accrued" in why
+
+    with pytest.raises(S.SealBroken) as e:
+        s.open_holdout(thin, genome=None)
+    assert "not ready" in str(e.value)
+    assert s.evaluations == 0, "a refused open must not burn an evaluation"
+
+
+def test_forward_seal_rejects_data_that_predates_the_commitment(tmp_path,
+                                                                monkeypatch):
+    """The whole guarantee. Sessions from before the commitment could have
+    informed it, so scoring them proves nothing."""
+    import pandas as pd
+
+    from loonie import seal as S
+
+    monkeypatch.setattr(S, "resolve", lambda q: tmp_path / Path(q).name)
+    cfg = config.load()
+    s = S.Seal.create_forward(cfg, start="2020-01-01", min_sessions=10,
+                              archive_existing=False)
+
+    old = synthetic_panel(T=400, N=5)
+    old.dates = pd.bdate_range("2020-01-01", periods=400)   # long before now
+    ready, _, _ = s.forward_ready(old)
+    assert not ready, "sessions before the commitment must not count toward it"
+
+
+def test_forward_seal_refuses_a_candidate_that_was_not_registered(tmp_path,
+                                                                  monkeypatch):
+    """Pre-registration is what collapses the multiple-testing penalty.
+
+    Testing a candidate chosen after the data existed is the search again with
+    a sample size of one, so the seal must refuse it rather than quietly
+    scoring it.
+    """
+    from loonie import seal as S
+
+    monkeypatch.setattr(S, "resolve", lambda q: tmp_path / Path(q).name)
+    cfg = config.load()
+    s = S.Seal.create_forward(cfg, min_sessions=0, archive_existing=False)
+
+    class G:
+        fingerprint = "aaaa1111"
+
+        def canonical(self):
+            return "registered_one"
+
+    class H:
+        fingerprint = "bbbb2222"
+
+        def canonical(self):
+            return "latecomer"
+
+    s.register([G()], note="pre-registered set")
+    assert len(s.registered) == 1
+
+    with pytest.raises(S.SealBroken) as e:
+        s.open_holdout(synthetic_panel(T=300, N=5), genome=H())
+    assert "not pre-registered" in str(e.value)
+
+
+def test_stopping_rule_is_declared_in_config_not_discovered():
+    """The bar rises with trials, so an open-ended daemon loses ground by
+    running. The end has to be a pre-committed number, like the seal."""
+    c = config.load()
+    stop = c["evolve"].get("stop") or {}
+    assert int(stop.get("max_trials", 0)) > 0
+    assert int(stop.get("stall_generations", 0)) > 0
+
+    from loonie.ic import null_bar
+    # The configured ceiling should sit where the bar is still roughly
+    # reachable; if this ever fails the rule has drifted from its rationale.
+    assert null_bar(stop["max_trials"]) < 6.0

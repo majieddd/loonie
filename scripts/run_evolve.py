@@ -29,6 +29,7 @@ import numpy as np  # noqa: E402
 
 from loonie import (config, data, evolve, experience, features,  # noqa: E402
                     methods, notify, publish, registry, seal, universe)
+from loonie import ic as icmod  # noqa: E402
 
 
 def build_report(ev: evolve.Evolver, panel) -> str:
@@ -187,6 +188,7 @@ def main() -> int:
 
     gens = a.generations or int(cfg.evolve.generations)
     n_done = 0
+    ic_best_seen, ic_stall = -9e9, 0
     hb = registry.Worker("search", "search", "genetic program")
     hb.beat(status="running", detail="seeding population")
     try:
@@ -236,6 +238,41 @@ def main() -> int:
             if n_done % max(1, a.report_every) == 0:
                 p = notify.write_report("evolve", build_report(ev, panel))
                 print("[report] %s" % p)
+
+            # ---- the stopping rule ----------------------------------------
+            # A daemon searching against a bar that rises with its own trial
+            # count is in a race it loses by continuing: sqrt(2 ln k) goes
+            # from 4.68 at 57k effective trials to ~5.02 at 300k, while the
+            # best IC the archive has produced sits at 4.01. Running forever
+            # is not neutral -- it raises the threshold the result must clear.
+            # So the end is declared in advance rather than discovered.
+            stop = cfg.evolve.get("stop", {}) or {}
+            cands = [e.cv for e in ev.archive.elites()]
+            cands += [h.get("cv", {}) for h in ev.hall_of_fame]
+            best_ic = max([float(c.get("ic_t") or -9e9) for c in cands]
+                          or [-9e9])
+            if best_ic > ic_best_seen + 1e-9:
+                ic_best_seen, ic_stall = best_ic, 0
+            else:
+                ic_stall += 1
+
+            reason = None
+            mt = int(stop.get("max_trials", 0) or 0)
+            sg = int(stop.get("stall_generations", 0) or 0)
+            if mt and ev.trials >= mt:
+                reason = "reached max_trials %d" % mt
+            elif sg and ic_stall >= sg:
+                reason = ("no IC improvement in %d generations (best %.2f)"
+                          % (ic_stall, ic_best_seen))
+            if reason:
+                print("\n[evolve] STOPPING: %s" % reason)
+                print("[evolve] the bar at %d effective trials is %.2f; "
+                      "best IC t reached %.2f"
+                      % (rec.get("trials_effective") or ev.trials,
+                         icmod.null_bar(rec.get("trials_effective") or ev.trials),
+                         ic_best_seen))
+                hb.done("stopped: %s" % reason)
+                break
 
             if not a.daemon and n_done >= gens:
                 break

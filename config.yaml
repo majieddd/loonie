@@ -24,10 +24,24 @@ data:
   adjust: true             # split/dividend adjusted
 
 holdout:
-  # The sealed window. Enforced by SHA-256 manifest + access ledger, not by
-  # good intentions. See loonie/seal.py.
-  start: "2024-09-01"
-  end:   "2026-09-01"
+  # A FORWARD seal, as of 2026-09-17. The previous window (2024-09-01 ->
+  # 2026-09-01) was contaminated: diagnostic scripts called load_panel()
+  # without the sealed training range and read straight through it while the
+  # evaluation counter reported 0 of 1. That is recorded in
+  # state/holdout_seal.retired.json, which is kept rather than deleted.
+  #
+  # Every historical window here is now either training data or contaminated,
+  # so there is nothing clean left to hash. Integrity moves from the data to
+  # the clock: the commitment is timestamped and every session scored must
+  # postdate it. A digest proves bytes did not change; it cannot prove nobody
+  # looked. A date that had not happened yet proves nobody could have.
+  #
+  # The retired window becomes ordinary training data, which is the honest
+  # disposition for data that has been seen -- pretending otherwise is the
+  # failure this module exists to prevent.
+  start: "2026-09-17"
+  end:   "2099-12-31"      # open-ended; it accrues ~250 sessions a year
+  min_sessions: 250        # refuse to evaluate before a trading year accrues
   max_evaluations: 1       # the holdout may be scored EXACTLY this many times
 
 backtest:
@@ -113,6 +127,21 @@ evolve:
     ic_tstat_floor: 2.0           # ordinary significance, before the correction
     # ...and it must still point the right way on the window fitness cannot see.
     min_forward_ic: 0.0
+
+  # WHEN TO STOP. Searching is not free and it is not neutral: the bar is
+  # sqrt(2 ln k) on effective trials, so every generation raises the threshold
+  # the eventual winner has to clear. At 57k effective trials it is 4.68; by
+  # 300k it is ~5.02, while the best IC the archive has produced is 4.01. A
+  # daemon left running is therefore losing ground, slowly, by design.
+  #
+  # So the end is declared in advance rather than discovered afterwards --
+  # which is the same discipline the holdout seal enforces, applied to the
+  # search itself. Stopping on a pre-committed rule keeps the trial count
+  # (and the bar) a fact rather than a consequence of when someone lost
+  # patience.
+  stop:
+    max_trials: 300000        # bar ~5.02 here; past this the race is not worth running
+    stall_generations: 300    # no improvement in best IC t -> the search is done looking
 
 cv:
   n_splits: 8
