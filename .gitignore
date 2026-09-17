@@ -40,3 +40,4 @@ tools/
 #   state/holdout_seal.json    the seal ledger -- this is a deliverable
 #   docs/data/*.json           what GitHub Pages serves
 data/universe/wide_panel.npz
+data/congress/ptr/

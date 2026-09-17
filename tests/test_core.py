@@ -3128,3 +3128,124 @@ def test_directory_filters_out_non_common_stock():
     # pre-filter index silently drops the wrong rows.
     assert src.count("reset_index(drop=True)") >= 3, \
         "symbol filters no longer reset the index between steps"
+
+
+# =============================================================================
+#  Congressional disclosures
+# =============================================================================
+SAMPLE_PTR = """Filing ID #20032062
+Name: Hon. Robert B. Aderholt
+ID Owner Asset Transaction Date Notification Amount Cap.
+GSK plc American Depositary Shares S 07/28/2025 08/11/2025 $1,001 - $15,000
+(GSK) [ST]
+Microsoft Corporation P 06/02/2025 06/15/2025 $15,001 - $50,000
+(MSFT) [ST]
+Some Municipal Bond Fund P 05/01/2025 05/10/2025 $1,001 - $15,000
+Digitally Signed: Hon. Robert B. Aderholt , 09/10/2025"""
+
+
+def _parse_lines(text):
+    """Exercise the row/ticker regexes the way parse_ptr does."""
+    from loonie import congress as C
+
+    lines = [ln.strip() for ln in text.splitlines()]
+    out = []
+    for i, line in enumerate(lines):
+        m = C._ROW.search(line)
+        if not m:
+            continue
+        tk = None
+        for nxt in lines[i + 1:i + 3]:
+            t = C._TICKER_LINE.match(nxt)
+            if t:
+                tk = t.group("t")
+                break
+        if not tk:
+            continue
+        out.append({"ticker": tk, "side": C._SIDE[m.group("side")],
+                    "tx": m.group("tx"), "amt": m.group("amt")})
+    return out
+
+
+def test_ptr_rows_span_two_lines_and_sides_are_not_all_buys():
+    """The bug that made the first parser useless.
+
+    A PTR row wraps: side, dates and amount on one line, the ticker in
+    (TICKER) form on the next. A parser requiring both on one line keeps only
+    the rows that happened not to wrap -- and detecting the side by scanning
+    the whole line for " P " matches letters inside company names, which
+    returned "buy" for every single transaction in the first run.
+    """
+    got = _parse_lines(SAMPLE_PTR)
+    by = {g["ticker"]: g for g in got}
+
+    assert "GSK" in by and by["GSK"]["side"] == "sell", \
+        "S must parse as a sell, not a buy"
+    assert "MSFT" in by and by["MSFT"]["side"] == "buy"
+    assert by["GSK"]["tx"] == "07/28/2025"
+    assert by["GSK"]["amt"] == "$1,001 - $15,000"
+
+    sides = {g["side"] for g in got}
+    assert sides == {"buy", "sell"}, "every row came back the same side: %s" % sides
+
+    # An asset with no (TICKER) line cannot be traded against and is dropped
+    # rather than guessed at.
+    assert len(got) == 2, "a row without a ticker was kept: %r" % got
+
+
+def test_congress_regex_has_no_stray_control_characters():
+    """A heredoc turned \b into a literal backspace byte (0x08) at the start
+    of the pattern, so it matched nothing at all and the parser returned zero
+    transactions while looking perfectly reasonable in the source."""
+    from loonie import congress as C
+
+    for name in ("_ROW", "_TICKER_LINE"):
+        pat = getattr(C, name).pattern
+        bad = [c for c in pat if ord(c) < 32]
+        assert not bad, "%s contains control characters: %r" % (name, bad)
+
+
+def test_congress_signal_is_keyed_to_the_filing_date_not_the_trade():
+    """The 45-day problem, and the single most flattering error available.
+
+    The STOCK Act allows up to 45 days between a trade and its disclosure. A
+    signal applied on the TRANSACTION date buys at prices nobody following the
+    filings could have paid, and shows a handsome edge precisely because the
+    information was private for that month.
+    """
+    import pandas as pd
+
+    from loonie import congress as C
+
+    p = synthetic_panel(T=400, N=6, seed=77)
+    p.dates = pd.bdate_range("2025-01-01", periods=400)
+    df = pd.DataFrame([{
+        "ticker": p.tickers[0], "side": "buy",
+        "transaction_date": p.dates[100],
+        "notification_date": p.dates[130],
+        "filing_date": p.dates[140],
+        "amount_mid": 50000.0,
+    }])
+
+    out = C.build_signal(p, df, decay_days=30)
+    sig = out["cong_net_buy"][:, 0]
+
+    assert np.all(sig[:140] == 0), \
+        "the signal appeared before the filing became public"
+    assert sig[140] > 0, "the signal never appeared at all"
+    assert sig[139] == 0, "the signal leaked one day early"
+    # And it decays rather than persisting forever.
+    assert sig[141] < sig[140] and np.all(sig[175:] == 0)
+
+
+def test_amount_bands_are_midpoints_of_the_disclosed_range():
+    """Disclosed amounts are ranges, so any size here is a convention. The
+    bands must at least sit inside the range they claim to represent."""
+    from loonie import congress as C
+
+    import re as _re
+    for band, mid in C.AMOUNT_BANDS.items():
+        nums = [int(x.replace(",", "")) for x in _re.findall(r"[\d,]+", band)]
+        if len(nums) == 2:
+            assert nums[0] <= mid <= nums[1], \
+                "%s midpoint %d is outside the band" % (band, mid)
