@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-17T01:25:35+00:00",
- "generation": 1942,
- "trials": 233995,
+ "updated": "2026-09-17T01:26:35+00:00",
+ "generation": 1943,
+ "trials": 234187,
  "promoted": false,
  "strategies": [
   {
@@ -118,9 +118,9 @@
     "dsr": 0.8113746145312539,
     "sr_ann_excess": 1.8492120218700252,
     "sr_star_ann": 1.5254464779771375,
-    "trials_total": 233995,
+    "trials_total": 234187,
     "trials_effective": 35532,
-    "independence": 0.15185064660572847,
+    "independence": 0.15172389963120356,
     "ic": 0.05824266734865354,
     "ic_t": 3.9192240558623617,
     "ic_n": 789,
