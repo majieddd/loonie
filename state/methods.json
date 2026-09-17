@@ -1,8 +1,8 @@
 {
  "a": {
-  "qd_ir": 3.0,
+  "qd_ir": 8.0,
   "qd_consistency": 2.0,
-  "elitist_ir": 12.0,
+  "elitist_ir": 26.0,
   "parsimony_hard": 2.0,
   "low_turnover": 12.0,
   "novelty_search": 1.0,
@@ -10,7 +10,7 @@
   "wide_explore": 3.0
  },
  "b": {
-  "qd_ir": 3.0,
+  "qd_ir": 4.0,
   "qd_consistency": 5.0,
   "elitist_ir": 5.0,
   "parsimony_hard": 2.0,
@@ -20,9 +20,9 @@
   "wide_explore": 12.0
  },
  "seen": {
-  "qd_ir": 4,
+  "qd_ir": 10,
   "qd_consistency": 5,
-  "elitist_ir": 15,
+  "elitist_ir": 29,
   "parsimony_hard": 2,
   "low_turnover": 40,
   "novelty_search": 1,
@@ -30,9 +30,9 @@
   "wide_explore": 13
  },
  "survived": {
-  "qd_ir": 2,
+  "qd_ir": 7,
   "qd_consistency": 1,
-  "elitist_ir": 11,
+  "elitist_ir": 25,
   "parsimony_hard": 1,
   "low_turnover": 11,
   "novelty_search": 0,
@@ -40,9 +40,9 @@
   "wide_explore": 2
  },
  "fwd_alpha": {
-  "qd_ir": 0.07283047702119409,
+  "qd_ir": 1.0500778018730839,
   "qd_consistency": -0.2193781924708327,
-  "elitist_ir": -0.05574332753741005,
+  "elitist_ir": 2.007405229755467,
   "parsimony_hard": 0.01147264874643906,
   "low_turnover": 2.424669027179818,
   "novelty_search": -0.18525722478287515,
@@ -50,17 +50,27 @@
   "wide_explore": -0.3197515428720526
  },
  "cycles": {
-  "qd_ir": 2,
+  "qd_ir": 4,
   "qd_consistency": 1,
-  "elitist_ir": 14,
+  "elitist_ir": 20,
   "parsimony_hard": 2,
   "low_turnover": 4,
   "novelty_search": 2,
-  "mdl_parsimony": 4,
+  "mdl_parsimony": 8,
   "wide_explore": 3
  },
- "updated": "2026-09-17T03:58:55+00:00",
+ "updated": "2026-09-17T05:24:13+00:00",
  "table": [
+  {
+   "id": "elitist_ir",
+   "summary": "plain elitism, no quality-diversity",
+   "posterior": 0.8387096774193549,
+   "forward_rate": 0.8620689655172413,
+   "mean_fwd_alpha": 0.06922086999156783,
+   "labelled": 29,
+   "cycles": 20,
+   "established": true
+  },
   {
    "id": "mdl_parsimony",
    "summary": "description-length complexity penalty",
@@ -68,27 +78,17 @@
    "forward_rate": 0.75,
    "mean_fwd_alpha": 0.1705046852160986,
    "labelled": 4,
-   "cycles": 4,
-   "established": false
-  },
-  {
-   "id": "elitist_ir",
-   "summary": "plain elitism, no quality-diversity",
-   "posterior": 0.7058823529411765,
-   "forward_rate": 0.7333333333333333,
-   "mean_fwd_alpha": -0.0037162218358273366,
-   "labelled": 15,
-   "cycles": 14,
+   "cycles": 8,
    "established": false
   },
   {
    "id": "qd_ir",
    "summary": "MAP-Elites + information-ratio fitness",
-   "posterior": 0.5,
-   "forward_rate": 0.5,
-   "mean_fwd_alpha": 0.018207619255298523,
-   "labelled": 4,
-   "cycles": 2,
+   "posterior": 0.6666666666666666,
+   "forward_rate": 0.7,
+   "mean_fwd_alpha": 0.10500778018730839,
+   "labelled": 10,
+   "cycles": 4,
    "established": false
   },
   {

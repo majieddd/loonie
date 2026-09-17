@@ -1,332 +1,128 @@
 {
- "updated": "2026-09-17T05:20:11+00:00",
- "generation": 2230,
- "trials": 300179,
+ "updated": "2026-09-17T05:26:53+00:00",
+ "generation": 2233,
+ "trials": 301240,
  "promoted": false,
  "strategies": [
   {
-   "fingerprint": "263258c573b49e3b",
-   "canonical": "min(f_book_to_market, tsmean_5(div(delta_5(ite(sigmoid(tsstd_63(peer_dispersion)), delta_21(m_dollar), rank(-0.7324))), sub(0.961, f_earnings_yield))))|k=30|rb=10|w=score",
+   "fingerprint": "48f75b7a2f8cf982",
+   "canonical": "f_fcf_yield|k=20|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
-     "t": "bin",
-     "op": "min",
-     "left": {
-      "t": "feat",
-      "name": "f_book_to_market"
-     },
-     "right": {
-      "t": "un",
-      "op": "tsmean",
-      "window": 5,
-      "child": {
-       "t": "bin",
-       "op": "div",
-       "left": {
-        "t": "un",
-        "op": "delta",
-        "window": 5,
-        "child": {
-         "t": "ite",
-         "cond": {
-          "t": "un",
-          "op": "sigmoid",
-          "window": 0,
-          "child": {
-           "t": "un",
-           "op": "tsstd",
-           "window": 63,
-           "child": {
-            "t": "feat",
-            "name": "peer_dispersion"
-           }
-          }
-         },
-         "a": {
-          "t": "un",
-          "op": "delta",
-          "window": 21,
-          "child": {
-           "t": "feat",
-           "name": "m_dollar"
-          }
-         },
-         "b": {
-          "t": "un",
-          "op": "rank",
-          "window": 0,
-          "child": {
-           "t": "const",
-           "value": -0.7324
-          }
-         }
-        }
-       },
-       "right": {
-        "t": "bin",
-        "op": "sub",
-        "left": {
-         "t": "const",
-         "value": 0.961
-        },
-        "right": {
-         "t": "feat",
-         "name": "f_earnings_yield"
-        }
-       }
-      }
-     }
+     "t": "feat",
+     "name": "f_fcf_yield"
     },
-    "n_positions": 30,
+    "n_positions": 20,
     "rebalance_days": 10,
-    "weighting": "score",
-    "born": 2230,
-    "parents": [
-     "2451d5c97373591a",
-     "67953b5c12269566"
-    ],
-    "operator": "wrap",
+    "weighting": "equal",
+    "born": 2233,
+    "parents": [],
+    "operator": "init",
     "meta": {},
-    "fingerprint": "263258c573b49e3b",
-    "canonical": "min(f_book_to_market, tsmean_5(div(delta_5(ite(sigmoid(tsstd_63(peer_dispersion)), delta_21(m_dollar), rank(-0.7324))), sub(0.961, f_earnings_yield))))|k=30|rb=10|w=score"
+    "fingerprint": "48f75b7a2f8cf982",
+    "canonical": "f_fcf_yield|k=20|rb=10|w=equal"
    },
    "cv": {
-    "frac_positive": 1.0,
-    "mean_alpha": 0.22930196699032646,
-    "median_alpha": 0.24032660393254132,
-    "mean_ir": 1.9039287420565887,
-    "worst_fold_alpha": 0.05196262840072716,
-    "alpha_tstat": 4.7975757274093285,
-    "total_trades": 8582,
-    "ann_turnover": 24.020593468382337,
-    "corr_bench": 0.840950458458012,
+    "frac_positive": 0.625,
+    "mean_alpha": 0.047183255123228,
+    "median_alpha": 0.03312567184790548,
+    "mean_ir": 1.0038646810223422,
+    "worst_fold_alpha": -0.04325349205836129,
+    "alpha_tstat": 1.9971838820431416,
+    "total_trades": 4212,
+    "ann_turnover": 4.093886433537414,
+    "corr_bench": 0.9390392580614508,
     "n_folds": 8,
     "ok": true,
-    "val_alpha": 0.23077618943618464,
-    "val_ir": 0.8946291616792491,
-    "val_t": 0.9087180802561369,
+    "val_alpha": 0.2035984932635483,
+    "val_ir": 2.4931934295872002,
+    "val_t": 3.2580182531771107,
     "val_sessions": 529,
-    "val_ic": -0.004743042656524048,
-    "val_ic_t": -0.49028168300461233,
-    "dsr": 0.8989281497728683,
-    "sr_ann_excess": 1.798764155594155,
-    "sr_star_ann": 1.3800610612908546,
-    "trials_total": 300179,
-    "trials_effective": 43077,
-    "independence": 0.14350301424905387,
-    "ic": -0.013079905946253995,
-    "ic_t": -2.7457249633072753,
+    "val_ic": 0.004938860416170532,
+    "val_ic_t": 0.4318695122950942,
+    "dsr": 0.0290509280919933,
+    "sr_ann_excess": 0.8650186427862083,
+    "sr_star_ann": 1.527828205601735,
+    "trials_total": 301240,
+    "trials_effective": 90043,
+    "independence": 0.2989073877847243,
+    "ic": 0.00985666528522234,
+    "ic_t": 2.034098428465862,
     "ic_n": 2141,
-    "ic_ir": -0.11332067077641259,
-    "ic_hit": 0.4586641756188697,
-    "ic_bar": 4.619684944011331,
-    "pbo": 0.07142857142857142
+    "ic_ir": 0.11551931989264673,
+    "ic_hit": 0.5268566090611864,
+    "ic_bar": 4.7766185974998505,
+    "pbo": 0.0
    }
   },
   {
-   "fingerprint": "9d696de1a3f8b2b9",
-   "canonical": "log1p(min(f_book_to_market, tsmean_5(div(delta_5(ite(sigmoid(tsstd_63(peer_dispersion)), delta_21(m_dollar), rank(-0.5126))), sub(0.961, f_earnings_yield)))))|k=30|rb=10|w=score",
+   "fingerprint": "62cdfe0715bed880",
+   "canonical": "rank(f_fcf_yield)|k=10|rb=1|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
      "t": "un",
-     "op": "log1p",
+     "op": "rank",
      "window": 0,
      "child": {
-      "t": "bin",
-      "op": "min",
-      "left": {
-       "t": "feat",
-       "name": "f_book_to_market"
-      },
-      "right": {
-       "t": "un",
-       "op": "tsmean",
-       "window": 5,
-       "child": {
-        "t": "bin",
-        "op": "div",
-        "left": {
-         "t": "un",
-         "op": "delta",
-         "window": 5,
-         "child": {
-          "t": "ite",
-          "cond": {
-           "t": "un",
-           "op": "sigmoid",
-           "window": 0,
-           "child": {
-            "t": "un",
-            "op": "tsstd",
-            "window": 63,
-            "child": {
-             "t": "feat",
-             "name": "peer_dispersion"
-            }
-           }
-          },
-          "a": {
-           "t": "un",
-           "op": "delta",
-           "window": 21,
-           "child": {
-            "t": "feat",
-            "name": "m_dollar"
-           }
-          },
-          "b": {
-           "t": "un",
-           "op": "rank",
-           "window": 0,
-           "child": {
-            "t": "const",
-            "value": -0.5126
-           }
-          }
-         }
-        },
-        "right": {
-         "t": "bin",
-         "op": "sub",
-         "left": {
-          "t": "const",
-          "value": 0.961
-         },
-         "right": {
-          "t": "feat",
-          "name": "f_earnings_yield"
-         }
-        }
-       }
-      }
+      "t": "feat",
+      "name": "f_fcf_yield"
      }
     },
-    "n_positions": 30,
-    "rebalance_days": 10,
-    "weighting": "score",
-    "born": 2230,
-    "parents": [
-     "fbb0ab3f940ca866",
-     "c8b74a0acf92ede0"
-    ],
-    "operator": "wrap",
+    "n_positions": 10,
+    "rebalance_days": 1,
+    "weighting": "equal",
+    "born": 2233,
+    "parents": [],
+    "operator": "init",
     "meta": {},
-    "fingerprint": "9d696de1a3f8b2b9",
-    "canonical": "log1p(min(f_book_to_market, tsmean_5(div(delta_5(ite(sigmoid(tsstd_63(peer_dispersion)), delta_21(m_dollar), rank(-0.5126))), sub(0.961, f_earnings_yield)))))|k=30|rb=10|w=score"
+    "fingerprint": "62cdfe0715bed880",
+    "canonical": "rank(f_fcf_yield)|k=10|rb=1|w=equal"
    },
    "cv": {
-    "frac_positive": 1.0,
-    "mean_alpha": 0.19738857130672308,
-    "median_alpha": 0.21285498690917043,
-    "mean_ir": 1.9122004599795994,
-    "worst_fold_alpha": 0.05212668873812594,
-    "alpha_tstat": 5.1756664955775,
-    "total_trades": 8588,
-    "ann_turnover": 24.315535926351647,
-    "corr_bench": 0.8845536521425631,
+    "frac_positive": 0.625,
+    "mean_alpha": 0.025969720903815732,
+    "median_alpha": 0.038137772823187824,
+    "mean_ir": 0.548414830253565,
+    "worst_fold_alpha": -0.10833611867403746,
+    "alpha_tstat": 1.0842995922204983,
+    "total_trades": 20334,
+    "ann_turnover": 11.421121056463843,
+    "corr_bench": 0.8792380174757752,
     "n_folds": 8,
     "ok": true
    }
   },
   {
-   "fingerprint": "18f05472c98688ea",
-   "canonical": "min(f_book_to_market, tsmean_5(div(delta_5(ite(rank(sigmoid(tsstd_63(peer_dispersion))), delta_21(m_dollar), dollar_vol_21)), sub(0.961, f_earnings_yield))))|k=30|rb=10|w=score",
+   "fingerprint": "b2752a8091f05a99",
+   "canonical": "rev_5|k=25|rb=21|w=score",
    "promoted": false,
    "genome": {
     "expr": {
-     "t": "bin",
-     "op": "min",
-     "left": {
-      "t": "feat",
-      "name": "f_book_to_market"
-     },
-     "right": {
-      "t": "un",
-      "op": "tsmean",
-      "window": 5,
-      "child": {
-       "t": "bin",
-       "op": "div",
-       "left": {
-        "t": "un",
-        "op": "delta",
-        "window": 5,
-        "child": {
-         "t": "ite",
-         "cond": {
-          "t": "un",
-          "op": "rank",
-          "window": 0,
-          "child": {
-           "t": "un",
-           "op": "sigmoid",
-           "window": 0,
-           "child": {
-            "t": "un",
-            "op": "tsstd",
-            "window": 63,
-            "child": {
-             "t": "feat",
-             "name": "peer_dispersion"
-            }
-           }
-          }
-         },
-         "a": {
-          "t": "un",
-          "op": "delta",
-          "window": 21,
-          "child": {
-           "t": "feat",
-           "name": "m_dollar"
-          }
-         },
-         "b": {
-          "t": "feat",
-          "name": "dollar_vol_21"
-         }
-        }
-       },
-       "right": {
-        "t": "bin",
-        "op": "sub",
-        "left": {
-         "t": "const",
-         "value": 0.961
-        },
-        "right": {
-         "t": "feat",
-         "name": "f_earnings_yield"
-        }
-       }
-      }
-     }
+     "t": "feat",
+     "name": "rev_5"
     },
-    "n_positions": 30,
-    "rebalance_days": 10,
+    "n_positions": 25,
+    "rebalance_days": 21,
     "weighting": "score",
-    "born": 2230,
-    "parents": [
-     "453e20aec9e54ff5",
-     "21f48152a650ebe9"
-    ],
-    "operator": "shrink",
+    "born": 2233,
+    "parents": [],
+    "operator": "init",
     "meta": {},
-    "fingerprint": "18f05472c98688ea",
-    "canonical": "min(f_book_to_market, tsmean_5(div(delta_5(ite(rank(sigmoid(tsstd_63(peer_dispersion))), delta_21(m_dollar), dollar_vol_21)), sub(0.961, f_earnings_yield))))|k=30|rb=10|w=score"
+    "fingerprint": "b2752a8091f05a99",
+    "canonical": "rev_5|k=25|rb=21|w=score"
    },
    "cv": {
-    "frac_positive": 1.0,
-    "mean_alpha": 0.2082911205098259,
-    "median_alpha": 0.22409296158281497,
-    "mean_ir": 1.7980175036982091,
-    "worst_fold_alpha": 0.059717013090296985,
-    "alpha_tstat": 4.393685494823803,
-    "total_trades": 8924,
-    "ann_turnover": 27.077928993139892,
-    "corr_bench": 0.8472115119926901,
+    "frac_positive": 0.375,
+    "mean_alpha": 0.01138100985933502,
+    "median_alpha": -0.00469811192562192,
+    "mean_ir": 0.22517576990207125,
+    "worst_fold_alpha": -0.1587624036445939,
+    "alpha_tstat": -0.14544494161217886,
+    "total_trades": 4259,
+    "ann_turnover": 22.08479432010115,
+    "corr_bench": 0.7675638879815004,
     "n_folds": 8,
     "ok": true
    }
