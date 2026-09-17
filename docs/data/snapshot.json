@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T05:26:53+00:00",
+ "generated_at": "2026-09-17T05:35:13+00:00",
  "workers": {
   "workers": [
    {
@@ -8,20 +8,20 @@
     "label": "system supervisor",
     "started_at": "2026-09-17T05:24:12+00:00",
     "status": "supervising",
-    "detail": "running: idle",
+    "detail": "running: publish",
     "progress": null,
     "metrics": {
-     "jobs_running": 0,
+     "jobs_running": 1,
      "failures": 0,
      "code_reloads": 0
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T05:26:52+00:00",
-    "heartbeat_epoch": 1789622812.318507,
-    "uptime_s": 160.1,
-    "heartbeat_age_s": 1.4,
+    "heartbeat": "2026-09-17T05:35:12+00:00",
+    "heartbeat_epoch": 1789623312.5638049,
+    "uptime_s": 660.3,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -39,7 +39,7 @@
     "heartbeat": "2026-09-17T04:23:35+00:00",
     "heartbeat_epoch": 1789619015.7774796,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 3798.0,
+    "heartbeat_age_s": 4297.0,
     "liveness": "finished"
    },
    {
@@ -68,30 +68,30 @@
     "heartbeat": "2026-09-17T05:26:08+00:00",
     "heartbeat_epoch": 1789622768.869833,
     "uptime_s": 52.9,
-    "heartbeat_age_s": 44.9,
+    "heartbeat_age_s": 543.9,
     "liveness": "finished"
    },
    {
     "id": "trade",
     "kind": "trade",
     "label": "paper execution",
-    "started_at": "2026-09-16T23:58:33+00:00",
+    "started_at": "2026-09-17T05:29:13+00:00",
     "status": "finished",
-    "detail": "23 orders, 22 positions, equity $97,800.25",
+    "detail": "86 orders, 22 positions, equity $97,800.25",
     "progress": 1.0,
     "metrics": {
      "equity": 97800.25,
      "positions": 22,
-     "orders": 23,
+     "orders": 86,
      "halted": false
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-16T23:59:08+00:00",
-    "heartbeat_epoch": 1789603148.748595,
-    "uptime_s": 35.1,
-    "heartbeat_age_s": 19665.0,
+    "heartbeat": "2026-09-17T05:29:44+00:00",
+    "heartbeat_epoch": 1789622984.2348976,
+    "uptime_s": 30.6,
+    "heartbeat_age_s": 328.5,
     "liveness": "finished"
    },
    {
@@ -112,14 +112,14 @@
     "heartbeat": "2026-09-17T00:11:56+00:00",
     "heartbeat_epoch": 1789603916.453543,
     "uptime_s": 169.9,
-    "heartbeat_age_s": 18897.3,
+    "heartbeat_age_s": 19396.3,
     "liveness": "finished"
    }
   ],
   "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T05:26:53+00:00"
+  "updated": "2026-09-17T05:35:12+00:00"
  },
  "experience": {
   "rows": 2816,
@@ -2249,9 +2249,9 @@
   "halt_reason": "",
   "halted_at": "",
   "equity_high_water": 100000.0,
-  "day": "2026-09-16",
-  "day_start_equity": 98252.05843488273,
-  "orders_today": 27,
+  "day": "2026-09-17",
+  "day_start_equity": 97800.25446284334,
+  "orders_today": 0,
   "breaches": [
    {
     "at": "2026-09-15T07:52:36+00:00",
@@ -2269,7 +2269,7 @@
    "max_position_pct": 0.06
   },
   "drawdown": -0.017933455913281358,
-  "day_pl": -0.0004621178114141283
+  "day_pl": 0.004155407857174097
  },
  "seal": {
   "start": "2026-09-17",
