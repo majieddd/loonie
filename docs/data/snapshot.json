@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-09-17T03:59:41+00:00",
+ "generated_at": "2026-09-17T04:00:40+00:00",
  "workers": {
   "workers": [
    {
     "id": "search",
     "kind": "search",
     "label": "genetic program",
-    "started_at": "2026-09-17T03:58:06+00:00",
+    "started_at": "2026-09-17T04:00:19+00:00",
     "status": "running",
     "detail": "seeding population",
     "progress": null,
@@ -14,10 +14,10 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T03:58:06+00:00",
-    "heartbeat_epoch": 1789617486.92574,
+    "heartbeat": "2026-09-17T04:00:19+00:00",
+    "heartbeat_epoch": 1789617619.3144493,
     "uptime_s": 0.0,
-    "heartbeat_age_s": 93.1,
+    "heartbeat_age_s": 20.5,
     "liveness": "live"
    },
    {
@@ -30,16 +30,16 @@
     "progress": null,
     "metrics": {
      "jobs_running": 2,
-     "failures": 246,
+     "failures": 247,
      "code_reloads": 11
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T03:59:39+00:00",
-    "heartbeat_epoch": 1789617579.4610455,
-    "uptime_s": 14767.3,
-    "heartbeat_age_s": 0.6,
+    "heartbeat": "2026-09-17T04:00:39+00:00",
+    "heartbeat_epoch": 1789617639.4878676,
+    "uptime_s": 14827.3,
+    "heartbeat_age_s": 0.3,
     "liveness": "live"
    },
    {
@@ -57,7 +57,7 @@
     "heartbeat": "2026-09-17T00:23:33+00:00",
     "heartbeat_epoch": 1789604613.8602972,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 12966.2,
+    "heartbeat_age_s": 13025.9,
     "liveness": "finished"
    },
    {
@@ -80,7 +80,7 @@
     "heartbeat": "2026-09-16T23:59:08+00:00",
     "heartbeat_epoch": 1789603148.748595,
     "uptime_s": 35.1,
-    "heartbeat_age_s": 14431.3,
+    "heartbeat_age_s": 14491.1,
     "liveness": "finished"
    },
    {
@@ -101,14 +101,14 @@
     "heartbeat": "2026-09-17T00:11:56+00:00",
     "heartbeat_epoch": 1789603916.453543,
     "uptime_s": 169.9,
-    "heartbeat_age_s": 13663.6,
+    "heartbeat_age_s": 13723.4,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T03:59:40+00:00"
+  "updated": "2026-09-17T04:00:39+00:00"
  },
  "experience": {
   "rows": 2675,
