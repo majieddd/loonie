@@ -2381,3 +2381,35 @@ def test_stopping_rule_is_declared_in_config_not_discovered():
     # The configured ceiling should sit where the bar is still roughly
     # reachable; if this ever fails the rule has drifted from its rationale.
     assert null_bar(stop["max_trials"]) < 6.0
+
+
+def test_failed_publish_rebase_cleans_up_after_itself():
+    """A failed rebase leaves .git/rebase-merge behind, and every later git
+    command in the repo refuses to run until it is cleared by hand.
+
+    That is not hypothetical: after the history rewrite moved the remote out
+    from under an in-flight rebase, this job wedged the repository and failed
+    every publish for hours. The docstring claimed it "leaves the working tree
+    alone", which was the opposite of what it did.
+    """
+    import ast
+
+    src = (Path(__file__).resolve().parent.parent / "scripts"
+           / "publish_dashboard.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    fn = next(n for n in ast.walk(tree)
+              if isinstance(n, ast.FunctionDef) and n.name == "main")
+
+    # Find the `if pull.returncode != 0:` branch and require an abort in it.
+    aborts = []
+    for node in ast.walk(fn):
+        if not isinstance(node, ast.Call):
+            continue
+        f = node.func
+        if (isinstance(f, ast.Name) and f.id == "git"
+                and [a for a in node.args
+                     if isinstance(a, ast.Constant) and a.value == "--abort"]):
+            aborts.append(node)
+    assert aborts, "publish never aborts a failed rebase"
+    assert "rebase --abort" in src, \
+        "the operator-facing message should name the manual escape hatch"

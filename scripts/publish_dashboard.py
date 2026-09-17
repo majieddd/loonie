@@ -12,7 +12,9 @@ dashboard is always current) but the push happens at most once per
 the granularity at which any of these numbers actually mean something.
 
 Nothing here force-pushes and nothing rewrites history. If the remote has
-moved, it rebases; if that fails it says so and leaves the working tree alone.
+moved, it rebases; if that fails it aborts the rebase before reporting, so a
+failed publish cannot leave the repository mid-rebase with every later git
+command refusing to run.
 """
 from __future__ import annotations
 
@@ -119,8 +121,25 @@ def main() -> int:
 
     pull = git("pull", "--rebase", "--autostash")
     if pull.returncode != 0:
+        # A failed rebase does NOT leave the tree alone: it leaves
+        # .git/rebase-merge behind, and every subsequent git command in the
+        # repository refuses to run until someone clears it by hand. That is
+        # how this job wedged the repo after a history rewrite moved the
+        # remote out from under an in-flight rebase -- the daemon then failed
+        # every publish for hours with a message about `git rebase --continue`.
+        #
+        # Aborting restores the pre-pull state including the autostash, which
+        # is the outcome the docstring always claimed and never delivered.
+        ab = git("rebase", "--abort")
         print("[publish] rebase onto remote failed; not pushing.\n%s"
               % pull.stderr.strip()[:300])
+        if ab.returncode == 0:
+            print("[publish] rebase aborted; working tree restored")
+        else:
+            print("[publish] WARNING: could not abort the rebase. The repo is "
+                  "mid-rebase and later git operations will refuse to run "
+                  "until it is cleared:\n  git -C %s rebase --abort"
+                  % config.ROOT)
         return 1
 
     push = git("push")
