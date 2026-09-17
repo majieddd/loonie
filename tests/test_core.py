@@ -2580,3 +2580,89 @@ def test_best_ic_in_history_tracks_the_generation_leader():
     if leader_ic is not None and np.isfinite(leader_ic):
         assert abs(recs[-1]["best_ic_t"] - float(leader_ic)) < 1e-9, \
             "history's best_ic_t does not match the gated leader"
+
+
+def test_scripts_have_no_unbound_names_in_their_exit_paths():
+    """A NameError on the last line of a long daemon run is expensive.
+
+    run_evolve's stopping path returned orchestrator.RC_STOPPED_BY_RULE while
+    the orchestrator import was added in a separate edit. The reference sat
+    OUTSIDE the try block, so a search that had run for 2,230 generations
+    printed its full summary and then died with a NameError -- which the
+    supervisor read as rc=1, "died unexpectedly", and restarted.
+
+    Nothing short of running to completion would have surfaced it, so this
+    checks statically instead: every name a script's main() loads must be a
+    local, an import, a module-level definition, or a builtin.
+    """
+    import ast
+    import builtins
+
+    root = Path(__file__).resolve().parent.parent / "scripts"
+    offenders = {}
+    for path in sorted(root.glob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+
+        bound = set(dir(builtins))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for al in node.names:
+                    bound.add(al.asname or al.name.split(".")[0])
+            elif isinstance(node, ast.ImportFrom):
+                for al in node.names:
+                    bound.add(al.asname or al.name)
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                   ast.ClassDef)):
+                bound.add(node.name)
+            elif isinstance(node, ast.Assign):
+                for t in node.targets:
+                    if isinstance(t, ast.Name):
+                        bound.add(t.id)
+            elif isinstance(node, (ast.AnnAssign, ast.AugAssign)):
+                if isinstance(node.target, ast.Name):
+                    bound.add(node.target.id)
+
+        for fn in [n for n in ast.walk(tree)
+                   if isinstance(n, ast.FunctionDef)]:
+            local = {a.arg for a in fn.args.args + fn.args.kwonlyargs}
+            if fn.args.vararg:
+                local.add(fn.args.vararg.arg)
+            if fn.args.kwarg:
+                local.add(fn.args.kwarg.arg)
+            for n in ast.walk(fn):
+                if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):
+                    local.add(n.id)
+                elif isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                    ast.ClassDef)):
+                    local.add(n.name)
+                elif isinstance(n, ast.ExceptHandler) and n.name:
+                    local.add(n.name)
+                elif isinstance(n, (ast.Import, ast.ImportFrom)):
+                    for al in n.names:
+                        local.add(al.asname or al.name.split(".")[0])
+                elif isinstance(n, ast.comprehension):
+                    for t in ast.walk(n.target):
+                        if isinstance(t, ast.Name):
+                            local.add(t.id)
+                # Parameters of lambdas and nested defs are bound inside them.
+                # Without this every `lambda kv: ...` and every nested
+                # callback argument reads as unbound, and the check drowns in
+                # false positives -- which is how a real one gets waved
+                # through.
+                if isinstance(n, (ast.Lambda, ast.FunctionDef,
+                                  ast.AsyncFunctionDef)):
+                    ar = n.args
+                    for a in (ar.args + ar.posonlyargs + ar.kwonlyargs):
+                        local.add(a.arg)
+                    if ar.vararg:
+                        local.add(ar.vararg.arg)
+                    if ar.kwarg:
+                        local.add(ar.kwarg.arg)
+
+            for n in ast.walk(fn):
+                if (isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)
+                        and n.id not in local and n.id not in bound):
+                    offenders.setdefault(path.name, set()).add(n.id)
+
+    assert not offenders, "unbound names in scripts: %s" % {
+        k: sorted(v) for k, v in offenders.items()}
