@@ -1,0 +1,86 @@
+{
+ "at": "2026-09-17T21:20:34+00:00",
+ "cycle": 1,
+ "seconds": 192.6,
+ "model": "qwen3:14b-q4_K_M",
+ "dream": {
+  "ok": true,
+  "worlds": 3,
+  "nodes": 128,
+  "methods": [
+   "elitist_ir",
+   "low_turnover",
+   "mdl_parsimony",
+   "novelty_search",
+   "parsimony_hard",
+   "qd_consistency",
+   "qd_ir",
+   "wide_explore"
+  ],
+  "budget": 8,
+  "table": [
+   {
+    "policy": "round_robin",
+    "worlds": 3,
+    "runs": 180,
+    "mean_value": 0.31471734165397486,
+    "mean_best": 0.3211173416539748,
+    "mean_regret": 0.03474727810117115,
+    "mean_evals": 8.0,
+    "mean_promoted": 1.0
+   },
+   {
+    "policy": "epsilon_greedy",
+    "worlds": 3,
+    "runs": 180,
+    "mean_value": 0.29599034503795985,
+    "mean_best": 0.30239034503795986,
+    "mean_regret": 0.053474274717186125,
+    "mean_evals": 8.0,
+    "mean_promoted": 1.788888888888889
+   },
+   {
+    "policy": "greedy",
+    "worlds": 3,
+    "runs": 180,
+    "mean_value": 0.29286337540436275,
+    "mean_best": 0.29926337540436276,
+    "mean_regret": 0.05660124435078322,
+    "mean_evals": 8.0,
+    "mean_promoted": 2.0
+   },
+   {
+    "policy": "thompson",
+    "worlds": 3,
+    "runs": 180,
+    "mean_value": 0.27012514196901005,
+    "mean_best": 0.27652514196901007,
+    "mean_regret": 0.07933947778613588,
+    "mean_evals": 8.0,
+    "mean_promoted": 1.8444444444444446
+   }
+  ],
+  "best_policy": "round_robin",
+  "incumbent_policy": "thompson",
+  "gain_over_incumbent": 0.044592199684964806,
+  "caveat": "replay can only visit candidates the history actually contains, so it understates a genuinely better policy; and 3 worlds is too few for a significance test"
+ },
+ "propose": {
+  "ok": true,
+  "hypothesis": {
+   "title": "Forex Volatility-Scaled Trend Following",
+   "market": "forex",
+   "signal": "Compute 20-day realized volatility of the currency pair. Use inverse volatility as a scaling factor for the trend-following position size (higher scaling for lower volatility).",
+   "direction": "long high",
+   "holding_days": 21,
+   "reason": "During low-volatility periods, trends are more likely to persist, allowing larger positions with lower risk.",
+   "cross_market_of": "Volatility-Scaled Momentum",
+   "model": "qwen3:14b-q4_K_M"
+  },
+  "fingerprint": "d9d7105a76a7737f",
+  "duplicate": false,
+  "bar_before": 2.0,
+  "bar_after": 2.0,
+  "distinct_hypotheses": 2
+ }
+}

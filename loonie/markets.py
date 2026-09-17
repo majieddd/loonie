@@ -279,10 +279,76 @@ def fetch_volatility(indices=None) -> MarketPanel:
                         "derived from these is modelled, not observed."})
 
 
+# =============================================================================
+#  Macro -- FRED, no API key needed for single series
+# =============================================================================
+FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=%s"
+
+# Chosen for length and for being the series that actually move markets, not
+# for being interesting. Several reach back to the 1960s.
+FRED_SERIES = [
+    "DGS10", "DGS2", "DGS3MO", "DGS30",        # the curve
+    "T10Y2Y", "T10Y3M",                        # inversion spreads
+    "BAMLH0A0HYM2", "BAMLC0A0CM",              # credit spreads, HY and IG
+    "DFF", "DTWEXBGS",                         # policy rate, broad dollar
+    "UNRATE", "CPIAUCSL", "PAYEMS", "INDPRO",  # the real economy
+    "T5YIE", "T10YIE",                         # breakeven inflation
+    "UMCSENT", "HOUST", "PERMIT",              # sentiment and housing
+    "WTISPLC", "GOLDAMGBD228NLBM",             # oil and gold
+]
+
+
+def fetch_macro(series=None) -> MarketPanel:
+    """Daily and monthly FRED series, forward-filled onto a daily calendar.
+
+    REVISIONS ARE A TRAP HERE and this does not solve it. FRED serves the
+    CURRENT vintage: today's value of UNRATE for March 2020 is the revised
+    figure, not what was published at the time. Anything conditioning on a
+    revised macro release is using a number nobody had, which is the same
+    error the SEC filing dates exist to prevent. ALFRED carries the vintages
+    and is the correct source for that; this is not it.
+
+    Rates and spreads are far safer than the real-economy series, because
+    market-observed prices are not revised.
+    """
+    series = series or FRED_SERIES
+    frames = {}
+    for sid in series:
+        try:
+            req = urllib.request.Request(FRED_CSV % sid,
+                                         headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=60) as fh:
+                raw = fh.read().decode("utf-8", errors="replace")
+            d = pd.read_csv(io.StringIO(raw))
+            dcol = d.columns[0]
+            d[dcol] = pd.to_datetime(d[dcol], errors="coerce")
+            v = pd.to_numeric(d[d.columns[1]], errors="coerce")
+            frames[sid] = pd.Series(v.values, index=d[dcol]).dropna()
+        except Exception:
+            continue
+        time.sleep(0.25)
+
+    if not frames:
+        raise RuntimeError("no FRED series retrieved")
+    df = pd.DataFrame(frames).sort_index()
+    # Forward-fill monthly series onto the daily grid: the last PUBLISHED
+    # value is what a reader had, and back-filling would not be.
+    df = df.ffill()
+    c = df.to_numpy(dtype="float32")
+    return MarketPanel(
+        market="macro", dates=pd.DatetimeIndex(df.index), symbols=list(df.columns),
+        close=c, tradable=np.isfinite(c),
+        meta={"source": "FRED (St. Louis Fed)",
+              "caveat": "CURRENT vintage, not point-in-time. Revised "
+                        "macro releases are numbers nobody had on the day. "
+                        "Rates and spreads are market-observed and safe; "
+                        "UNRATE, CPI and PAYEMS are revised and are not."})
+
+
 def registry() -> list:
     """What is stored, how much of it, and what is wrong with each."""
     out = []
-    for m in ("stocks", "crypto", "forex", "volatility"):
+    for m in ("stocks", "crypto", "forex", "volatility", "macro"):
         p = load(m)
         if p is None:
             out.append({"market": m, "present": False})

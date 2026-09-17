@@ -3541,3 +3541,121 @@ def test_prices_are_stored_long_with_market_as_a_column():
     # Every market in one table, so a query can compare them without a union.
     assert W.SCHEMA.count("CREATE TABLE") >= 7
     assert "caveat" in W.SCHEMA, "markets table must carry its caveat"
+
+
+# =============================================================================
+#  RSI: replay simulator and the hypothesis ledger
+# =============================================================================
+def _world(spec, seed=0):
+    """spec: {method: [scores]} -> a replayable World."""
+    from loonie import dream as D
+
+    nodes = []
+    g = 0
+    for m, scores in spec.items():
+        for s in scores:
+            g += 1
+            nodes.append(D.Node(fingerprint="%s%d" % (m, g), method=m,
+                                operator="x", generation=g, fitness=s,
+                                fwd_alpha=s, fwd_t=0.0,
+                                gates_passed=0, gates_total=8))
+    return D.World.build(nodes, run_id="t")
+
+
+def test_replay_terminates_when_a_policy_fixates_on_an_exhausted_method():
+    """The bug that hung the first version.
+
+    A greedy policy keeps choosing whichever method scored best. Once that
+    method has nothing left, refusing the choice and continuing costs no
+    budget -- so the loop never advances, never errors, and never returns.
+    Exhausted methods are hidden from the policy instead.
+    """
+    from loonie import dream as D
+
+    w = _world({"good": [0.9], "bad": [0.1, 0.1, 0.1, 0.1]})
+    r = D.replay(D.Greedy(), w, budget=50, seed=0)
+    assert r["evaluations"] == 5, "replay did not consume the whole world"
+    assert r["best_score"] == 0.9
+
+
+def test_replay_scores_on_forward_outcome_not_fitness():
+    """Fitness is what the search optimised; forward alpha is what it was
+    trying to predict. Replaying against fitness would measure how well a
+    policy games the objective."""
+    from loonie import dream as D
+
+    n = D.Node(fingerprint="a", method="m", operator="o", generation=1,
+               fitness=99.0, fwd_alpha=0.02, fwd_t=1.0,
+               gates_passed=0, gates_total=8)
+    assert n.score == 0.02, "score came from fitness, not the forward result"
+
+    nan = D.Node(fingerprint="b", method="m", operator="o", generation=2,
+                 fitness=99.0, fwd_alpha=float("nan"), fwd_t=float("nan"),
+                 gates_passed=0, gates_total=8)
+    assert nan.score == 0.0, "an unmeasured forward outcome became a score"
+
+
+def test_a_world_with_one_method_cannot_discriminate_policies():
+    """Why worlds pool runs instead of following them.
+
+    run_evolve draws ONE method at startup and keeps it, so a per-run world
+    offers no allocation decision and every policy ties at zero regret --
+    which looks like a finding and is an artefact of the world's shape.
+    """
+    from loonie import dream as D
+
+    w = _world({"only": [0.1, 0.5, 0.3, 0.2]})
+    out = {D.replay(cls(), w, budget=2, seed=1)["best_score"]
+           for cls in D.POLICIES}
+    assert len(out) == 1, "a single-method world somehow discriminated"
+
+    # Two methods and a budget below the world size, and it does.
+    w2 = _world({"a": [0.9, 0.9, 0.9], "b": [0.0, 0.0, 0.0]})
+    got = {cls.__name__: D.replay(cls(), w2, budget=2, seed=1)["best_score"]
+           for cls in D.POLICIES}
+    assert len(set(got.values())) > 1, "policies tied where they should differ"
+
+
+def test_hypothesis_fingerprint_is_over_substance_not_title():
+    """A model asked repeatedly for something new will rename the same idea.
+
+    A ledger keyed on titles lets it do that indefinitely without the
+    multiple-testing bar ever moving, which is the whole mechanism the ledger
+    exists to enforce.
+    """
+    from loonie import researcher as R
+
+    a = {"title": "Low Volatility Tilt", "market": "stocks",
+         "signal": "60-day realized volatility", "direction": "long low",
+         "holding_days": 21}
+    b = dict(a, title="Calm Stock Preference Strategy")   # renamed only
+    c = dict(a, holding_days=63)                          # genuinely different
+
+    assert R._fingerprint(a) == R._fingerprint(b), \
+        "renaming a hypothesis produced a new fingerprint"
+    assert R._fingerprint(a) != R._fingerprint(c)
+
+
+def test_the_bar_rises_with_distinct_hypotheses(tmp_path, monkeypatch):
+    """Every proposal raises the threshold for every hypothesis, including
+    those already tested. A tireless proposer does not improve the odds of
+    finding an edge; it raises the bar for everything."""
+    from loonie import researcher as R
+
+    monkeypatch.setattr(R, "resolve", lambda q: tmp_path / Path(q).name)
+    assert R.bar()["bar"] == 2.0
+
+    for i in range(200):
+        R.record({"title": "h%d" % i, "market": "stocks",
+                  "signal": "signal number %d" % i, "direction": "long high",
+                  "holding_days": 21})
+    b = R.bar()
+    assert b["proposals_distinct"] == 200
+    assert b["bar"] > 3.2, "the bar did not rise with 200 hypotheses"
+
+    # A duplicate is the same test and must not be charged twice.
+    R.record({"title": "again", "market": "stocks", "signal": "signal number 0",
+              "direction": "long high", "holding_days": 21})
+    b2 = R.bar()
+    assert b2["proposals_distinct"] == 200, "a duplicate moved the bar"
+    assert b2["proposals_total"] == 201, "the duplicate was not recorded at all"
