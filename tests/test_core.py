@@ -3053,3 +3053,78 @@ def test_ensemble_script_cannot_skip_the_out_of_sample_split():
     assert not (flags & banned), "an escape hatch from the split was added"
     assert "--split" in flags, "the split is no longer configurable at all"
     assert "_slice_panel" in src, "the script no longer splits the panel"
+
+
+# =============================================================================
+#  Wide universe
+# =============================================================================
+def test_liquidity_rule_reads_only_the_past():
+    """A universe rule that reads today's volume to decide whether today's
+    name is tradable is reading the session it is about to trade."""
+    from loonie import wide
+
+    T, N = 300, 8
+    rng = np.random.default_rng(5)
+    close = np.full((T, N), 100.0)
+    volume = rng.uniform(1e5, 1e6, (T, N))
+
+    full = wide.liquidity_rank(close, volume, lookback=60)
+    cut = 200
+    trunc = wide.liquidity_rank(close[:cut], volume[:cut], lookback=60)
+    both = np.isfinite(full[:cut]) & np.isfinite(trunc)
+    assert both.any()
+    assert np.allclose(full[:cut][both], trunc[both]), \
+        "the liquidity rule changed when future data was removed"
+
+
+def test_membership_holds_between_refreshes():
+    """Re-ranking daily churns names in and out on noise, and the strategy is
+    charged turnover for a decision the universe definition made, not one it
+    made itself."""
+    from loonie import wide
+
+    T, N = 400, 50
+    rng = np.random.default_rng(9)
+    close = np.full((T, N), 50.0)
+    volume = rng.uniform(1e4, 1e7, (T, N))
+    m = wide.membership(close, volume, n_names=20, lookback=60,
+                        refresh_every=21, min_dollar_vol=0.0, min_price=1.0)
+
+    # Within a refresh block membership must not move at all. The block
+    # boundaries are derived, not guessed: hardcoding rows 120..140 straddled
+    # the refresh at 123 and failed the code for doing exactly its job.
+    lookback, every = 60, 21
+    starts = list(range(lookback, T, every))
+    a, b = starts[3], min(starts[3] + every, T)
+    block = m[a:b]
+    assert (block == block[0]).all(), "membership changed mid-block"
+
+    # And it must actually change between blocks, or the rule is inert.
+    assert not np.array_equal(m[starts[3]], m[starts[6]]),         "membership never changed across refreshes"
+
+
+def test_membership_respects_the_size_cap():
+    from loonie import wide
+
+    T, N = 300, 200
+    rng = np.random.default_rng(13)
+    close = np.full((T, N), 20.0)
+    volume = rng.uniform(1e5, 1e8, (T, N))
+    m = wide.membership(close, volume, n_names=30, lookback=60,
+                        refresh_every=21, min_dollar_vol=0.0, min_price=1.0)
+    per_day = m.sum(axis=1)
+    assert per_day.max() <= 30, "the universe exceeded its target size"
+
+
+def test_directory_filters_out_non_common_stock():
+    """Units, warrants and rights have their own price dynamics and would be
+    selected FOR by a liquidity rule in any week a SPAC was in the news."""
+    from loonie import wide
+
+    assert ".U" in wide.NOT_COMMON and ".W" in wide.NOT_COMMON
+    src = (Path(__file__).resolve().parent.parent / "loonie"
+           / "wide.py").read_text(encoding="utf-8")
+    # The reindex trap: filtering a frame then reusing a Series built from the
+    # pre-filter index silently drops the wrong rows.
+    assert src.count("reset_index(drop=True)") >= 3, \
+        "symbol filters no longer reset the index between steps"

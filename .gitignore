@@ -39,3 +39,4 @@ tools/
 #   state/risk_state.json      kill-switch state and breach log
 #   state/holdout_seal.json    the seal ledger -- this is a deliverable
 #   docs/data/*.json           what GitHub Pages serves
+data/universe/wide_panel.npz

@@ -1,0 +1,12 @@
+{
+ "built": "2026-09-17T14:14:37Z",
+ "target_names": 3000,
+ "names_ever": 4381,
+ "median_per_day": 2439.0,
+ "min_per_day": 1602,
+ "max_per_day": 3000,
+ "median_churn_per_refresh": 0.04210956663941128,
+ "first_populated": "2016-03-31",
+ "symbols_fetched": 6994,
+ "symbols_usable": 5098
+}
