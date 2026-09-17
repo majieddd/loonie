@@ -2549,3 +2549,34 @@ def test_history_records_best_ic_for_the_stopping_rule():
                 if isinstance(k, ast.Constant) and isinstance(k.value, str):
                     keys.add(k.value)
     assert "best_ic_t" in keys, "history no longer records best_ic_t"
+
+
+def test_best_ic_in_history_tracks_the_generation_leader():
+    """A stall signal that never moves is not a plateau, it is a broken gauge.
+
+    ic_t is computed inside gate(), which runs on the generation leader. The
+    first version of this record took the max over ARCHIVE elites instead --
+    most of which never reach gating and so carry no ic_t at all -- and the
+    maximum sat frozen on whichever few had one. It logged 0.80 for 97
+    consecutive generations. The stopping rule would have read that as a dead
+    flat search and fired on a number that was never measuring anything.
+    """
+    from loonie import evolve
+
+    p = synthetic_panel(T=800, N=20, seed=83)
+    f = features.build(p)
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+    c["evolve"]["population"] = 12
+
+    ev = evolve.Evolver(c, p, f, seed=9, verbose=False)
+    ev.seed_population(12)
+    recs = [ev.step() for _ in range(3)]
+
+    assert all("best_ic_t" in r for r in recs), "best_ic_t missing from history"
+    # It must come from the leader that was actually gated this generation.
+    leader_ic = ev.population[0].cv.get("ic_t")
+    if leader_ic is not None and np.isfinite(leader_ic):
+        assert abs(recs[-1]["best_ic_t"] - float(leader_ic)) < 1e-9, \
+            "history's best_ic_t does not match the gated leader"

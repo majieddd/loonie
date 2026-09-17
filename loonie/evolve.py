@@ -1121,10 +1121,15 @@ class Evolver:
             # supervisor restarts this worker on every source change, and an
             # in-process counter resets each time -- so a rule needing 300
             # stalled generations would never once reach 300.
-            "best_ic_t": float(max(
-                [float(e.cv.get("ic_t") or -9e9) for e in self.archive.elites()]
-                + [float(h.get("cv", {}).get("ic_t") or -9e9)
-                   for h in self.hall_of_fame] or [float("nan")])),
+            #
+            # Read from `top`, like every other best_* field here. The first
+            # version took the max over archive elites, but ic_t is only
+            # computed inside gate(), which runs on the generation leader --
+            # so most archive entries carry no IC at all and the maximum sat
+            # frozen on whichever few had one. It logged 0.80 for 97
+            # consecutive generations, which would have read as a dead flat
+            # plateau rather than as a broken measurement.
+            "best_ic_t": float(top.cv.get("ic_t", float("nan"))),
             "explore": float(self.explore),
             "promoted_total": len(self.hall_of_fame),
             "seconds": round(time.time() - t0, 2),
