@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-17T18:23:13+00:00",
- "generation": 2546,
- "trials": 338741,
+ "updated": "2026-09-17T18:39:13+00:00",
+ "generation": 2547,
+ "trials": 338976,
  "promoted": false,
  "strategies": [
   {
@@ -44,19 +44,19 @@
     "val_sessions": 529,
     "val_ic": 0.012339183958365441,
     "val_ic_t": 1.8896186253801357,
-    "dsr": 0.23310488239460236,
+    "dsr": 0.21602881089832787,
     "sr_ann_excess": 1.2647890559201627,
-    "sr_star_ann": 1.5211395723598655,
-    "trials_total": 338741,
-    "trials_effective": 73620,
-    "independence": 0.21733430157392597,
+    "sr_star_ann": 1.5411983055276137,
+    "trials_total": 338976,
+    "trials_effective": 95480,
+    "independence": 0.28167166763662627,
     "ic": 0.001956195897672782,
     "ic_t": 0.5536064317207249,
     "ic_n": 2149,
     "ic_ir": 0.01561018920027435,
     "ic_hit": 0.4974406700791066,
-    "ic_bar": 4.734273335356338,
-    "pbo": 0.34285714285714286
+    "ic_bar": 4.788877129443345,
+    "pbo": 0.14285714285714285
    }
   },
   {
@@ -96,37 +96,50 @@
    }
   },
   {
-   "fingerprint": "dd056bf0da71b1af",
-   "canonical": "f_earnings_yield|k=15|rb=5|w=equal",
+   "fingerprint": "ad43ea2f14c98f10",
+   "canonical": "add(tsrank_63(-1.81), f_earnings_yield)|k=15|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
-     "t": "feat",
-     "name": "f_earnings_yield"
+     "t": "bin",
+     "op": "add",
+     "left": {
+      "t": "un",
+      "op": "tsrank",
+      "window": 63,
+      "child": {
+       "t": "const",
+       "value": -1.8098
+      }
+     },
+     "right": {
+      "t": "feat",
+      "name": "f_earnings_yield"
+     }
     },
     "n_positions": 15,
-    "rebalance_days": 5,
+    "rebalance_days": 10,
     "weighting": "equal",
-    "born": 2248,
+    "born": 2236,
     "parents": [
-     "e4d971196b77f426",
-     "3dd83fa778b0a959"
+     "b28203a84e0c1287",
+     "e99c183e1df825e6"
     ],
     "operator": "hoist",
     "meta": {},
-    "fingerprint": "dd056bf0da71b1af",
-    "canonical": "f_earnings_yield|k=15|rb=5|w=equal"
+    "fingerprint": "ad43ea2f14c98f10",
+    "canonical": "add(tsrank_63(-1.81), f_earnings_yield)|k=15|rb=10|w=equal"
    },
    "cv": {
     "frac_positive": 1.0,
-    "mean_alpha": 0.08688761227415848,
-    "median_alpha": 0.06355592757125483,
-    "mean_ir": 1.0968837776126208,
-    "worst_fold_alpha": 0.02267175140560662,
-    "alpha_tstat": 3.1235716242332545,
-    "total_trades": 6236,
-    "ann_turnover": 5.261529711579401,
-    "corr_bench": 0.9192261965968057,
+    "mean_alpha": 0.09864696166895875,
+    "median_alpha": 0.0532136793267602,
+    "mean_ir": 1.1991546224317249,
+    "worst_fold_alpha": 0.02818302481812141,
+    "alpha_tstat": 3.4019563190825775,
+    "total_trades": 3148,
+    "ann_turnover": 4.092599648322363,
+    "corr_bench": 0.9176517964028129,
     "n_folds": 8,
     "ok": true
    }
