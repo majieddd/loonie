@@ -1,43 +1,14 @@
 {
- "generated_at": "2026-09-17T16:51:29+00:00",
+ "generated_at": "2026-09-17T17:03:10+00:00",
  "workers": {
   "workers": [
-   {
-    "id": "search",
-    "kind": "search",
-    "label": "genetic program",
-    "started_at": "2026-09-17T16:50:53+00:00",
-    "status": "running",
-    "detail": "gen 2546 | fit +1.010 | IR +1.27 | alpha t +3.59",
-    "progress": null,
-    "metrics": {
-     "generation": 2546,
-     "trials": 338741,
-     "trials_effective": 73620,
-     "best_fitness": 1.0099,
-     "best_alpha_t": 3.586,
-     "best_dsr": 0.233,
-     "archive_cells": 56,
-     "promoted": 0,
-     "demoted": 227,
-     "seconds_per_gen": 36.66
-    },
-    "cycle": 0,
-    "errors": 0,
-    "last_error": "",
-    "heartbeat": "2026-09-17T16:51:29+00:00",
-    "heartbeat_epoch": 1789663889.769727,
-    "uptime_s": 36.7,
-    "heartbeat_age_s": 0.0,
-    "liveness": "live"
-   },
    {
     "id": "orchestrator",
     "kind": "supervisor",
     "label": "system supervisor",
     "started_at": "2026-09-17T09:56:55+00:00",
     "status": "supervising",
-    "detail": "running: search",
+    "detail": "running: publish",
     "progress": null,
     "metrics": {
      "jobs_running": 1,
@@ -47,10 +18,10 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T16:51:29+00:00",
-    "heartbeat_epoch": 1789663889.4507062,
-    "uptime_s": 24873.6,
-    "heartbeat_age_s": 0.3,
+    "heartbeat": "2026-09-17T17:03:09+00:00",
+    "heartbeat_epoch": 1789664589.8690567,
+    "uptime_s": 25574.0,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -68,7 +39,36 @@
     "heartbeat": "2026-09-17T14:27:00+00:00",
     "heartbeat_epoch": 1789655220.2108197,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 8669.6,
+    "heartbeat_age_s": 9369.9,
+    "liveness": "finished"
+   },
+   {
+    "id": "search",
+    "kind": "search",
+    "label": "genetic program",
+    "started_at": "2026-09-17T16:50:53+00:00",
+    "status": "finished",
+    "detail": "stopped: no IC improvement in 311 generations (best 2.03)",
+    "progress": 1.0,
+    "metrics": {
+     "generation": 2546,
+     "trials": 338741,
+     "trials_effective": 73620,
+     "best_fitness": 1.0099,
+     "best_alpha_t": 3.586,
+     "best_dsr": 0.233,
+     "archive_cells": 56,
+     "promoted": 0,
+     "demoted": 227,
+     "seconds_per_gen": 36.66
+    },
+    "cycle": 0,
+    "errors": 0,
+    "last_error": "",
+    "heartbeat": "2026-09-17T16:51:29+00:00",
+    "heartbeat_epoch": 1789663889.8556385,
+    "uptime_s": 36.8,
+    "heartbeat_age_s": 700.2,
     "liveness": "finished"
    },
    {
@@ -91,7 +91,7 @@
     "heartbeat": "2026-09-17T10:02:31+00:00",
     "heartbeat_epoch": 1789639351.7214437,
     "uptime_s": 34.3,
-    "heartbeat_age_s": 24538.1,
+    "heartbeat_age_s": 25238.4,
     "liveness": "finished"
    },
    {
@@ -112,27 +112,27 @@
     "heartbeat": "2026-09-17T10:15:31+00:00",
     "heartbeat_epoch": 1789640131.0609217,
     "uptime_s": 182.3,
-    "heartbeat_age_s": 23758.7,
+    "heartbeat_age_s": 24459.0,
     "liveness": "finished"
    }
   ],
-  "live": 2,
+  "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T16:51:29+00:00"
+  "updated": "2026-09-17T17:03:10+00:00"
  },
  "experience": {
-  "rows": 3120,
-  "labelled": 3120,
+  "rows": 3121,
+  "labelled": 3121,
   "distinct_strategies": 105,
-  "runs": 26,
+  "runs": 27,
   "methods": 8,
   "promoted": 211,
   "first": "2026-09-16T15:28:11+00:00",
-  "last": "2026-09-17T16:49:19+00:00",
-  "bytes": 198141,
-  "fwd_alpha_mean": 0.03321216177573266,
-  "fwd_positive_rate": 0.5657051282051282
+  "last": "2026-09-17T16:51:29+00:00",
+  "bytes": 198192,
+  "fwd_alpha_mean": 0.03325303538967305,
+  "fwd_positive_rate": 0.5658442806792695
  },
  "family_forward_rates": {
   "momentum": {
@@ -141,8 +141,8 @@
    "rate": 1.0
   },
   "fundamental": {
-   "seen": 432,
-   "survived": 432,
+   "seen": 433,
+   "survived": 433,
    "rate": 1.0
   },
   "volume": {
@@ -3689,7 +3689,7 @@
   },
   "universe_start": "2016-01-01",
   "holdout_start": "2026-09-17",
-  "population": 250,
+  "population": 300,
   "slippage_bps": 5.0
  }
 }
