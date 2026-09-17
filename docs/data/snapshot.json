@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T16:33:58+00:00",
+ "generated_at": "2026-09-17T16:47:09+00:00",
  "workers": {
   "workers": [
    {
@@ -8,20 +8,20 @@
     "label": "system supervisor",
     "started_at": "2026-09-17T09:56:55+00:00",
     "status": "supervising",
-    "detail": "running: idle",
+    "detail": "running: publish",
     "progress": null,
     "metrics": {
-     "jobs_running": 0,
+     "jobs_running": 1,
      "failures": 0,
      "code_reloads": 14
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T16:33:53+00:00",
-    "heartbeat_epoch": 1789662833.8510442,
-    "uptime_s": 23818.0,
-    "heartbeat_age_s": 4.3,
+    "heartbeat": "2026-09-17T16:47:09+00:00",
+    "heartbeat_epoch": 1789663629.2850554,
+    "uptime_s": 24613.4,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -39,7 +39,7 @@
     "heartbeat": "2026-09-17T14:27:00+00:00",
     "heartbeat_epoch": 1789655220.2108197,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 7617.9,
+    "heartbeat_age_s": 8409.3,
     "liveness": "finished"
    },
    {
@@ -68,7 +68,7 @@
     "heartbeat": "2026-09-17T16:31:55+00:00",
     "heartbeat_epoch": 1789662715.9446156,
     "uptime_s": 16.4,
-    "heartbeat_age_s": 122.2,
+    "heartbeat_age_s": 913.6,
     "liveness": "finished"
    },
    {
@@ -91,7 +91,7 @@
     "heartbeat": "2026-09-17T10:02:31+00:00",
     "heartbeat_epoch": 1789639351.7214437,
     "uptime_s": 34.3,
-    "heartbeat_age_s": 23486.4,
+    "heartbeat_age_s": 24277.8,
     "liveness": "finished"
    },
    {
@@ -112,14 +112,14 @@
     "heartbeat": "2026-09-17T10:15:31+00:00",
     "heartbeat_epoch": 1789640131.0609217,
     "uptime_s": 182.3,
-    "heartbeat_age_s": 22707.1,
+    "heartbeat_age_s": 23498.4,
     "liveness": "finished"
    }
   ],
   "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T16:33:58+00:00"
+  "updated": "2026-09-17T16:47:09+00:00"
  },
  "experience": {
   "rows": 3119,
