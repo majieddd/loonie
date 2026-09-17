@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T09:39:08+00:00",
+ "generated_at": "2026-09-17T09:51:20+00:00",
  "workers": {
   "workers": [
    {
@@ -8,20 +8,20 @@
     "label": "system supervisor",
     "started_at": "2026-09-17T05:24:12+00:00",
     "status": "supervising",
-    "detail": "running: idle",
+    "detail": "running: publish",
     "progress": null,
     "metrics": {
-     "jobs_running": 0,
+     "jobs_running": 1,
      "failures": 0,
-     "code_reloads": 3
+     "code_reloads": 6
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T09:39:04+00:00",
-    "heartbeat_epoch": 1789637944.6049294,
-    "uptime_s": 15292.4,
-    "heartbeat_age_s": 3.4,
+    "heartbeat": "2026-09-17T09:51:19+00:00",
+    "heartbeat_epoch": 1789638679.9966614,
+    "uptime_s": 16027.8,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -39,7 +39,7 @@
     "heartbeat": "2026-09-17T05:54:13+00:00",
     "heartbeat_epoch": 1789624453.6981816,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 13494.3,
+    "heartbeat_age_s": 14226.5,
     "liveness": "finished"
    },
    {
@@ -68,7 +68,7 @@
     "heartbeat": "2026-09-17T05:26:08+00:00",
     "heartbeat_epoch": 1789622768.869833,
     "uptime_s": 52.9,
-    "heartbeat_age_s": 15179.2,
+    "heartbeat_age_s": 15911.4,
     "liveness": "finished"
    },
    {
@@ -91,7 +91,7 @@
     "heartbeat": "2026-09-17T09:38:41+00:00",
     "heartbeat_epoch": 1789637921.6083794,
     "uptime_s": 34.1,
-    "heartbeat_age_s": 26.4,
+    "heartbeat_age_s": 758.6,
     "liveness": "finished"
    },
    {
@@ -112,14 +112,14 @@
     "heartbeat": "2026-09-17T05:42:45+00:00",
     "heartbeat_epoch": 1789623765.0286531,
     "uptime_s": 180.4,
-    "heartbeat_age_s": 14183.0,
+    "heartbeat_age_s": 14915.2,
     "liveness": "finished"
    }
   ],
   "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T09:39:08+00:00"
+  "updated": "2026-09-17T09:51:20+00:00"
  },
  "experience": {
   "rows": 2816,
@@ -2522,6 +2522,13 @@
     "qty": 4.843513907685223,
     "price": 417.17848622131345,
     "notional": 2020.6097999999997,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.021 from 0.000"
    },
    {
@@ -2531,6 +2538,13 @@
     "qty": 2.6466766858682855,
     "price": 187.85387450408936,
     "notional": 497.18847000000005,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2540,6 +2554,13 @@
     "qty": 14.016863641015789,
     "price": 418.8493346557617,
     "notional": 5870.95401,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.060 from 0.000"
    },
    {
@@ -2549,6 +2570,13 @@
     "qty": 25.60366812665857,
     "price": 106.35315305328369,
     "notional": 2723.030835,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -2558,6 +2586,13 @@
     "qty": 34.29537666318763,
     "price": 14.497244771003723,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2567,6 +2602,13 @@
     "qty": 52.21930268181567,
     "price": 52.14605893135071,
     "notional": 2723.030835,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -2576,6 +2618,13 @@
     "qty": 4.072490179851993,
     "price": 341.3205688934326,
     "notional": 1390.024665,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.014 from 0.000"
    },
    {
@@ -2585,6 +2634,13 @@
     "qty": 39.56767114655105,
     "price": 25.872930610656738,
     "notional": 1023.73161,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -2594,6 +2650,13 @@
     "qty": 36.34709000841699,
     "price": 74.91743725204468,
     "notional": 2723.030835,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -2603,6 +2666,13 @@
     "qty": 11.95490178502346,
     "price": 85.63279133605957,
     "notional": 1023.7316099999999,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -2612,6 +2682,13 @@
     "qty": 1.941111895371598,
     "price": 783.5715826721191,
     "notional": 1521.00012,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.016 from 0.000"
    },
    {
@@ -2621,6 +2698,13 @@
     "qty": 13.411205121010152,
     "price": 203.04147244262694,
     "notional": 2723.030835,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -2630,6 +2714,13 @@
     "qty": 49.11967638943495,
     "price": 36.868423473358156,
     "notional": 1810.9650299999998,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.019 from 0.000"
    },
    {
@@ -2639,6 +2730,13 @@
     "qty": 3.1531724667167675,
     "price": 157.67880610656738,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2648,6 +2746,13 @@
     "qty": 2.688487393667685,
     "price": 184.93241633605956,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2657,6 +2762,13 @@
     "qty": 2.8504073100751595,
     "price": 174.42716633605957,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2666,6 +2778,13 @@
     "qty": 3.0589911318264345,
     "price": 375.8378188934326,
     "notional": 1149.6845549999998,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.012 from 0.000"
    },
    {
@@ -2675,6 +2794,13 @@
     "qty": 7.394593272703203,
     "price": 143.23158366394043,
     "notional": 1059.139305,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.011 from 0.000"
    },
    {
@@ -2684,6 +2810,13 @@
     "qty": 7.461561732514109,
     "price": 66.63329847335815,
     "notional": 497.18846999999994,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2693,6 +2826,13 @@
     "qty": 8.31075292531468,
     "price": 214.0069438934326,
     "notional": 1778.5588349999998,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.018 from 0.000"
    },
    {
@@ -2702,6 +2842,13 @@
     "qty": 3.554140852300779,
     "price": 139.88991732788085,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2711,6 +2858,13 @@
     "qty": 2.163336317424785,
     "price": 229.8248617172241,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2720,6 +2874,13 @@
     "qty": 3.4125808038936425,
     "price": 145.6928051147461,
     "notional": 497.18847000000005,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2729,6 +2890,13 @@
     "qty": 26.653295552692907,
     "price": 38.40919438934326,
     "notional": 1023.7316100000002,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -2738,6 +2906,13 @@
     "qty": 10.523706311556277,
     "price": 97.27861835861206,
     "notional": 1023.73161,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -2747,6 +2922,13 @@
     "qty": 0.7143027872101013,
     "price": 919.8597244262695,
     "notional": 657.058365,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.007 from 0.000"
    },
    {
@@ -2756,6 +2938,13 @@
     "qty": 4.608288006119759,
     "price": 236.84836072540284,
     "notional": 1091.4654600000001,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.011 from 0.000"
    },
    {
@@ -2765,6 +2954,13 @@
     "qty": 2.5940386334013343,
     "price": 191.66579232788087,
     "notional": 497.18847000000005,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2774,6 +2970,13 @@
     "qty": 4.917763334905268,
     "price": 101.1005280532837,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2783,6 +2986,13 @@
     "qty": 31.377335335822227,
     "price": 86.78336786270141,
     "notional": 2723.030835,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -2792,6 +3002,13 @@
     "qty": 2.6596485671484684,
     "price": 384.91236122131346,
     "notional": 1023.73161,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -2801,6 +3018,13 @@
     "qty": 8.767466431269964,
     "price": 56.70834030532837,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2810,6 +3034,13 @@
     "qty": 9.207527455080314,
     "price": 104.47220816802978,
     "notional": 961.930725,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -2819,6 +3050,13 @@
     "qty": 3.0267999888472725,
     "price": 164.26208267211913,
     "notional": 497.18846999999994,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2828,6 +3066,13 @@
     "qty": 1.5276344021324477,
     "price": 343.0414301147461,
     "notional": 524.04189,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2837,6 +3082,13 @@
     "qty": 1.5434347672351123,
     "price": 339.52966534423825,
     "notional": 524.04189,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2846,6 +3098,13 @@
     "qty": 15.581783732920393,
     "price": 144.23208366394044,
     "notional": 2247.3931350000003,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.023 from 0.000"
    },
    {
@@ -2855,6 +3114,13 @@
     "qty": 4.605560639225877,
     "price": 107.95395152664184,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2864,6 +3130,13 @@
     "qty": 0.5012760500713016,
     "price": 991.8456505737305,
     "notional": 497.18847000000005,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2873,6 +3146,13 @@
     "qty": 4.0823132037784085,
     "price": 121.79086835861206,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2882,6 +3162,13 @@
     "qty": 76.64569069378197,
     "price": 13.35667538166046,
     "notional": 1023.7316099999999,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -2891,6 +3178,13 @@
     "qty": 9.48416206719397,
     "price": 287.11348622131345,
     "notional": 2723.030835,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -2900,6 +3194,13 @@
     "qty": 20.87542160653316,
     "price": 50.43520484733582,
     "notional": 1052.8561650000001,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.011 from 0.000"
    },
    {
@@ -2909,6 +3210,13 @@
     "qty": 7.204569127119042,
     "price": 377.9588740081787,
     "notional": 2723.030835,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -2918,6 +3226,13 @@
     "qty": 35.686210755729824,
     "price": 48.46421862602234,
     "notional": 1729.50432,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.018 from 0.000"
    },
    {
@@ -2927,6 +3242,13 @@
     "qty": 0.8822099085453231,
     "price": 563.5716230163574,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2936,6 +3258,13 @@
     "qty": 2.1532129401463918,
     "price": 230.90538828277587,
     "notional": 497.18847000000005,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2945,6 +3274,13 @@
     "qty": 13.140104840241738,
     "price": 77.90893774795532,
     "notional": 1023.73161,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -2954,6 +3290,13 @@
     "qty": 13.969571539512621,
     "price": 65.43270152664185,
     "notional": 914.066805,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.009 from 0.000"
    },
    {
@@ -2963,6 +3306,13 @@
     "qty": 2.0589161366561872,
     "price": 241.48068061065675,
     "notional": 497.18847000000005,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2972,6 +3322,13 @@
     "qty": 31.123420271081706,
     "price": 54.63730561065674,
     "notional": 1700.499825,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.017 from 0.000"
    },
    {
@@ -2981,6 +3338,13 @@
     "qty": 3.0207283240736507,
     "price": 164.59224950408935,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2990,6 +3354,13 @@
     "qty": 1.7139999743169412,
     "price": 290.0749576721191,
     "notional": 497.18847,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -2999,6 +3370,13 @@
     "qty": 41.23117576004706,
     "price": 66.04300713729859,
     "notional": 2723.0308350000005,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -3008,6 +3386,13 @@
     "qty": 3.7554871617497776,
     "price": 272.5962214508057,
     "notional": 1023.73161,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    },
    {
@@ -3017,6 +3402,13 @@
     "qty": 114.69321755172307,
     "price": 23.741864542007445,
     "notional": 2723.0308349999996,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.028 from 0.000"
    },
    {
@@ -3026,6 +3418,13 @@
     "qty": 1.4594419970631425,
     "price": 340.67025,
     "notional": 497.18847000000005,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -3035,6 +3434,13 @@
     "qty": 3.681037037037037,
     "price": 135.0675,
     "notional": 497.18846999999994,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.005 from 0.000"
    },
    {
@@ -3044,6 +3450,13 @@
     "qty": 6.235849449435984,
     "price": 259.6597637786865,
     "notional": 1619.1991950000001,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.017 from 0.000"
    },
    {
@@ -3053,9 +3466,18 @@
     "qty": 3.783677948868413,
     "price": 270.56520767211913,
     "notional": 1023.7316099999999,
+    "ref_price": null,
+    "open_price": null,
+    "gap_bps": null,
+    "spread_bps": null,
+    "impact_bps": null,
+    "total_cost_bps": null,
+    "submitted_at": "2026-09-17T09:38:41+00:00",
     "note": "target 0.010 from 0.000"
    }
   ],
+  "execution": null,
+  "pending": 0,
   "updated": "2026-09-17T09:38:41+00:00",
   "broker": "alpaca",
   "mode": "paper",
