@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T21:35:20+00:00",
+ "generated_at": "2026-09-17T21:51:20+00:00",
  "workers": {
   "workers": [
    {
@@ -18,9 +18,9 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T21:35:19+00:00",
-    "heartbeat_epoch": 1789680919.668952,
-    "uptime_s": 41903.8,
+    "heartbeat": "2026-09-17T21:51:20+00:00",
+    "heartbeat_epoch": 1789681880.2585647,
+    "uptime_s": 42864.4,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -39,7 +39,7 @@
     "heartbeat": "2026-09-17T18:27:03+00:00",
     "heartbeat_epoch": 1789669623.3019047,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 11296.6,
+    "heartbeat_age_s": 12257.1,
     "liveness": "finished"
    },
    {
@@ -48,18 +48,18 @@
     "label": "local RSI loop",
     "started_at": "2026-09-17T21:21:40+00:00",
     "status": "running",
-    "detail": "cycle 1 | round_robin | bar 2.00",
+    "detail": "cycle 2 | round_robin | bar 2.00",
     "progress": null,
     "metrics": {
-     "cycle": 1
+     "cycle": 2
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T21:24:21+00:00",
-    "heartbeat_epoch": 1789680261.6950278,
-    "uptime_s": 161.3,
-    "heartbeat_age_s": 658.2,
+    "heartbeat": "2026-09-17T21:40:12+00:00",
+    "heartbeat_epoch": 1789681212.0175765,
+    "uptime_s": 1111.6,
+    "heartbeat_age_s": 668.4,
     "liveness": "stale"
    },
    {
@@ -88,7 +88,7 @@
     "heartbeat": "2026-09-17T21:20:55+00:00",
     "heartbeat_epoch": 1789680055.732407,
     "uptime_s": 19.9,
-    "heartbeat_age_s": 864.2,
+    "heartbeat_age_s": 1824.7,
     "liveness": "finished"
    },
    {
@@ -111,7 +111,7 @@
     "heartbeat": "2026-09-17T10:02:31+00:00",
     "heartbeat_epoch": 1789639351.7214437,
     "uptime_s": 34.3,
-    "heartbeat_age_s": 41568.2,
+    "heartbeat_age_s": 42528.7,
     "liveness": "finished"
    },
    {
@@ -132,14 +132,14 @@
     "heartbeat": "2026-09-17T18:15:40+00:00",
     "heartbeat_epoch": 1789668940.0183825,
     "uptime_s": 181.4,
-    "heartbeat_age_s": 11979.9,
+    "heartbeat_age_s": 12940.4,
     "liveness": "finished"
    }
   ],
   "live": 1,
   "stale": 1,
   "dead": 0,
-  "updated": "2026-09-17T21:35:19+00:00"
+  "updated": "2026-09-17T21:51:20+00:00"
  },
  "experience": {
   "rows": 3131,
