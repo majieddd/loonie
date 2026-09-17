@@ -140,7 +140,14 @@ evolve:
   # (and the bar) a fact rather than a consequence of when someone lost
   # patience.
   stop:
-    max_trials: 300000        # bar ~5.02 here; past this the race is not worth running
+    # Raised from 300,000 on 2026-09-17 at the user's instruction to keep
+    # testing methods. Set from the arithmetic rather than from wherever the
+    # run happened to be: at 1M trials the bar is ~5.05, only +0.24 above
+    # where it sat, because sqrt(2 ln k) grows very slowly. Searching four
+    # times as hard costs almost nothing in threshold -- the reason to stop
+    # is a search that has stopped learning, which is what stall_generations
+    # measures.
+    max_trials: 1000000
     stall_generations: 300    # no improvement in best IC t -> the search is done looking
 
 cv:
