@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T09:51:20+00:00",
+ "generated_at": "2026-09-17T09:55:15+00:00",
  "workers": {
   "workers": [
    {
@@ -8,27 +8,27 @@
     "label": "system supervisor",
     "started_at": "2026-09-17T05:24:12+00:00",
     "status": "supervising",
-    "detail": "running: publish",
+    "detail": "running: idle",
     "progress": null,
     "metrics": {
-     "jobs_running": 1,
+     "jobs_running": 0,
      "failures": 0,
-     "code_reloads": 6
+     "code_reloads": 7
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T09:51:19+00:00",
-    "heartbeat_epoch": 1789638679.9966614,
-    "uptime_s": 16027.8,
-    "heartbeat_age_s": 0.2,
+    "heartbeat": "2026-09-17T09:55:15+00:00",
+    "heartbeat_epoch": 1789638915.1333528,
+    "uptime_s": 16262.9,
+    "heartbeat_age_s": 0.8,
     "liveness": "live"
    },
    {
     "id": "meta",
     "kind": "meta",
     "label": "method review",
-    "started_at": "2026-09-17T05:54:13+00:00",
+    "started_at": "2026-09-17T09:54:15+00:00",
     "status": "finished",
     "detail": "8 methods, 106 labelled rows",
     "progress": 1.0,
@@ -36,10 +36,10 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T05:54:13+00:00",
-    "heartbeat_epoch": 1789624453.6981816,
-    "uptime_s": 0.4,
-    "heartbeat_age_s": 14226.5,
+    "heartbeat": "2026-09-17T09:54:15+00:00",
+    "heartbeat_epoch": 1789638855.8522868,
+    "uptime_s": 0.5,
+    "heartbeat_age_s": 60.1,
     "liveness": "finished"
    },
    {
@@ -68,30 +68,30 @@
     "heartbeat": "2026-09-17T05:26:08+00:00",
     "heartbeat_epoch": 1789622768.869833,
     "uptime_s": 52.9,
-    "heartbeat_age_s": 15911.4,
+    "heartbeat_age_s": 16147.1,
     "liveness": "finished"
    },
    {
     "id": "trade",
     "kind": "trade",
     "label": "paper execution",
-    "started_at": "2026-09-17T09:38:07+00:00",
+    "started_at": "2026-09-17T09:51:23+00:00",
     "status": "finished",
-    "detail": "86 orders, 83 positions, equity $97,714.39",
+    "detail": "0 orders, 83 positions, equity $97,714.39",
     "progress": 1.0,
     "metrics": {
      "equity": 97714.39,
      "positions": 83,
-     "orders": 86,
+     "orders": 0,
      "halted": false
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T09:38:41+00:00",
-    "heartbeat_epoch": 1789637921.6083794,
-    "uptime_s": 34.1,
-    "heartbeat_age_s": 758.6,
+    "heartbeat": "2026-09-17T09:52:04+00:00",
+    "heartbeat_epoch": 1789638724.626778,
+    "uptime_s": 41.3,
+    "heartbeat_age_s": 191.3,
     "liveness": "finished"
    },
    {
@@ -112,14 +112,14 @@
     "heartbeat": "2026-09-17T05:42:45+00:00",
     "heartbeat_epoch": 1789623765.0286531,
     "uptime_s": 180.4,
-    "heartbeat_age_s": 14915.2,
+    "heartbeat_age_s": 15150.9,
     "liveness": "finished"
    }
   ],
   "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T09:51:20+00:00"
+  "updated": "2026-09-17T09:55:15+00:00"
  },
  "experience": {
   "rows": 2816,

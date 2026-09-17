@@ -242,12 +242,46 @@ def build_snapshot(cfg) -> dict:
         r["weight"] = r["market_value"] / equity if equity > 0 else 0.0
 
     blotter = (paper.get("blotter") or [])[-60:]
-    fills = [{
-        "at": b.get("at"), "symbol": b.get("symbol"), "side": b.get("side"),
-        "qty": b.get("filled_qty"), "price": b.get("filled_price"),
-        "notional": float(b.get("filled_qty") or 0) * float(b.get("filled_price") or 0),
-        "note": b.get("note"),
-    } for b in reversed(blotter)]
+
+    def _fill(b):
+        # Two shapes coexist: rows written before execution costs were split
+        # out carry filled_qty/filled_price, rows written after carry qty and
+        # the cost components. Reading both means a day of history does not
+        # vanish from the page the moment the model improves.
+        qty = b.get("qty") if b.get("qty") not in (None, 0) else b.get("filled_qty")
+        px = b.get("fill_price") or b.get("filled_price")
+        return {
+            "at": b.get("at"), "symbol": b.get("symbol"), "side": b.get("side"),
+            "qty": qty, "price": px,
+            "notional": abs(float(qty or 0) * float(px or 0)),
+            # Present only on the realistic model. The page shows a dash where
+            # they are missing rather than a zero, because "not measured" and
+            # "measured as free" are different claims.
+            "ref_price": b.get("ref_price"),
+            "open_price": b.get("open_price"),
+            "gap_bps": b.get("gap_bps"),
+            "spread_bps": b.get("spread_bps"),
+            "impact_bps": b.get("impact_bps"),
+            "total_cost_bps": b.get("total_cost_bps"),
+            "submitted_at": b.get("submitted_at"),
+            "note": b.get("note"),
+        }
+
+    fills = [_fill(b) for b in reversed(blotter)]
+    priced = [f for f in fills if f.get("total_cost_bps") is not None]
+    execution_summary = None
+    if priced:
+        n = sum(f["notional"] for f in priced) or 1.0
+        wavg = lambda k: sum((f.get(k) or 0.0) * f["notional"]   # noqa: E731
+                             for f in priced) / n
+        execution_summary = {
+            "fills": len(priced),
+            "notional": n,
+            "gap_bps": wavg("gap_bps"),
+            "spread_bps": wavg("spread_bps"),
+            "impact_bps": wavg("impact_bps"),
+            "total_bps": wavg("total_cost_bps"),
+        }
 
     portfolio = {
         "equity": equity,
@@ -258,6 +292,8 @@ def build_snapshot(cfg) -> dict:
         "total_return": (equity / start - 1.0) if start > 0 else 0.0,
         "positions": positions,
         "fills": fills,
+        "execution": execution_summary,
+        "pending": len(paper.get("pending") or []),
         "updated": paper.get("updated"),
         "broker": str(cfg.trade.broker),
         "mode": str(cfg.trade.mode),
