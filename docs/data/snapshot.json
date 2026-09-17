@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T00:02:56+00:00",
+ "generated_at": "2026-09-17T00:03:33+00:00",
  "workers": {
   "workers": [
    {
@@ -17,7 +17,7 @@
     "heartbeat": "2026-09-17T00:02:49+00:00",
     "heartbeat_epoch": 1789603369.8825822,
     "uptime_s": 0.0,
-    "heartbeat_age_s": 6.4,
+    "heartbeat_age_s": 42.9,
     "liveness": "live"
    },
    {
@@ -26,20 +26,20 @@
     "label": "system supervisor",
     "started_at": "2026-09-16T23:53:32+00:00",
     "status": "supervising",
-    "detail": "running: search",
+    "detail": "running: search, publish",
     "progress": null,
     "metrics": {
-     "jobs_running": 1,
+     "jobs_running": 2,
      "failures": 10,
-     "code_reloads": 5
+     "code_reloads": 6
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T00:02:52+00:00",
-    "heartbeat_epoch": 1789603372.5084884,
-    "uptime_s": 560.3,
-    "heartbeat_age_s": 3.8,
+    "heartbeat": "2026-09-17T00:03:32+00:00",
+    "heartbeat_epoch": 1789603412.535152,
+    "uptime_s": 600.4,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -57,7 +57,7 @@
     "heartbeat": "2026-09-16T20:01:40+00:00",
     "heartbeat_epoch": 1789588900.3752224,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 14475.9,
+    "heartbeat_age_s": 14512.4,
     "liveness": "finished"
    },
    {
@@ -80,7 +80,7 @@
     "heartbeat": "2026-09-16T23:59:08+00:00",
     "heartbeat_epoch": 1789603148.748595,
     "uptime_s": 35.1,
-    "heartbeat_age_s": 227.6,
+    "heartbeat_age_s": 264.0,
     "liveness": "finished"
    },
    {
@@ -101,14 +101,14 @@
     "heartbeat": "2026-09-16T23:50:49+00:00",
     "heartbeat_epoch": 1789602649.5047596,
     "uptime_s": 213.9,
-    "heartbeat_age_s": 726.8,
+    "heartbeat_age_s": 763.3,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T00:02:56+00:00"
+  "updated": "2026-09-17T00:03:32+00:00"
  },
  "experience": {
   "rows": 2385,
@@ -178,7 +178,7 @@
    "forward_rate": 1.0,
    "mean_fwd_alpha": 0.0013222162638455376,
    "labelled": 11,
-   "cycles": 13,
+   "cycles": 14,
    "established": false
   },
   {
