@@ -3293,3 +3293,55 @@ def test_clustered_tstat_is_not_the_naive_one():
     clustered = mod.tstat(d.groupby("date")["y"].mean())
     assert abs(naive - clustered) > 0.3, \
         "clustering changed nothing; the correction is not being applied"
+
+
+def test_congress_weights_apply_the_session_after_publication():
+    """A filing appears during a day whose close has already happened.
+
+    Acting on it at that close is a few hours of lookahead -- small, invisible
+    in any sanity check on prices, and worth more than the entire measured
+    effect over a five-day hold.
+    """
+    import importlib.util
+
+    p = (Path(__file__).resolve().parent.parent / "scripts"
+         / "congress_backtest.py")
+    spec = importlib.util.spec_from_file_location("_cbt", p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    dates = pd.bdate_range("2025-01-01", periods=60)
+    tickers = ["AAA", "BBB"]
+    member = np.ones((60, 2), bool)
+    df = pd.DataFrame([{"ticker": "AAA", "side": "buy",
+                        "filing_date": dates[20], "member": "X"}])
+
+    w = mod.build_weights(df, dates, tickers, member, horizon=5,
+                          mode="long_short", max_pos=1.0)
+    assert w[20, 0] == 0.0, "acted on the same session the filing appeared"
+    assert w[21, 0] > 0, "never acted on the filing at all"
+    assert w[26, 0] == 0.0, "the hold did not expire after 5 sessions"
+
+
+def test_repeated_disclosure_does_not_double_a_position():
+    """Two members disclosing the same name inside one holding window is not
+    a reason to hold twice as much of it -- that is a sizing decision nobody
+    made, concentrating exactly where the data is noisiest."""
+    import importlib.util
+
+    p = (Path(__file__).resolve().parent.parent / "scripts"
+         / "congress_backtest.py")
+    spec = importlib.util.spec_from_file_location("_cbt2", p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    dates = pd.bdate_range("2025-01-01", periods=60)
+    tickers = ["AAA"]
+    member = np.ones((60, 1), bool)
+    df = pd.DataFrame([
+        {"ticker": "AAA", "side": "buy", "filing_date": dates[20], "member": "X"},
+        {"ticker": "AAA", "side": "buy", "filing_date": dates[21], "member": "Y"},
+    ])
+    w = mod.build_weights(df, dates, tickers, member, horizon=5,
+                          mode="long_short", max_pos=1.0)
+    assert np.nanmax(np.abs(w)) <= 1.0 + 1e-9, "position exceeded full weight"
