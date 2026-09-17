@@ -29,8 +29,8 @@ if hasattr(sys.stdout, "reconfigure"):
 import numpy as np  # noqa: E402
 
 from loonie import (allocator as alloc_mod, config, data, evolve,  # noqa: E402
-                    features, notify, portfolio, publish, registry,
-                    risk, universe)
+                    execution, features, notify, portfolio, publish,
+                    registry, risk, universe)
 from loonie.broker import get_broker  # noqa: E402
 from loonie.genome import Genome  # noqa: E402
 
@@ -175,7 +175,38 @@ def session(cfg, args) -> int:
         if np.isfinite(px) and px > 0:
             marks[sym] = float(px)
     if hasattr(broker, "set_marks"):
-        broker.set_marks(marks)
+        broker.set_marks(marks, as_of=panel.dates[-1].date())
+
+    # ---- settle what was queued last time, BEFORE deciding anything new ----
+    # Orders submitted after a close rest until the next session opens. That
+    # is the sequence a real account follows, and doing it in the other order
+    # would let today's decision be made against positions today's fills had
+    # not yet created.
+    if hasattr(broker, "settle") and getattr(broker, "pending", None):
+        opens = {}
+        for j, sym in enumerate(panel.tickers):
+            o = panel.bars["open"][-1, j]
+            if np.isfinite(o) and o > 0:
+                opens[sym] = float(o)
+        liq = execution.liquidity(panel)
+        n_pending = len(broker.pending)
+        fills = broker.settle(opens, liq,
+                              bar_date=panel.dates[-1].date())
+        rep = execution.summarise(fills)
+        print("[trade] settled %d of %d queued orders at the %s open"
+              % (rep.get("fills", 0), n_pending, panel.dates[-1].date()))
+        if rep.get("fills"):
+            print("[trade]   cost: gap %+.1f bps | spread %.1f | impact %.1f "
+                  "| total %+.1f bps on $%s  (= $%.2f)"
+                  % (rep["gap_bps"], rep["spread_bps"], rep["impact_bps"],
+                     rep["total_bps"], format(rep["notional"], ",.0f"),
+                     rep["cost_dollars"]))
+        if rep.get("capped"):
+            print("[trade]   %d order(s) capped by available liquidity"
+                  % rep["capped"])
+        if broker.pending:
+            print("[trade]   %d order(s) still resting (no opening price)"
+                  % len(broker.pending))
 
     account = broker.account()
     rm = risk.RiskManager(cfg)

@@ -2801,3 +2801,164 @@ def test_an_oversized_position_can_still_be_sold():
     sell = rm.check_order("BKR", oversized, eq, acct, side="sell")
     assert sell.allow, \
         "an oversized position could not be trimmed: %s" % sell.reason
+
+
+# =============================================================================
+#  Execution realism
+# =============================================================================
+def test_orders_fill_at_the_next_open_not_the_signal_close():
+    """The lookahead that lived in the execution layer.
+
+    The signal is computed from Tuesday's close; Tuesday's close is gone by
+    the time you have computed it. Filling there is a one-bar lookahead worth
+    roughly the overnight gap on every trade, sitting where nobody looks for
+    lookahead.
+    """
+    from loonie import execution as X
+
+    # Gaps UP overnight: a buyer pays more than the close they decided on.
+    f = X.simulate("buy", qty=100, ref_price=100.0, open_price=101.0,
+                   adv_dollars=5e7, daily_vol=0.02, symbol="T")
+    assert f.fill_price > 100.0
+    assert abs(f.gap_bps - 100.0) < 1.0, "a 1%% gap against a buyer is +100 bps"
+
+    # The same gap HELPS a seller, and the sign must say so.
+    g = X.simulate("sell", qty=100, ref_price=100.0, open_price=101.0,
+                   adv_dollars=5e7, daily_vol=0.02, symbol="T")
+    assert g.gap_bps < 0, "a favourable gap was charged as a cost"
+
+
+def test_impact_grows_with_size_so_scale_is_not_free():
+    """A flat slippage says a $500 order and a $5,000,000 order cost the same
+    fraction, which is backwards: the difficulty of running more money is that
+    it does not scale."""
+    from loonie import execution as X
+
+    adv, vol = 1e7, 0.02
+    small = X.impact_bps(1e4, adv, vol)
+    big = X.impact_bps(1e6, adv, vol)
+    assert big > small * 5, "impact barely moved with a 100x order"
+    # Square-root law: 100x the size is ~10x the impact, not 100x.
+    assert 8 < big / max(small, 1e-9) < 13
+
+
+def test_spread_is_wider_for_cheap_illiquid_names():
+    """Charging a $400 megacap and a $9 thin name the same 5 bps subsidises
+    trading illiquid things -- which is where a naive search likes to go."""
+    from loonie import execution as X
+
+    liquid = X.spread_bps(price=400.0, dollar_vol=5e9)
+    thin = X.spread_bps(price=9.0, dollar_vol=2e6)
+    assert thin > liquid * 3, "spread did not widen for the illiquid name"
+    assert liquid < 5.0
+
+
+def test_an_order_cannot_consume_more_than_its_share_of_volume():
+    """Pretending otherwise is how a backtest 'scales' to money it could
+    never deploy."""
+    from loonie import execution as X
+
+    adv = 1e6
+    f = X.simulate("buy", qty=1e6, ref_price=10.0, open_price=10.0,
+                   adv_dollars=adv, daily_vol=0.02, symbol="THIN")
+    assert f.filled
+    assert f.notional <= adv * X.MAX_PARTICIPATION * 1.01
+    assert "participation capped" in f.note
+
+
+def test_a_queued_order_survives_a_restart(tmp_path, monkeypatch):
+    """A decision made after Tuesday's close is still owed a Wednesday fill.
+
+    Dropping the queue on restart would turn a missed trade into a trade that
+    never existed, and the paper record would show neither the cost nor the
+    position.
+    """
+    from loonie.broker import paper as P
+
+    monkeypatch.setattr(P, "resolve", lambda q: tmp_path / Path(q).name)
+    cfg = config.load()
+
+    b = P.PaperBroker(cfg, starting_cash=100000.0)
+    b.set_marks({"AAA": 50.0})
+    o = b.submit(P.Order(symbol="AAA", side="buy", qty=0.0, notional=5000.0))
+    assert o.status == "pending", "the order filled immediately"
+    assert not b.positions(), "a position appeared before any fill"
+
+    b2 = P.PaperBroker(cfg)
+    assert len(b2.pending) == 1, "the queue did not survive a restart"
+
+    fills = b2.settle({"AAA": 51.0}, {"AAA": {"adv": 5e7, "vol": 0.02}})
+    assert len(fills) == 1 and fills[0].filled
+    assert "AAA" in b2.positions(), "settling produced no position"
+    assert b2.positions()["AAA"].avg_price > 51.0, "costs were not charged"
+
+
+def test_settlement_sells_before_buying_so_cash_is_available():
+    """Settling in submission order leaves buys short of the cash the same
+    batch is about to produce."""
+    import tempfile
+
+    from loonie.broker import paper as P
+
+    with tempfile.TemporaryDirectory() as td:
+        import loonie.broker.paper as mod
+        orig = mod.resolve
+        mod.resolve = lambda q: Path(td) / Path(q).name
+        try:
+            cfg = config.load()
+            b = P.PaperBroker(cfg, starting_cash=10000.0)
+            b.set_marks({"OLD": 100.0, "NEW": 100.0})
+            b.settle({"OLD": 100.0}, {"OLD": {"adv": 5e8, "vol": 0.01}})
+            b.submit(P.Order(symbol="OLD", side="buy", qty=0.0, notional=9000.0))
+            b.settle({"OLD": 100.0}, {"OLD": {"adv": 5e8, "vol": 0.01}})
+
+            # Now almost no cash; queue a buy that only a sell can fund.
+            b.submit(P.Order(symbol="NEW", side="buy", qty=0.0, notional=8000.0))
+            b.submit(P.Order(symbol="OLD", side="sell",
+                             qty=b.positions()["OLD"].qty))
+            fills = b.settle({"OLD": 100.0, "NEW": 100.0},
+                             {"OLD": {"adv": 5e8, "vol": 0.01},
+                              "NEW": {"adv": 5e8, "vol": 0.01}})
+            got = {f.symbol: f for f in fills if f.filled}
+            assert "NEW" in got, "the buy was starved by settlement order"
+            assert got["NEW"].notional > 7000, \
+                "the buy was downsized despite the sell funding it"
+        finally:
+            mod.resolve = orig
+
+
+def test_an_order_cannot_fill_at_an_open_that_preceded_its_own_signal():
+    """The obvious implementation of "fill at the open" fills backwards.
+
+    An order decided on bar T's CLOSE must fill at the open of T+1 or later.
+    Settling it against bar T's own open is a fill several hours before the
+    information that produced it existed -- worse than the instant-fill bug it
+    was meant to replace, and invisible in any P&L that only checks prices are
+    plausible.
+    """
+    import tempfile
+
+    from loonie.broker import paper as P
+
+    with tempfile.TemporaryDirectory() as td:
+        import loonie.broker.paper as mod
+        orig = mod.resolve
+        mod.resolve = lambda q: Path(td) / Path(q).name
+        try:
+            cfg = config.load()
+            b = P.PaperBroker(cfg, starting_cash=50000.0)
+            b.set_marks({"AAA": 100.0}, as_of="2026-09-16")
+            b.submit(P.Order(symbol="AAA", side="buy", qty=0.0, notional=5000.0))
+            assert b.pending[0]["ref_bar"] == "2026-09-16"
+
+            liq = {"AAA": {"adv": 5e8, "vol": 0.01}}
+            same = b.settle({"AAA": 99.0}, liq, bar_date="2026-09-16")
+            assert same == [], "filled on the same bar that produced the signal"
+            assert len(b.pending) == 1, "the order was consumed anyway"
+            assert not b.positions()
+
+            nxt = b.settle({"AAA": 99.0}, liq, bar_date="2026-09-17")
+            assert len(nxt) == 1 and nxt[0].filled, "the next open did not fill it"
+            assert not b.pending
+        finally:
+            mod.resolve = orig
