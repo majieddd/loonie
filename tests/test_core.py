@@ -3417,3 +3417,42 @@ def test_every_strategy_declares_a_caveat():
         if spec["market"] == "options":
             assert "MODELLED" in spec["caveat"], \
                 "%s does not declare that it is modelled" % sid
+
+
+def test_a_per_row_constant_cannot_change_cross_sectional_ranks():
+    """The bug that made two strategies identical to four significant figures.
+
+    "Altcoin rotation" divided every coin's momentum by Bitcoin's, then ranked
+    the result. Dividing a whole row by the same scalar is a monotone
+    transform, so the ranks are untouched and the strategy was arithmetically
+    cross-sectional momentum wearing a different name. It reported 410.0%,
+    14.5%, 52%, -60%, 1.80 -- the same five numbers.
+    """
+    from loonie.strategies import _ranks
+
+    rng = np.random.default_rng(19)
+    x = rng.normal(0, 1, (40, 12))
+    mask = np.ones((40, 12), bool)
+    scale = rng.uniform(0.5, 2.0, (40, 1))       # a different constant per row
+
+    assert np.allclose(_ranks(x, mask), _ranks(x * scale, mask),
+                       equal_nan=True), \
+        "test premise broken: scaling a row changed its ranks"
+
+    # A relative bet only differs if the benchmark is an actual POSITION.
+    src = (Path(__file__).resolve().parent.parent / "loonie"
+           / "strategy_lib.py").read_text(encoding="utf-8")
+    body = src.split("def cry_btc_relative")[1].split("@register")[0]
+    assert "row[j_btc] = -1.0" in body, \
+        "altcoin rotation no longer shorts Bitcoin; it is momentum again"
+
+
+def test_strategy_ids_are_unique_and_results_are_distinguishable():
+    """Two rows reporting identical statistics is a bug, not a coincidence."""
+    from loonie import strategy_lib  # noqa: F401
+    from loonie.strategies import REGISTRY
+
+    ids = list(REGISTRY)
+    assert len(ids) == len(set(ids))
+    titles = [v["title"] for v in REGISTRY.values()]
+    assert len(titles) == len(set(titles)), "duplicate strategy titles"

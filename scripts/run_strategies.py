@@ -90,12 +90,47 @@ def main() -> int:
         print("  %-34s %-8s  unavailable: %s"
               % (r["title"][:34], r["market"], r.get("reason", "?")))
 
+    # ---- the accounting that makes the table readable --------------------
+    # Sorting N strategies by return and reporting the top one IS selection.
+    # The largest |t| among N independent null draws concentrates near
+    # sqrt(2 ln N), so that is the bar any winner has to clear before the
+    # ranking means anything.
+    import math
+    n = len(live)
+    bar = max(2.0, math.sqrt(2.0 * math.log(max(n, 2))))
+    clears = [r for r in live if abs(r["t_stat"]) >= bar]
+    best = max(live, key=lambda r: abs(r["t_stat"])) if live else None
+
+    print()
+    print("=" * 92)
+    print("MULTIPLE TESTING")
+    print("  strategies measured        : %d" % n)
+    print("  bar sqrt(2 ln N)           : %.2f" % bar)
+    print("  largest |t| observed       : %.2f  (%s)"
+          % (abs(best["t_stat"]), best["title"]) if best else "")
+    print("  clear the bar              : %d  %s"
+          % (len(clears), ", ".join(r["title"] for r in clears) or "none"))
+    measured = [r for r in clears if r["market"] != "options"]
+    print("  ...of those, NOT modelled  : %d  %s"
+          % (len(measured), ", ".join(r["title"] for r in measured) or "none"))
+    print()
+    print("  Hou, Xue & Zhang (2020) replicated 452 published anomalies and")
+    print("  found 65% could not clear |t| >= 1.96, and 52% failed regardless")
+    print("  after adjusting for multiple testing. Harvey, Liu & Zhu (2016)")
+    print("  argue the honest hurdle for a new factor is nearer t = 3.0.")
+    print("  The right prior for this table is that most of it does not work.")
+
+    summary = {"n_strategies": n, "bar": bar,
+               "clearing": [r["id"] for r in clears],
+               "clearing_measured": [r["id"] for r in measured]}
+
     print("\nSpans differ by market and totals are NOT comparable across rows.")
     print("Win rate is shown beside max drawdown deliberately: a high rate with")
     print("a deep drawdown is the short-volatility shape, not a good strategy.")
 
     out = {"generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "markets": M.registry(), "strategies": rows}
+           "markets": M.registry(), "strategies": rows,
+           "multiple_testing": summary}
     p = resolve(a.json)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(out, indent=1, default=str), encoding="utf-8")

@@ -370,3 +370,485 @@ def opt_vrp_timed(hold=21):
             rets.append(premium - moved - COST_BPS["options"] / 1e4)
         dates.append(vix.index[t + hold])
     return _opt_result("opt_vrp_timed", dates, rets, hold)
+
+
+# =============================================================================
+#  The documented anomaly library
+# =============================================================================
+#
+# Each of these is a published, named effect with a citation, implemented in
+# its simplest faithful form. They are hypotheses drawn from the literature,
+# not search output -- but the literature is itself the problem.
+#
+# Hou, Xue and Zhang (2020) replicated 452 published anomalies and found 65%
+# could not clear |t| >= 1.96 once microcaps were handled properly, and 52%
+# failed regardless after adjusting for multiple testing. Harvey, Liu and Zhu
+# (2016) argue the honest hurdle for a NEW factor is nearer t = 3.0 precisely
+# because so many have been tried.
+#
+# So the right expectation for everything below is that most of it will not
+# work, and the ones that look best will mostly be the ones that got lucky on
+# this particular span. The table reports the multiple-testing bar next to the
+# results for that reason.
+
+def _px(p):
+    return np.asarray(p.close, dtype=np.float64)
+
+
+def _shift(c, k):
+    return np.vstack([np.full((k, c.shape[1]), np.nan), c[:-k]])
+
+
+def _mom(c, back, skip=0):
+    """Return from `back` periods ago to `skip` periods ago."""
+    a, b = _shift(c, skip) if skip else c, _shift(c, back)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return a / b - 1.0
+
+
+def _ls(sid, p, score, hold, n, cost=None, invert=False):
+    s = -score if invert else score
+    net, _ = long_short_book(s, p.tradable, p.returns(), n, n, hold,
+                             cost if cost is not None else COST_BPS[p.market])
+    return _wrap(sid, p, net)
+
+
+# ---------------------------------------------------------------- equities
+@register("stk_strev", "Short-Term Reversal", "stocks",
+          "Long last month's worst performers, short its best, held a month. "
+          "Jegadeesh (1990) and Lehmann (1990): one-month returns reverse, "
+          "which is the opposite sign to momentum at twelve months and one of "
+          "the oldest documented effects in equities.",
+          "Reversal is concentrated in small, illiquid names and is largely a "
+          "liquidity-provision premium. On a liquid universe with realistic "
+          "costs it is much weaker than the published version.")
+def stk_strev(hold=21, n=150):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_strev", "Short-Term Reversal", "stocks", "",
+                      ok=False, reason="wide panel not built")
+    return _ls("stk_strev", p, _ranks(_mom(_px(p), 21), p.tradable), hold, n,
+               invert=True)
+
+
+@register("stk_ltrev", "Long-Term Reversal", "stocks",
+          "Long the worst performers of the last three years, short the best, "
+          "rebalanced quarterly. De Bondt and Thaler (1985): extreme "
+          "multi-year winners and losers revert, which they read as the "
+          "market overreacting to long runs of news.",
+          "Needs a long sample to test at all. Three-year formation on a "
+          "ten-year panel leaves very few independent observations, so the "
+          "t-statistic here is weak evidence either way.")
+def stk_ltrev(hold=63, n=150):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_ltrev", "Long-Term Reversal", "stocks", "",
+                      ok=False, reason="wide panel not built")
+    return _ls("stk_ltrev", p, _ranks(_mom(_px(p), 756, 21), p.tradable),
+               hold, n, invert=True)
+
+
+@register("stk_52whigh", "52-Week High Proximity", "stocks",
+          "Long names trading closest to their own 52-week high, short those "
+          "furthest below it, held a month. George and Hwang (2004): nearness "
+          "to the high predicts better than raw momentum, because traders "
+          "anchor on the high and under-react when it is approached.",
+          "Mechanically correlated with momentum. If both appear in this "
+          "table they are not two independent pieces of evidence.")
+def stk_52whigh(hold=21, n=150):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_52whigh", "52-Week High Proximity", "stocks", "",
+                      ok=False, reason="wide panel not built")
+    c = _px(p)
+    hi = _roll(c, 252, np.nanmax)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        prox = c / hi
+    return _ls("stk_52whigh", p, _ranks(prox, p.tradable), hold, n)
+
+
+@register("stk_bab", "Betting Against Beta", "stocks",
+          "Long low-beta names, short high-beta ones, held a month. Frazzini "
+          "and Pedersen (2014): investors who cannot use leverage bid up "
+          "high-beta stocks instead, so beta is overpriced and the "
+          "risk-adjusted payoff runs the other way.",
+          "The published version levers the long leg to match beta. This does "
+          "not, so it is the raw spread rather than the tradable factor, and "
+          "will understate the effect the paper reports.")
+def stk_bab(hold=21, n=150, window=252):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_bab", "Betting Against Beta", "stocks", "",
+                      ok=False, reason="wide panel not built")
+    r = p.returns()
+    mkt = np.nan_to_num(np.nanmean(np.where(p.tradable, r, np.nan), axis=1))
+    T, N = r.shape
+    beta = np.full((T, N), np.nan)
+    for t in range(window, T, 21):
+        w_r, w_m = r[t - window:t], mkt[t - window:t]
+        vm = np.var(w_m)
+        if vm > 1e-12:
+            b = ((w_r - w_r.mean(0)) * (w_m - w_m.mean())[:, None]).mean(0) / vm
+            beta[t:min(t + 21, T)] = b
+    return _ls("stk_bab", p, _ranks(beta, p.tradable), hold, n, invert=True)
+
+
+@register("stk_ivol", "Idiosyncratic Volatility", "stocks",
+          "Long names with the lowest residual volatility against the market, "
+          "short the highest, held a month. Ang, Hodrick, Xing and Zhang "
+          "(2006) found high idiosyncratic volatility predicts LOW returns, "
+          "which standard theory says should not happen at all.",
+          "Closely related to the low-volatility tilt already in this table. "
+          "Treat the two as one hypothesis measured twice, not two.")
+def stk_ivol(hold=21, n=150, window=126):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_ivol", "Idiosyncratic Volatility", "stocks", "",
+                      ok=False, reason="wide panel not built")
+    r = p.returns()
+    mkt = np.nan_to_num(np.nanmean(np.where(p.tradable, r, np.nan), axis=1))
+    T, N = r.shape
+    iv = np.full((T, N), np.nan)
+    for t in range(window, T, 21):
+        w_r, w_m = r[t - window:t], mkt[t - window:t]
+        vm = np.var(w_m)
+        if vm > 1e-12:
+            b = ((w_r - w_r.mean(0)) * (w_m - w_m.mean())[:, None]).mean(0) / vm
+            iv[t:min(t + 21, T)] = (w_r - np.outer(w_m, b)).std(0)
+    return _ls("stk_ivol", p, _ranks(iv, p.tradable), hold, n, invert=True)
+
+
+@register("stk_max", "Lottery / MAX Effect", "stocks",
+          "Short the names with the biggest single-day gain in the past "
+          "month, long those with the smallest, held a month. Bali, Cakici "
+          "and Whitelaw (2011): investors overpay for lottery-like payoffs, "
+          "so stocks with recent extreme upside subsequently underperform.",
+          "Overlaps idiosyncratic volatility and the low-vol tilt: extreme "
+          "single-day moves happen in volatile names. Three rows here are "
+          "close to the same bet.")
+def stk_max(hold=21, n=150):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_max", "Lottery / MAX Effect", "stocks", "",
+                      ok=False, reason="wide panel not built")
+    mx = _roll(p.returns(), 21, np.nanmax)
+    return _ls("stk_max", p, _ranks(mx, p.tradable), hold, n, invert=True)
+
+
+@register("stk_illiq", "Amihud Illiquidity Premium", "stocks",
+          "Long the least liquid names by Amihud's measure -- absolute return "
+          "per dollar traded -- short the most liquid, held a month. Amihud "
+          "(2002): illiquid assets must offer higher expected returns to "
+          "compensate for the cost of getting out.",
+          "This deliberately buys what is expensive to trade, so it is the "
+          "strategy in this table most likely to be destroyed by real costs. "
+          "The 2.6 bps charged here is measured on LIQUID names and is "
+          "certainly too low for the long leg.")
+def stk_illiq(hold=21, n=100):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_illiq", "Amihud Illiquidity Premium", "stocks", "",
+                      ok=False, reason="wide panel not built")
+    r = np.abs(p.returns())
+    dv = _px(p) * np.nan_to_num(np.asarray(p.volume, dtype=np.float64))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        amihud = r / np.where(dv > 0, dv, np.nan)
+    return _ls("stk_illiq", p, _ranks(_roll(amihud, 21, np.nanmean),
+                                      p.tradable), hold, n)
+
+
+@register("stk_turnover", "Low Turnover", "stocks",
+          "Long names with the lowest share turnover, short the highest, held "
+          "a month. Datar, Naik and Radcliffe (1998) and a long line after "
+          "them: high-turnover stocks underperform, variously read as a "
+          "liquidity premium or as a proxy for speculative interest.",
+          "Turnover correlates with volatility and with the lottery measure. "
+          "Another row that is not independent of the ones above it.")
+def stk_turnover(hold=21, n=150):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_turnover", "Low Turnover", "stocks", "",
+                      ok=False, reason="wide panel not built")
+    vol = np.nan_to_num(np.asarray(p.volume, dtype=np.float64))
+    return _ls("stk_turnover", p, _ranks(_roll(vol, 21, np.nanmean),
+                                         p.tradable), hold, n, invert=True)
+
+
+@register("stk_mom_intermediate", "Intermediate Momentum (12-7)", "stocks",
+          "Long the strongest names by return from twelve months ago to seven "
+          "months ago, ignoring everything since. Novy-Marx (2012) argued "
+          "momentum profits come from the INTERMEDIATE past, not the recent "
+          "past, which if true means standard 12-1 momentum is mis-specified.",
+          "A direct competitor to the 12-1 row. If both work they are the "
+          "same effect; if only one does, this span is too short to say which.")
+def stk_mom_intermediate(hold=21, n=150):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_mom_intermediate", "Intermediate Momentum (12-7)",
+                      "stocks", "", ok=False, reason="wide panel not built")
+    return _ls("stk_mom_intermediate", p,
+               _ranks(_mom(_px(p), 252, 126), p.tradable), hold, n)
+
+
+@register("stk_vol_scaled_mom", "Volatility-Scaled Momentum", "stocks",
+          "12-1 momentum with each position sized inversely to its own recent "
+          "volatility. Barroso and Santa-Clara (2015): momentum's rare "
+          "catastrophic drawdowns are predictable from its own volatility, "
+          "and scaling by it roughly doubles the risk-adjusted return.",
+          "Fixes momentum's worst property rather than its average one, so "
+          "the improvement should show in drawdown and Sharpe, not in raw "
+          "return. Judge it on those columns.")
+def stk_vol_scaled_mom(hold=21, n=150):
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_vol_scaled_mom", "Volatility-Scaled Momentum",
+                      "stocks", "", ok=False, reason="wide panel not built")
+    r = p.returns()
+    vol = _roll(r, 63, np.nanstd)
+    score = _ranks(_mom(_px(p), 252, 21), p.tradable)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        scaled = (score - 0.5) / np.where(vol > 1e-6, vol, np.nan)
+    return _ls("stk_vol_scaled_mom", p, _ranks(scaled, p.tradable), hold, n)
+
+
+@register("stk_turn_of_month", "Turn-of-the-Month Effect", "stocks",
+          "Hold the whole universe only across the last trading day of each "
+          "month and the first three of the next, in cash otherwise. Ariel "
+          "(1987) and Lakonishok and Smidt (1988): essentially all of the "
+          "market's historical return has accrued in that window.",
+          "A calendar rule with no mechanism beyond flows, and the most "
+          "likely of anything here to be a data artefact. It is also barely a "
+          "strategy: it is the market, held a fifth of the time.")
+def stk_turn_of_month():
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_turn_of_month", "Turn-of-the-Month Effect",
+                      "stocks", "", ok=False, reason="wide panel not built")
+    import pandas as pd
+    d = pd.DatetimeIndex(p.dates)
+    dom = d.day.to_numpy()
+    eom = (pd.Series(d).groupby([d.year, d.month]).transform("max")
+           == pd.Series(d)).to_numpy()
+    on = eom | (dom <= 3)
+    bench = _bench(p)
+    net = np.where(on, bench, 0.0) - np.abs(np.diff(
+        np.concatenate([[0.0], on.astype(float)]))) * COST_BPS["stocks"] / 1e4
+    return _wrap("stk_turn_of_month", p, net)
+
+
+@register("stk_sell_in_may", "Halloween / Sell in May", "stocks",
+          "Hold the universe from November through April and stand aside from "
+          "May through October. Bouman and Jacobsen (2002) documented the "
+          "seasonal in 36 of 37 countries, which is either a remarkable "
+          "regularity or a remarkable amount of data mining.",
+          "No mechanism has ever been established. Ten years of data contains "
+          "ten independent observations of an annual cycle, which is not "
+          "enough to distinguish this from chance at any useful confidence.")
+def stk_sell_in_may():
+    p = _stock_panel()
+    if p is None:
+        return Result("stk_sell_in_may", "Halloween / Sell in May", "stocks",
+                      "", ok=False, reason="wide panel not built")
+    import pandas as pd
+    m = pd.DatetimeIndex(p.dates).month.to_numpy()
+    on = (m >= 11) | (m <= 4)
+    bench = _bench(p)
+    net = np.where(on, bench, 0.0) - np.abs(np.diff(
+        np.concatenate([[0.0], on.astype(float)]))) * COST_BPS["stocks"] / 1e4
+    return _wrap("stk_sell_in_may", p, net)
+
+
+# ------------------------------------------------------------------ crypto
+@register("cry_strev", "Crypto Short-Term Reversal", "crypto",
+          "Long the coins that fell most over the past week, short those that "
+          "rose most, rebalanced weekly. Short-horizon reversal is documented "
+          "in crypto much as in equities, and is usually attributed to the "
+          "cost of providing liquidity into sharp moves.",
+          "Directly contradicts the crypto momentum row at a different "
+          "horizon. That is not necessarily inconsistent -- reversal at a "
+          "week and trend at a quarter can coexist -- but both winning "
+          "handsomely should raise suspicion of the data.")
+def cry_strev(hold=7, window=7, n=6):
+    p = M.load("crypto")
+    if p is None:
+        return Result("cry_strev", "Crypto Short-Term Reversal", "crypto", "",
+                      ok=False, reason="crypto panel not fetched")
+    return _ls("cry_strev", p, _ranks(_mom(_px(p), window), p.tradable),
+               hold, n, invert=True)
+
+
+@register("cry_vol_target", "Crypto Volatility-Targeted Trend", "crypto",
+          "The same trend rule as the crypto trend row, but scaling total "
+          "exposure so that forecast portfolio volatility stays near 40% "
+          "annualised. Volatility targeting is standard in managed futures "
+          "and is the usual answer to an asset class whose risk varies by an "
+          "order of magnitude between regimes.",
+          "Targeting stabilises risk; it does not add return. If this beats "
+          "plain trend on Sharpe but not on CAGR, that is the mechanism "
+          "working exactly as intended and not an edge.")
+def cry_vol_target(window=100, target=0.40):
+    p = M.load("crypto")
+    if p is None:
+        return Result("cry_vol_target", "Crypto Volatility-Targeted Trend",
+                      "crypto", "", ok=False, reason="crypto panel not fetched")
+    c = _px(p)
+    ma = _roll(c, window, np.nanmean)
+    sig = (c > ma) & p.tradable
+    w = sig / np.maximum(sig.sum(axis=1, keepdims=True), 1.0)
+    held = np.vstack([np.zeros((1, w.shape[1])), w[:-1]])
+    gross = (held * np.nan_to_num(p.returns())).sum(axis=1)
+    # Trailing realised vol of the strategy itself, never the current bar.
+    rv = np.full(len(gross), np.nan)
+    for t in range(63, len(gross)):
+        rv[t] = np.std(gross[t - 63:t]) * np.sqrt(365.0)
+    lev = np.clip(np.where(np.isfinite(rv) & (rv > 1e-6), target / rv, 0.0),
+                  0.0, 3.0)
+    turn = np.abs(np.diff(np.concatenate([[0.0], lev]))) * 0.5
+    return _wrap("cry_vol_target", p,
+                 lev * gross - turn * COST_BPS["crypto"] / 1e4)
+
+
+@register("cry_btc_relative", "Altcoin Rotation vs Bitcoin", "crypto",
+          "Long the alt-coins outperforming Bitcoin over the past month, "
+          "short Bitcoin itself, rebalanced weekly. Practitioner folklore "
+          "holds that capital rotates from Bitcoin into alts in risk-on "
+          "phases, which if true should show as persistent relative strength.",
+          "This is folklore, not literature: it has no peer-reviewed support "
+          "that I am aware of, and it is included precisely because the "
+          "difference between a documented effect and a widely repeated one "
+          "is what this table exists to measure.")
+def cry_btc_relative(hold=7, window=30, n=6):
+    p = M.load("crypto")
+    if p is None or "BTC-USD" not in p.symbols:
+        return Result("cry_btc_relative", "Altcoin Rotation vs Bitcoin",
+                      "crypto", "", ok=False, reason="crypto panel or BTC missing")
+    # Dividing every coin in a row by the same BTC factor is a per-row
+    # CONSTANT, so it leaves the cross-sectional ranks untouched: the first
+    # version of this was arithmetically identical to cross-sectional
+    # momentum, and reported the same numbers to four significant figures.
+    # The bet only means something if BTC is actually the short leg.
+    c = _px(p)
+    j_btc = p.symbols.index("BTC-USD")
+    btc = c[:, j_btc]
+    btc_mom = btc / np.concatenate([np.full(window, np.nan), btc[:-window]]) - 1.0
+    alt_mom = _mom(c, window)
+    T, N = c.shape
+    w = np.zeros((T, N))
+    for t in range(0, T, hold):
+        excess = alt_mom[t] - btc_mom[t]
+        excess[j_btc] = np.nan                    # BTC is the benchmark, not a pick
+        ok = np.isfinite(excess) & p.tradable[t]
+        idx = np.where(ok)[0]
+        if len(idx) < n:
+            continue
+        pick = idx[np.argsort(-excess[idx])[:n]]
+        row = np.zeros(N)
+        row[pick] = 1.0 / n
+        row[j_btc] = -1.0                          # funded by shorting Bitcoin
+        w[t:min(t + hold, T)] = row
+    held = np.vstack([np.zeros((1, N)), w[:-1]])
+    gross = (held * np.nan_to_num(p.returns())).sum(axis=1)
+    turn = np.abs(np.diff(np.vstack([np.zeros((1, N)), w]), axis=0)).sum(axis=1)
+    return _wrap("cry_btc_relative", p,
+                 gross - turn * COST_BPS["crypto"] / 1e4)
+
+
+# ------------------------------------------------------------------- forex
+@register("fx_ppp", "FX Long-Horizon Reversion", "forex",
+          "Long the currencies that have fallen most against the dollar over "
+          "three years, short those that have risen most, rebalanced "
+          "quarterly. A crude purchasing-power-parity bet: real exchange "
+          "rates revert over multi-year horizons, one of the better "
+          "established regularities in international finance.",
+          "PPP works over five to ten years. Even 27 years of data contains "
+          "only a handful of independent three-year observations, so this is "
+          "under-powered by construction however it comes out.")
+def fx_ppp(hold=63, window=756, n=10):
+    p = M.load("forex")
+    if p is None:
+        return Result("fx_ppp", "FX Long-Horizon Reversion", "forex", "",
+                      ok=False, reason="forex panel not fetched")
+    return _ls("fx_ppp", p, _ranks(_mom(_px(p), window), p.tradable), hold, n,
+               invert=True)
+
+
+@register("fx_dollar", "Dollar Trend", "forex",
+          "A single position: long a basket of all currencies against the "
+          "dollar when the basket has risen over sixty days, short when it "
+          "has fallen. The dollar factor is the first principal component of "
+          "currency returns and explains most of the common variation in the "
+          "asset class.",
+          "One position rather than a cross-section, so the effective sample "
+          "is far smaller than the session count suggests and the t-statistic "
+          "should be read with that in mind.")
+def fx_dollar(hold=21, window=60):
+    p = M.load("forex")
+    if p is None:
+        return Result("fx_dollar", "Dollar Trend", "forex", "",
+                      ok=False, reason="forex panel not fetched")
+    basket = _bench(p)
+    cum = np.cumsum(np.nan_to_num(basket))
+    trend = cum - np.concatenate([np.full(window, np.nan), cum[:-window]])
+    pos = np.where(np.isfinite(trend), np.sign(trend), 0.0)
+    held = np.concatenate([[0.0], pos[:-1]])
+    turn = np.abs(np.diff(np.concatenate([[0.0], pos])))
+    return _wrap("fx_dollar", p,
+                 held * basket - turn * COST_BPS["forex"] / 1e4)
+
+
+# ----------------------------------------------------------------- options
+@register("opt_vix_carry", "VIX Term-Structure Carry", "options",
+          "Short volatility exposure when the VIX curve is in contango -- "
+          "three-month implied above spot -- and stand aside when it inverts. "
+          "Contango means volatility futures roll down toward spot, and the "
+          "roll is the return; inversion is the market pricing stress, which "
+          "is when short-volatility positions are destroyed.",
+          "MODELLED, not backtested. Uses real CBOE VIX and VIX3M history for "
+          "the SIGNAL, which is genuine, but the P&L is still the modelled "
+          "straddle rather than a traded VIX future.")
+def opt_vix_carry(hold=21):
+    px, vix = _spy_and_vix()
+    vol = M.load("volatility")
+    if px is None or vol is None or "VIX3M" not in vol.symbols:
+        return Result("opt_vix_carry", "VIX Term-Structure Carry", "options",
+                      "", ok=False, reason="VIX3M history unavailable")
+    import pandas as pd
+    v3 = pd.Series(vol.close[:, vol.symbols.index("VIX3M")].astype(float),
+                   index=vol.dates).reindex(vix.index)
+    p, v, t3 = px.to_numpy(float), vix.to_numpy(float) / 100.0, v3.to_numpy(float) / 100.0
+    rets, dates = [], []
+    for t in range(0, len(p) - hold, hold):
+        dates.append(vix.index[t + hold])
+        if not np.isfinite(t3[t]) or t3[t] <= v[t]:
+            rets.append(0.0)                 # backwardation: stand aside
+            continue
+        tau = hold / 252.0
+        premium = 0.8 * v[t] * np.sqrt(tau)
+        moved = abs(p[t + hold] / p[t] - 1.0)
+        rets.append(premium - moved - COST_BPS["options"] / 1e4)
+    return _opt_result("opt_vix_carry", dates, rets, hold)
+
+
+@register("opt_put_write", "Cash-Secured Put Write", "options",
+          "Sell a one-month at-the-money put on the index each month and hold "
+          "it to expiry, fully collateralised. The CBOE PUT index has tracked "
+          "this since 1986; it earns the equity risk premium plus the "
+          "variance premium while capping the upside.",
+          "MODELLED, not backtested. A put write is a long-equity position "
+          "with the tail left on and the upside sold, so comparing its return "
+          "to a market-neutral strategy in this table is comparing different "
+          "kinds of risk.")
+def opt_put_write(hold=21):
+    px, vix = _spy_and_vix()
+    if px is None:
+        return Result("opt_put_write", "Cash-Secured Put Write", "options",
+                      "", ok=False, reason="SPY or VIX unavailable")
+    p, v = px.to_numpy(float), vix.to_numpy(float) / 100.0
+    rets, dates = [], []
+    for t in range(0, len(p) - hold, hold):
+        tau = hold / 252.0
+        premium = 0.4 * v[t] * np.sqrt(tau)      # ATM put ~= half a straddle
+        move = p[t + hold] / p[t] - 1.0
+        rets.append(premium + min(move, 0.0) - COST_BPS["options"] / 1e4)
+        dates.append(vix.index[t + hold])
+    return _opt_result("opt_put_write", dates, rets, hold)
