@@ -2962,3 +2962,45 @@ def test_an_order_cannot_fill_at_an_open_that_preceded_its_own_signal():
             assert not b.pending
         finally:
             mod.resolve = orig
+
+
+def test_a_source_change_reconsiders_a_completed_worker():
+    """Otherwise the edit that was meant to restart it is silently ignored.
+
+    A worker that stopped on its own rule stays stopped -- but the rules live
+    in config.yaml, which the fingerprint watches. Raising max_trials to
+    resume searching and having nothing happen is exactly the failure: the
+    config said keep going, the supervisor said already finished, and neither
+    logged a disagreement.
+    """
+    from loonie import orchestrator as orc
+
+    import time as _t
+
+    sup = orc.Orchestrator.__new__(orc.Orchestrator)
+    j = orc.Job(name="search", every_s=0, argv=[])
+    j.completed = True
+    sup.jobs = {"search": j}
+    sup.children = {}
+    sup.reloads = 0
+    sup.fingerprint = "definitely-not-the-current-fingerprint"
+    sup._log = lambda *a, **k: None
+    # Pre-arm the debounce so the change counts on this call rather than
+    # merely being noticed.
+    sup._pending_fp = orc.source_fingerprint()
+    sup._pending_since = _t.time() - 3600.0
+
+    changed = sup.check_source()
+    assert changed is True, "the source change was not acted on"
+    assert not j.completed, "a completed worker was not reconsidered"
+    assert j.last_status == "pending"
+
+
+def test_config_is_part_of_the_reload_fingerprint():
+    """The gates and the stopping rule live in config.yaml, so a change there
+    has to count as a source change."""
+    from loonie import orchestrator as orc
+    import inspect
+
+    src = inspect.getsource(orc.source_fingerprint)
+    assert "config.yaml" in src, "config.yaml is not watched for reloads"

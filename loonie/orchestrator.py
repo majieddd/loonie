@@ -292,7 +292,21 @@ class Orchestrator:
         self._log("source changed -- restarting continuous workers "
                   "(reload #%d)" % self.reloads)
         for job in self.jobs.values():
-            if job.continuous and job.proc is not None:
+            if not job.continuous:
+                continue
+            if job.completed:
+                # A worker that stopped on its own rule stays stopped -- but
+                # only while the rule that stopped it is unchanged. The source
+                # or config just changed, and config.yaml is where those rules
+                # live, so keeping it down would silently ignore the edit that
+                # was made to bring it back. Raising max_trials and seeing
+                # nothing happen is exactly that failure.
+                job.completed = False
+                job.last_status = "pending"
+                job.last_detail = "reconsidered after a source change"
+                self._log("%s was completed; source changed, so it will run "
+                          "again" % job.name)
+            if job.proc is not None:
                 job.terminating = True
                 try:
                     job.proc.terminate()
