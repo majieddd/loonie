@@ -1,34 +1,23 @@
 {
- "generated_at": "2026-09-17T03:57:40+00:00",
+ "generated_at": "2026-09-17T03:58:40+00:00",
  "workers": {
   "workers": [
    {
     "id": "search",
     "kind": "search",
     "label": "genetic program",
-    "started_at": "2026-09-17T03:51:10+00:00",
+    "started_at": "2026-09-17T03:58:06+00:00",
     "status": "running",
-    "detail": "gen 2087 | fit +1.789 | IR +1.97 | alpha t +4.49",
+    "detail": "seeding population",
     "progress": null,
-    "metrics": {
-     "generation": 2087,
-     "trials": 264346,
-     "trials_effective": 60530,
-     "best_fitness": 1.7886,
-     "best_alpha_t": 4.492,
-     "best_dsr": 0.777,
-     "archive_cells": 64,
-     "promoted": 0,
-     "demoted": 227,
-     "seconds_per_gen": 62.38
-    },
+    "metrics": {},
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T03:56:44+00:00",
-    "heartbeat_epoch": 1789617404.1855443,
-    "uptime_s": 333.2,
-    "heartbeat_age_s": 55.5,
+    "heartbeat": "2026-09-17T03:58:06+00:00",
+    "heartbeat_epoch": 1789617486.92574,
+    "uptime_s": 0.0,
+    "heartbeat_age_s": 32.7,
     "liveness": "live"
    },
    {
@@ -41,16 +30,16 @@
     "progress": null,
     "metrics": {
      "jobs_running": 2,
-     "failures": 244,
-     "code_reloads": 9
+     "failures": 245,
+     "code_reloads": 10
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T03:57:39+00:00",
-    "heartbeat_epoch": 1789617459.3961437,
-    "uptime_s": 14647.2,
-    "heartbeat_age_s": 0.3,
+    "heartbeat": "2026-09-17T03:58:39+00:00",
+    "heartbeat_epoch": 1789617519.4296837,
+    "uptime_s": 14707.3,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -68,7 +57,7 @@
     "heartbeat": "2026-09-17T00:23:33+00:00",
     "heartbeat_epoch": 1789604613.8602972,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 12845.8,
+    "heartbeat_age_s": 12905.8,
     "liveness": "finished"
    },
    {
@@ -91,7 +80,7 @@
     "heartbeat": "2026-09-16T23:59:08+00:00",
     "heartbeat_epoch": 1789603148.748595,
     "uptime_s": 35.1,
-    "heartbeat_age_s": 14310.9,
+    "heartbeat_age_s": 14370.9,
     "liveness": "finished"
    },
    {
@@ -112,14 +101,14 @@
     "heartbeat": "2026-09-17T00:11:56+00:00",
     "heartbeat_epoch": 1789603916.453543,
     "uptime_s": 169.9,
-    "heartbeat_age_s": 13543.2,
+    "heartbeat_age_s": 13603.2,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T03:57:39+00:00"
+  "updated": "2026-09-17T03:58:39+00:00"
  },
  "experience": {
   "rows": 2675,
@@ -189,7 +178,7 @@
    "forward_rate": 0.75,
    "mean_fwd_alpha": 0.1705046852160986,
    "labelled": 4,
-   "cycles": 3,
+   "cycles": 4,
    "established": false
   },
   {
@@ -2267,25 +2256,20 @@
   "day_pl": -0.0004621178114141283
  },
  "seal": {
-  "start": "2024-09-01",
-  "stop": "2026-09-01",
-  "digest": "6e3eb2f41651a1c168065a145dd5e572",
-  "created": "2026-09-15T07:35:11+00:00",
+  "start": "2026-09-17",
+  "stop": "2099-12-31",
+  "digest": "",
+  "created": "2026-09-17T03:58:00+00:00",
   "evaluations": 0,
   "max_evaluations": 1,
   "ledger": [
    {
-    "event": "created",
-    "at": "2026-09-15T07:35:11+00:00",
-    "sessions": 500,
-    "tickers": 615
-   },
-   {
-    "event": "exposed",
-    "at": "2026-09-17T03:49:38+00:00",
-    "by": "assistant (Claude), session 2026-09-16",
-    "what": "sealed window 2024-09-01..2026-09-01 read by diagnostics that called load_panel(cfg) without the sealed training range",
-    "note": "Affected: scripts/attribute.py, scripts/feature_ic.py, scripts/power.py, and ad-hoc IC measurements. The reported forward-tail IC (+0.0244 median, best t +2.61 over 2024-08-07..2026-09-16) was measured ON this window and is therefore a holdout reading, not an independent forward check. The RUNNING SEARCH was never affected: its panel ends 2024-08-30 and its validation tail is 2022-12-20..2024-08-30, entirely before the seal."
+    "event": "sealed_forward",
+    "at": "2026-09-17T03:58:00+00:00",
+    "start": "2026-09-17",
+    "min_sessions": 250,
+    "supersedes": "2026-09-17..2026-09-01",
+    "why": "every historical window is training data or contaminated; integrity now rests on the commitment predating the data"
    }
   ],
   "remaining": 1
@@ -2394,7 +2378,7 @@
    "min_forward_ic": 0.0
   },
   "universe_start": "2016-01-01",
-  "holdout_start": "2024-09-01",
+  "holdout_start": "2026-09-17",
   "population": 300,
   "slippage_bps": 5.0
  }
