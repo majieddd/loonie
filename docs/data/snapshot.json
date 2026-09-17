@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T00:58:34+00:00",
+ "generated_at": "2026-09-17T00:59:34+00:00",
  "workers": {
   "workers": [
    {
@@ -8,27 +8,27 @@
     "label": "genetic program",
     "started_at": "2026-09-17T00:04:18+00:00",
     "status": "running",
-    "detail": "gen 1899 | fit +1.789 | IR +1.97 | alpha t +4.49",
+    "detail": "gen 1900 | fit +1.789 | IR +1.97 | alpha t +4.49",
     "progress": null,
     "metrics": {
-     "generation": 1899,
-     "trials": 227539,
-     "trials_effective": 41728,
+     "generation": 1900,
+     "trials": 227664,
+     "trials_effective": 42540,
      "best_fitness": 1.7886,
      "best_alpha_t": 4.492,
-     "best_dsr": 0.801,
+     "best_dsr": 0.8,
      "archive_cells": 95,
      "promoted": 0,
      "demoted": 227,
-     "seconds_per_gen": 27.91
+     "seconds_per_gen": 30.03
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T00:58:34+00:00",
-    "heartbeat_epoch": 1789606714.7997077,
-    "uptime_s": 3256.0,
-    "heartbeat_age_s": 0.0,
+    "heartbeat": "2026-09-17T00:59:04+00:00",
+    "heartbeat_epoch": 1789606744.9743335,
+    "uptime_s": 3286.2,
+    "heartbeat_age_s": 29.5,
     "liveness": "live"
    },
    {
@@ -41,16 +41,16 @@
     "progress": null,
     "metrics": {
      "jobs_running": 2,
-     "failures": 65,
+     "failures": 66,
      "code_reloads": 6
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T00:58:34+00:00",
-    "heartbeat_epoch": 1789606714.2759254,
-    "uptime_s": 3902.1,
-    "heartbeat_age_s": 0.5,
+    "heartbeat": "2026-09-17T00:59:34+00:00",
+    "heartbeat_epoch": 1789606774.3053036,
+    "uptime_s": 3962.1,
+    "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
    {
@@ -68,7 +68,7 @@
     "heartbeat": "2026-09-17T00:23:33+00:00",
     "heartbeat_epoch": 1789604613.8602972,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 2101.0,
+    "heartbeat_age_s": 2160.6,
     "liveness": "finished"
    },
    {
@@ -91,7 +91,7 @@
     "heartbeat": "2026-09-16T23:59:08+00:00",
     "heartbeat_epoch": 1789603148.748595,
     "uptime_s": 35.1,
-    "heartbeat_age_s": 3566.1,
+    "heartbeat_age_s": 3625.8,
     "liveness": "finished"
    },
    {
@@ -112,14 +112,14 @@
     "heartbeat": "2026-09-17T00:11:56+00:00",
     "heartbeat_epoch": 1789603916.453543,
     "uptime_s": 169.9,
-    "heartbeat_age_s": 2798.4,
+    "heartbeat_age_s": 2858.0,
     "liveness": "finished"
    }
   ],
   "live": 2,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T00:58:34+00:00"
+  "updated": "2026-09-17T00:59:34+00:00"
  },
  "experience": {
   "rows": 2495,
@@ -338,78 +338,78 @@
   }
  ],
  "search": {
-  "generation": 1899,
-  "trials": 227539,
-  "trials_effective": 41728,
-  "independence": 0.18338893605028844,
+  "generation": 1900,
+  "trials": 227664,
+  "trials_effective": 42540,
+  "independence": 0.18685375753136033,
   "archive_cells": 95,
   "explore": 0.85,
   "best_fitness": 1.7885804021320022,
   "best_ir": 1.9685804021320021,
   "best_alpha_t": 4.492315979863666,
-  "best_dsr": 0.8013316780105886,
-  "best_pbo": 0.37142857142857144,
+  "best_dsr": 0.8001117149819947,
+  "best_pbo": 0.32857142857142857,
   "best_corr": 0.7535600111448433,
   "best_null_pct": 1.0,
-  "seconds_per_gen": 27.91,
+  "seconds_per_gen": 30.03,
   "promoted_count": 0,
   "demoted_count": 227,
   "null_summary": {
-   "n": 2837,
-   "mean_fitness": -1.0038033120208822,
-   "p95_fitness": 0.20009789814746454,
-   "p99_fitness": 0.4030695393393908,
+   "n": 2849,
+   "mean_fitness": -1.0070088336599154,
+   "p95_fitness": 0.20017134104980894,
+   "p99_fitness": 0.40838681677924266,
    "max_fitness": 0.6981366457191495,
-   "p95_alpha_t": 1.240630616532023
+   "p95_alpha_t": 1.2475065315412397
   },
   "operators": {
    "point": {
-    "rate": 0.02798165137614679,
-    "tried": 2180,
+    "rate": 0.027968821641448878,
+    "tried": 2181,
     "won": 61,
-    "posterior_mean": 0.005870972211693391
+    "posterior_mean": 0.00586852450691689
    },
    "subtree": {
-    "rate": 0.04049586776859504,
-    "tried": 3630,
+    "rate": 0.04046242774566474,
+    "tried": 3633,
     "won": 147,
-    "posterior_mean": 0.00732221070809016
+    "posterior_mean": 0.0072889655252592715
    },
    "hoist": {
     "rate": 0.09734513274336283,
     "tried": 10057,
     "won": 979,
-    "posterior_mean": 0.004445563396006524
+    "posterior_mean": 0.004461859937643076
    },
    "shrink": {
-    "rate": 0.06569110863686974,
-    "tried": 6287,
+    "rate": 0.0656702178406742,
+    "tried": 6289,
     "won": 413,
-    "posterior_mean": 0.007449803006159189
+    "posterior_mean": 0.007431556933135393
    },
    "wrap": {
-    "rate": 0.024539877300613498,
-    "tried": 1956,
+    "rate": 0.024514811031664963,
+    "tried": 1958,
     "won": 48,
-    "posterior_mean": 0.005050530334306194
+    "posterior_mean": 0.00503579575470852
    },
    "jitter": {
-    "rate": 0.05782447554963837,
-    "tried": 27791,
+    "rate": 0.05771440884930326,
+    "tried": 27844,
     "won": 1607,
-    "posterior_mean": 0.015493884033126766
+    "posterior_mean": 0.015376796838458148
    },
    "crossover": {
-    "rate": 0.0973006905210295,
-    "tried": 38232,
+    "rate": 0.0972676166819192,
+    "tried": 38245,
     "won": 3720,
-    "posterior_mean": 0.012558422381453794
+    "posterior_mean": 0.01244935777187523
    },
    "params": {
-    "rate": 0.07074106928197774,
-    "tried": 241246,
+    "rate": 0.07071058628547752,
+    "tried": 241350,
     "won": 17066,
-    "posterior_mean": 0.01642965162331388
+    "posterior_mean": 0.016360550386329942
    }
   },
   "features": {
@@ -420,55 +420,55 @@
     "rate": 0.0
    },
    "macro": {
-    "posterior_mean": 0.9947642293340377,
+    "posterior_mean": 0.9947564036307286,
     "seen": 818,
     "survived": 785,
     "rate": 0.9596577017114915
    },
    "market_relative": {
-    "posterior_mean": 0.48831374880169637,
+    "posterior_mean": 0.48834691489216925,
     "seen": 9,
     "survived": 3,
     "rate": 0.3333333333333333
    },
    "microstructure": {
-    "posterior_mean": 0.9951489509991638,
+    "posterior_mean": 0.9951411144460716,
     "seen": 800,
     "survived": 775,
     "rate": 0.96875
    },
    "momentum": {
-    "posterior_mean": 0.9901171693704036,
+    "posterior_mean": 0.9900881421739989,
     "seen": 260,
     "survived": 259,
     "rate": 0.9961538461538462
    },
    "oscillator": {
-    "posterior_mean": 0.4933912534101347,
+    "posterior_mean": 0.49341081837251466,
     "seen": 2,
     "survived": 0,
     "rate": 0.0
    },
    "peer": {
-    "posterior_mean": 0.994808053431643,
+    "posterior_mean": 0.9948002252957892,
     "seen": 806,
     "survived": 776,
     "rate": 0.9627791563275434
    },
    "reversal": {
-    "posterior_mean": 0.4946691608584254,
+    "posterior_mean": 0.49468397779321843,
     "seen": 35,
     "survived": 12,
     "rate": 0.34285714285714286
    },
    "volatility": {
-    "posterior_mean": 0.994808053431643,
+    "posterior_mean": 0.9948002252957892,
     "seen": 806,
     "survived": 776,
     "rate": 0.9627791563275434
    },
    "volume": {
-    "posterior_mean": 0.99730413735506,
+    "posterior_mean": 0.9972962400289218,
     "seen": 766,
     "survived": 764,
     "rate": 0.9973890339425587
@@ -513,7 +513,7 @@
   },
   {
    "name": "deflated_sharpe",
-   "value": 0.8013316780105886,
+   "value": 0.8001117149819947,
    "op": ">=",
    "threshold": 0.5,
    "pass": true
@@ -522,12 +522,12 @@
    "name": "ic_tstat",
    "value": 3.9192240558623617,
    "op": ">=",
-   "threshold": 4.612792569645057,
+   "threshold": 4.616968721738155,
    "pass": false
   },
   {
    "name": "pbo",
-   "value": 0.37142857142857144,
+   "value": 0.32857142857142857,
    "op": "<=",
    "threshold": 0.4,
    "pass": true
@@ -543,8 +543,8 @@
   "alpha_t": 4.492315979863666,
   "folds_positive": 1.0,
   "worst_fold": 0.05101830158399376,
-  "dsr": 0.8013316780105886,
-  "pbo": 0.37142857142857144,
+  "dsr": 0.8001117149819947,
+  "pbo": 0.32857142857142857,
   "corr": 0.7535600111448433,
   "turnover": 12.95504948250527,
   "trades": 1488,
@@ -553,7 +553,7 @@
   "null_mean_ir": null,
   "ic": 0.05824266734865354,
   "ic_t": 3.9192240558623617,
-  "ic_bar": 4.612792569645057,
+  "ic_bar": 4.616968721738155,
   "ic_hit": 0.6577946768060836,
   "val_ic": 0.019613942187685373,
   "val_ic_t": 2.036936365831569,
@@ -1349,8 +1349,8 @@
    "alpha_t": 4.492315979863666,
    "folds_positive": 1.0,
    "worst_fold": 0.05101830158399376,
-   "dsr": 0.8013316780105886,
-   "pbo": 0.37142857142857144,
+   "dsr": 0.8001117149819947,
+   "pbo": 0.32857142857142857,
    "corr": 0.7535600111448433,
    "turnover": 12.95504948250527,
    "trades": 1488,
@@ -1359,7 +1359,7 @@
    "null_mean_ir": null,
    "ic": 0.05824266734865354,
    "ic_t": 3.9192240558623617,
-   "ic_bar": 4.612792569645057,
+   "ic_bar": 4.616968721738155,
    "ic_hit": 0.6577946768060836,
    "val_ic": 0.019613942187685373,
    "val_ic_t": 2.036936365831569,
@@ -2388,7 +2388,7 @@
   },
   "universe_start": "2016-01-01",
   "holdout_start": "2024-09-01",
-  "population": 250,
+  "population": 300,
   "slippage_bps": 5.0
  }
 }
