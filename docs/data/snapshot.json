@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T05:35:13+00:00",
+ "generated_at": "2026-09-17T05:51:13+00:00",
  "workers": {
   "workers": [
    {
@@ -18,9 +18,9 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T05:35:12+00:00",
-    "heartbeat_epoch": 1789623312.5638049,
-    "uptime_s": 660.3,
+    "heartbeat": "2026-09-17T05:51:13+00:00",
+    "heartbeat_epoch": 1789624273.0406637,
+    "uptime_s": 1620.8,
     "heartbeat_age_s": 0.2,
     "liveness": "live"
    },
@@ -39,7 +39,7 @@
     "heartbeat": "2026-09-17T04:23:35+00:00",
     "heartbeat_epoch": 1789619015.7774796,
     "uptime_s": 0.4,
-    "heartbeat_age_s": 4297.0,
+    "heartbeat_age_s": 5257.4,
     "liveness": "finished"
    },
    {
@@ -68,7 +68,7 @@
     "heartbeat": "2026-09-17T05:26:08+00:00",
     "heartbeat_epoch": 1789622768.869833,
     "uptime_s": 52.9,
-    "heartbeat_age_s": 543.9,
+    "heartbeat_age_s": 1504.4,
     "liveness": "finished"
    },
    {
@@ -91,35 +91,35 @@
     "heartbeat": "2026-09-17T05:29:44+00:00",
     "heartbeat_epoch": 1789622984.2348976,
     "uptime_s": 30.6,
-    "heartbeat_age_s": 328.5,
+    "heartbeat_age_s": 1289.0,
     "liveness": "finished"
    },
    {
     "id": "validate",
     "kind": "validate",
     "label": "honest walk-forward",
-    "started_at": "2026-09-17T00:09:06+00:00",
+    "started_at": "2026-09-17T05:39:44+00:00",
     "status": "finished",
     "detail": "4 segments chained",
     "progress": 1.0,
     "metrics": {
      "segments_done": 4,
-     "last_excess": -0.0191
+     "last_excess": 0.2265
     },
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-09-17T00:11:56+00:00",
-    "heartbeat_epoch": 1789603916.453543,
-    "uptime_s": 169.9,
-    "heartbeat_age_s": 19396.3,
+    "heartbeat": "2026-09-17T05:42:45+00:00",
+    "heartbeat_epoch": 1789623765.0286531,
+    "uptime_s": 180.4,
+    "heartbeat_age_s": 508.2,
     "liveness": "finished"
    }
   ],
   "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-09-17T05:35:12+00:00"
+  "updated": "2026-09-17T05:51:13+00:00"
  },
  "experience": {
   "rows": 2816,
@@ -339,6 +339,24 @@
    "segments_won": 1,
    "segments": 4,
    "beat_benchmark": false,
+   "significant": false
+  },
+  {
+   "at": "2026-09-17T05:42:45+00:00",
+   "mode": "honest",
+   "report": "walkforward_20260917_004245.html",
+   "from": "2019-08-12",
+   "to": "2026-09-16",
+   "sessions": 1754,
+   "strategy": 0.151629,
+   "benchmark": 0.142869,
+   "excess": 0.008759,
+   "alpha_t": 0.4912,
+   "excess_sr": 0.1811,
+   "dsr": 0.0037,
+   "segments_won": 2,
+   "segments": 4,
+   "beat_benchmark": true,
    "significant": false
   }
  ],
