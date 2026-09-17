@@ -249,14 +249,28 @@ def main() -> int:
             # is not neutral -- it raises the threshold the result must clear.
             # So the end is declared in advance rather than discovered.
             stop = cfg.evolve.get("stop", {}) or {}
-            cands = [e.cv for e in ev.archive.elites()]
-            cands += [h.get("cv", {}) for h in ev.hall_of_fame]
-            best_ic = max([float(c.get("ic_t") or -9e9) for c in cands]
-                          or [-9e9])
-            if best_ic > ic_best_seen + 1e-9:
-                ic_best_seen, ic_stall = best_ic, 0
+            # Measured from PERSISTED history, not from a counter in this
+            # process. The supervisor restarts this worker on every source
+            # change, and a local counter resets with it -- a rule needing 300
+            # stalled generations would never once reach 300.
+            hist = [h for h in ev.history
+                    if h.get("best_ic_t") is not None
+                    and float(h.get("best_ic_t", -9e9)) > -8e9]
+            if hist:
+                ics = [float(h["best_ic_t"]) for h in hist]
+                ic_best_seen = max(ics)
+                best_at = max(i for i, v in enumerate(ics) if v >= ic_best_seen)
+                ic_stall = len(ics) - 1 - best_at
             else:
-                ic_stall += 1
+                # No IC history yet (the gate is newer than the run). Fall back
+                # to fitness, which has been recorded since the beginning.
+                fits = [float(h["best_fitness"]) for h in ev.history
+                        if h.get("best_fitness") is not None]
+                if fits:
+                    ic_best_seen = max(fits)
+                    best_at = max(i for i, v in enumerate(fits)
+                                  if v >= ic_best_seen)
+                    ic_stall = len(fits) - 1 - best_at
 
             reason = None
             mt = int(stop.get("max_trials", 0) or 0)

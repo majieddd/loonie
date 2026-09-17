@@ -1116,6 +1116,15 @@ class Evolver:
             "trials": self.trials,
             "trials_effective": int(top.cv.get("trials_effective", self.trials)),
             "independence": float(top.cv.get("independence", 1.0)),
+            # Recorded so the stopping rule can measure stall from persisted
+            # history rather than from a counter living in one process. The
+            # supervisor restarts this worker on every source change, and an
+            # in-process counter resets each time -- so a rule needing 300
+            # stalled generations would never once reach 300.
+            "best_ic_t": float(max(
+                [float(e.cv.get("ic_t") or -9e9) for e in self.archive.elites()]
+                + [float(h.get("cv", {}).get("ic_t") or -9e9)
+                   for h in self.hall_of_fame] or [float("nan")])),
             "explore": float(self.explore),
             "promoted_total": len(self.hall_of_fame),
             "seconds": round(time.time() - t0, 2),

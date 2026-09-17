@@ -293,6 +293,16 @@ def build_snapshot(cfg) -> dict:
         "evaluations": seal.get("evaluations", 0),
         "max_evaluations": seal.get("max_evaluations", 1),
         "ledger": seal.get("ledger") or [],
+        # A forward seal has no digest to show and a different guarantee: the
+        # commitment timestamp, not a hash. Publishing only the historical
+        # fields would leave the page displaying an empty digest as though
+        # something had gone wrong, and silently omit the pre-registered set,
+        # which is the part that makes the eventual test mean anything.
+        "kind": seal.get("kind", "historical"),
+        "committed_at": seal.get("committed_at", ""),
+        "min_sessions": seal.get("min_sessions", 0),
+        "contaminated": bool(seal.get("contaminated", False)),
+        "registered": seal.get("registered") or [],
     }
     seal_out["remaining"] = max(
         0, seal_out["max_evaluations"] - seal_out["evaluations"])

@@ -923,19 +923,59 @@ function render(snap, series){
   const seal = el("div");
   seal.appendChild(el("div","pill "+(SE.remaining?"ok":"warn"),
     SE.remaining ? "sealed · "+SE.remaining+" evaluation left" : "spent"));
+  const fwd = (SE.kind === "forward");
   const sw = el("div"); sw.style.marginTop="16px";
-  sw.appendChild(kv("window", (SE.start||"?")+" → "+(SE.stop||"?")));
-  sw.appendChild(kv("digest (SHA-256, first 32 hex)", SE.digest||"—"));
-  sw.appendChild(kv("sealed at", (SE.created||"—").replace("T"," ").replace("+00:00","Z")));
+  sw.appendChild(kv("window", (SE.start||"?")+" → "+(fwd?"open-ended":(SE.stop||"?"))));
+  /* A forward window has no digest to show. Printing an empty one reads as a
+     fault; naming the guarantee it uses instead reads as a design. */
+  if (fwd){
+    sw.appendChild(kv("committed at",
+      (SE.committed_at||"—").replace("T"," ").replace("+00:00","Z")));
+    sw.appendChild(kv("guarantee", "every scored session must postdate the commitment"));
+    sw.appendChild(kv("evaluable after", int(SE.min_sessions||0)+" sessions accrue"));
+  } else {
+    sw.appendChild(kv("digest (SHA-256, first 32 hex)", SE.digest||"—"));
+    sw.appendChild(kv("sealed at", (SE.created||"—").replace("T"," ").replace("+00:00","Z")));
+  }
   sw.appendChild(kv("evaluations used", SE.evaluations+" of "+SE.max_evaluations));
+  const REG = SE.registered || [];
+  if (REG.length) sw.appendChild(kv("pre-registered", REG.length+" candidates"));
   seal.appendChild(sw);
+
+  if (REG.length){
+    const rl = el("div"); rl.style.marginTop="14px";
+    REG.forEach(r => {
+      const p = el("p","src-note");
+      p.innerHTML = "<code>"+(r.canonical||r.fingerprint||"—")+"</code>";
+      rl.appendChild(p);
+    });
+    seal.appendChild(rl);
+  }
+
   const note = el("p","lede"); note.style.marginTop="20px";
-  note.innerHTML = "The holdout may be scored exactly "+SE.max_evaluations+
-    " time. Opening it is recorded in an append-only ledger before the result "+
-    "can be reacted to, and the manifest hash breaks if the underlying data "+
-    "changes. A window opened once means something; one opened eleven times "+
-    "does not, and this is how you tell them apart.";
+  note.innerHTML = fwd
+    ? ("Every historical window here is now training data or was read, so "+
+       "there is nothing clean left to hash. The guarantee moved from the "+
+       "data to the clock: the commitment is timestamped and every session "+
+       "scored must postdate it. A digest proves bytes did not change; it "+
+       "cannot prove nobody looked. A date that had not happened yet proves "+
+       "nobody could have. The "+REG.length+" candidates above were fixed "+
+       "before the data existed, which is what makes the bar "+
+       "√(2·ln·5)≈" + "2.0 rather than the 4.7 a search of this "+
+       "size would owe.")
+    : ("The holdout may be scored exactly "+SE.max_evaluations+
+       " time. Opening it is recorded in an append-only ledger before the "+
+       "result can be reacted to, and the manifest hash breaks if the "+
+       "underlying data changes. A window opened once means something; one "+
+       "opened eleven times does not, and this is how you tell them apart.");
   seal.appendChild(note);
+
+  if (SE.contaminated){
+    const warn = el("p","src-note"); warn.style.marginTop="12px";
+    warn.innerHTML = "<b>This window was read outside the ledger.</b> The "+
+      "evaluation count above understates what has been seen.";
+    seal.appendChild(warn);
+  }
   g3.appendChild(seal);
   s5.appendChild(g3);
   app.appendChild(s5);

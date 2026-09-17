@@ -2505,3 +2505,47 @@ def test_a_worker_that_stopped_on_purpose_is_not_respawned():
     j2.proc = FakeProc(1)
     sup._reap(j2)
     assert not j2.completed and j2.failures == 1
+
+
+def test_stall_is_measured_from_persisted_history_not_a_live_counter():
+    """A counter living in one process cannot measure a 300-generation stall.
+
+    The supervisor restarts the search on every source change, and an
+    in-process counter resets with it -- so a rule requiring 300 stalled
+    generations would never once reach 300, and the stopping rule would be
+    decorative. Stall has to be derived from ev.history, which is checkpointed
+    every generation.
+    """
+    src = (Path(__file__).resolve().parent.parent / "scripts"
+           / "run_evolve.py").read_text(encoding="utf-8")
+    assert "ev.history" in src.split("the stopping rule")[-1], \
+        "the stopping rule no longer reads persisted history"
+
+    # And the arithmetic it relies on.
+    ics = [1.0, 2.0, 3.0, 3.0, 2.5, 2.9]        # best at index 2
+    best = max(ics)
+    best_at = max(i for i, v in enumerate(ics) if v >= best)
+    assert best_at == 3, "ties must count the LAST occurrence, not the first"
+    assert len(ics) - 1 - best_at == 2, "stall length is wrong"
+
+    # A monotonically improving run is never stalled.
+    rising = [1.0, 2.0, 3.0]
+    b = max(rising)
+    at = max(i for i, v in enumerate(rising) if v >= b)
+    assert len(rising) - 1 - at == 0
+
+
+def test_history_records_best_ic_for_the_stopping_rule():
+    """Stall is measured on IC now, so IC has to be in the checkpoint."""
+    import ast
+
+    src = (Path(__file__).resolve().parent.parent / "loonie"
+           / "evolve.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    keys = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Dict):
+            for k in node.keys:
+                if isinstance(k, ast.Constant) and isinstance(k.value, str):
+                    keys.add(k.value)
+    assert "best_ic_t" in keys, "history no longer records best_ic_t"
