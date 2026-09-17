@@ -211,14 +211,23 @@ def session(cfg, args) -> int:
             print("    %-5s %-6s %-12s  %s" % (o.side.upper(), o.symbol, size, o.note))
     else:
         sent = 0
+        # Sells first: they free the exposure the buys need. Submitting in the
+        # diff's arbitrary order meant the buys were measured against a book
+        # that had not been reduced yet, so a full book rejected every buy no
+        # matter how many sells came later in the same batch.
+        orders = sorted(orders, key=lambda o: 0 if str(o.side).lower() == "sell"
+                        else 1)
+        pending = 0.0
         for o in orders:
             notional = o.notional or (o.qty * marks.get(o.symbol, 0))
-            ok = rm.check_order(o.symbol, notional, account.equity, account)
+            ok = rm.check_order(o.symbol, notional, account.equity, account,
+                                side=o.side, pending=pending)
             if not ok:
                 print("[trade] skip %s: %s" % (o.symbol, ok.reason))
                 continue
             broker.submit(o)
             rm.note_order()
+            pending += (-notional if str(o.side).lower() == "sell" else notional)
             sent += 1
             print("    %-5s %-6s %-10s -> %s %s"
                   % (o.side.upper(), o.symbol,

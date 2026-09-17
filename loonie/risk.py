@@ -153,18 +153,46 @@ class RiskManager:
         return RiskDecision(allow=True, checks=checks)
 
     def check_order(self, symbol: str, notional: float, equity: float,
-                    account=None) -> RiskDecision:
-        """Per-order sizing limits."""
-        maxpos = float(self.cfg.trade.max_position_pct) * max(equity, 1e-9)
-        if notional > maxpos * 1.001:
-            return RiskDecision(
-                allow=False,
-                reason="%s notional $%.0f exceeds max_position_pct ($%.0f)"
-                       % (symbol, notional, maxpos))
+                    account=None, side: str = "buy",
+                    pending: float = 0.0) -> RiskDecision:
+        """Per-order sizing limits.
+
+        `side` is load-bearing and was missing. The gross-exposure cap used to
+        add every order's notional to current exposure regardless of
+        direction, so a SELL -- which reduces exposure -- was rejected for
+        would-be exceeding the cap. Once the book filled to the cap, that
+        blocked the very orders that make room, and the portfolio froze: seven
+        consecutive rebalances proposed up to 86 orders and submitted none,
+        for a full day, with the account file untouched and the heartbeat
+        still reporting healthy runs.
+
+        `pending` carries the net exposure change already approved earlier in
+        the same batch. Without it, sells approved a moment ago do not count,
+        and the first buy after them is measured against stale exposure.
+        """
+        is_sell = str(side).lower() == "sell"
+
+        # Both caps below size a position UP. Neither has any business
+        # refusing an order that sizes one DOWN -- and applying them to sells
+        # does not merely waste a trade, it makes the breach permanent: a name
+        # that drifts above max_position_pct becomes unsellable precisely
+        # because it is oversized. BKR reached 6.1% against a 6.0% cap and
+        # could not be trimmed for that reason.
+        if not is_sell:
+            maxpos = float(self.cfg.trade.max_position_pct) * max(equity, 1e-9)
+            if notional > maxpos * 1.001:
+                return RiskDecision(
+                    allow=False,
+                    reason="%s notional $%.0f exceeds max_position_pct ($%.0f)"
+                           % (symbol, notional, maxpos))
         if notional < float(self.cfg.trade.min_order_notional):
             return RiskDecision(allow=False, reason="%s below min notional" % symbol)
-        if account is not None:
+
+        # A sell only ever reduces gross exposure. Capping it is not caution,
+        # it is a deadlock.
+        if account is not None and not is_sell:
             gross = sum(abs(p.market_value) for p in account.positions.values())
+            gross = max(0.0, gross + pending)
             cap = float(self.cfg.trade.max_gross_exposure) * max(equity, 1e-9)
             if gross + notional > cap * 1.001:
                 return RiskDecision(

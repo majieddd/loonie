@@ -2711,3 +2711,93 @@ def test_system_log_is_written_by_the_process_not_the_caller(tmp_path):
     # Flushed per write: a log you have to wait for is not a log.
     t.write("[orchestrator] second\n")
     assert "second" in log.read_text(encoding="utf-8")
+
+
+class _Pos:
+    def __init__(self, mv):
+        self.market_value = mv
+
+
+class _Acct:
+    def __init__(self, n, each):
+        self.positions = {"S%02d" % i: _Pos(each) for i in range(n)}
+        self.equity = n * each
+
+
+def test_a_sell_is_never_blocked_by_the_gross_exposure_cap():
+    """The bug that froze the paper book for a day.
+
+    check_order added every order's notional to current exposure regardless of
+    direction, so a SELL -- which reduces exposure -- was rejected for
+    would-be breaching the cap. Once the book filled, that blocked exactly the
+    orders that make room: seven consecutive rebalances proposed up to 86
+    orders and submitted none, while the heartbeat reported healthy runs.
+    """
+    from loonie import risk
+
+    c = config.load()
+    rm = risk.RiskManager(c) if hasattr(risk, "RiskManager") else None
+    if rm is None:
+        pytest.skip("RiskManager not exposed under that name")
+
+    acct = _Acct(20, 5000.0)                 # $100k, fully invested
+    eq = acct.equity
+
+    # A buy at a full book is correctly refused...
+    buy = rm.check_order("NEW", 4000.0, eq, acct, side="buy")
+    assert not buy.allow and "gross exposure" in buy.reason
+
+    # ...and a sell of the same size must not be.
+    sell = rm.check_order("S00", 4000.0, eq, acct, side="sell")
+    assert sell.allow, "a sell was blocked by the exposure cap: %s" % sell.reason
+
+
+def test_exposure_freed_earlier_in_the_batch_is_counted():
+    """Sells approved a moment ago have to reduce the number the next buy is
+    measured against, or the first buy after them still sees a full book."""
+    from loonie import risk
+
+    c = config.load()
+    rm = risk.RiskManager(c)
+    acct = _Acct(20, 5000.0)
+    eq = acct.equity
+
+    assert not rm.check_order("NEW", 4000.0, eq, acct, side="buy").allow
+    freed = rm.check_order("NEW", 4000.0, eq, acct, side="buy", pending=-9000.0)
+    assert freed.allow, "room freed by earlier sells was not counted"
+
+
+def test_trade_submits_sells_before_buys():
+    """Ordering is part of the fix: buys measured against an unreduced book
+    fail no matter how many sells appear later in the same batch."""
+    src = (Path(__file__).resolve().parent.parent / "scripts"
+           / "run_trade.py").read_text(encoding="utf-8")
+    assert 'sorted(orders' in src and '"sell"' in src, \
+        "run_trade no longer orders sells ahead of buys"
+    assert "side=o.side" in src, "order side is not passed to the risk check"
+
+
+def test_an_oversized_position_can_still_be_sold():
+    """Otherwise a cap breach is permanent.
+
+    max_position_pct sizes a position UP. Applied to a sell it makes the very
+    name that drifted above the cap unsellable *because* it is oversized --
+    BKR sat at 6.1% against a 6.0% cap and could not be trimmed for exactly
+    that reason.
+    """
+    from loonie import risk
+
+    c = config.load()
+    rm = risk.RiskManager(c)
+    acct = _Acct(20, 5000.0)
+    eq = acct.equity
+    maxpos = float(c["trade"]["max_position_pct"]) * eq
+    oversized = maxpos * 1.05
+
+    buy = rm.check_order("BKR", oversized, eq, acct, side="buy")
+    assert not buy.allow and "max_position_pct" in buy.reason, \
+        "the cap must still stop an oversized BUY"
+
+    sell = rm.check_order("BKR", oversized, eq, acct, side="sell")
+    assert sell.allow, \
+        "an oversized position could not be trimmed: %s" % sell.reason
