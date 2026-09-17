@@ -32,6 +32,49 @@ if hasattr(sys.stdout, "reconfigure"):
 from loonie import config, orchestrator, registry  # noqa: E402
 
 
+class _Tee:
+    """Write to the console AND to state/system.log.
+
+    The orchestrator logs with print(), so where its history ends up depends
+    entirely on how someone launched it. Start it with stdout pointed anywhere
+    else and state/system.log simply stops -- still present, still readable,
+    quietly five hours out of date. That is worse than having no log, because
+    the stale lines still look like the current state: it is how a run of
+    failing publish jobs stayed invisible here for an entire evening.
+
+    So the file is written from inside the process, whatever the caller does
+    with stdout.
+    """
+
+    def __init__(self, stream, path):
+        self.stream = stream
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.fh = open(path, "a", encoding="utf-8", errors="replace")
+
+    def write(self, s):
+        self.stream.write(s)
+        try:
+            self.fh.write(s)
+            self.fh.flush()          # a log you have to wait for is not a log
+        except Exception:
+            pass                     # never let logging kill the supervisor
+        return len(s)
+
+    def flush(self):
+        self.stream.flush()
+        try:
+            self.fh.flush()
+        except Exception:
+            pass
+
+    def isatty(self):
+        return getattr(self.stream, "isatty", lambda: False)()
+
+
+sys.stdout = _Tee(sys.stdout, config.resolve("state/system.log"))
+sys.stderr = _Tee(sys.stderr, config.resolve("state/system.log"))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--population", type=int, default=250)

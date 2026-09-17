@@ -2666,3 +2666,48 @@ def test_scripts_have_no_unbound_names_in_their_exit_paths():
 
     assert not offenders, "unbound names in scripts: %s" % {
         k: sorted(v) for k, v in offenders.items()}
+
+
+def test_system_log_is_written_by_the_process_not_the_caller(tmp_path):
+    """A log whose destination depends on the launch command stops silently.
+
+    The orchestrator logs with print(), so starting it with stdout redirected
+    anywhere else leaves state/system.log present, readable, and hours out of
+    date -- which still LOOKS like current state. That is how an evening of
+    failing publish jobs stayed invisible here.
+    """
+    import importlib.util
+
+    path = Path(__file__).resolve().parent.parent / "scripts" / "run_system.py"
+    src = path.read_text(encoding="utf-8")
+    assert "state/system.log" in src, "run_system no longer owns its log file"
+
+    spec = importlib.util.spec_from_file_location("_rs_probe", path)
+    mod = importlib.util.module_from_spec(spec)
+    # Importing would start the supervisor; just exercise the tee directly.
+    tee_src = src.split("class _Tee:")[1].split("sys.stdout = _Tee")[0]
+    ns: dict = {}
+    exec("class _Tee:" + tee_src, {"sys": sys, "open": open}, ns)
+
+    log = tmp_path / "system.log"
+
+    class Sink:
+        def __init__(self):
+            self.seen = []
+
+        def write(self, s):
+            self.seen.append(s)
+
+        def flush(self):
+            pass
+
+    sink = Sink()
+    t = ns["_Tee"](sink, log)
+    t.write("[orchestrator] hello\n")
+    t.flush()
+
+    assert "hello" in log.read_text(encoding="utf-8"), "nothing reached the file"
+    assert sink.seen, "the console stream was starved"
+    # Flushed per write: a log you have to wait for is not a log.
+    t.write("[orchestrator] second\n")
+    assert "second" in log.read_text(encoding="utf-8")
