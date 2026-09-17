@@ -1,128 +1,184 @@
 {
- "updated": "2026-09-17T09:55:15+00:00",
- "generation": 2233,
- "trials": 301240,
+ "updated": "2026-09-17T10:06:56+00:00",
+ "generation": 2253,
+ "trials": 304888,
  "promoted": false,
  "strategies": [
   {
-   "fingerprint": "48f75b7a2f8cf982",
-   "canonical": "f_fcf_yield|k=20|rb=10|w=equal",
+   "fingerprint": "4f4e650261016725",
+   "canonical": "f_earnings_yield|k=15|rb=1|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
      "t": "feat",
-     "name": "f_fcf_yield"
+     "name": "f_earnings_yield"
     },
-    "n_positions": 20,
-    "rebalance_days": 10,
+    "n_positions": 15,
+    "rebalance_days": 1,
     "weighting": "equal",
-    "born": 2233,
-    "parents": [],
-    "operator": "init",
+    "born": 2247,
+    "parents": [
+     "3dd83fa778b0a959",
+     "962776ca5f58bcd7"
+    ],
+    "operator": "hoist",
     "meta": {},
-    "fingerprint": "48f75b7a2f8cf982",
-    "canonical": "f_fcf_yield|k=20|rb=10|w=equal"
+    "fingerprint": "4f4e650261016725",
+    "canonical": "f_earnings_yield|k=15|rb=1|w=equal"
    },
    "cv": {
-    "frac_positive": 0.625,
-    "mean_alpha": 0.047183255123228,
-    "median_alpha": 0.03312567184790548,
-    "mean_ir": 1.0038646810223422,
-    "worst_fold_alpha": -0.04325349205836129,
-    "alpha_tstat": 1.9971838820431416,
-    "total_trades": 4212,
-    "ann_turnover": 4.093886433537414,
-    "corr_bench": 0.9390392580614508,
+    "frac_positive": 1.0,
+    "mean_alpha": 0.10045553001573393,
+    "median_alpha": 0.06576008624158544,
+    "mean_ir": 1.2436488246480624,
+    "worst_fold_alpha": 0.03432948049773614,
+    "alpha_tstat": 3.540662571650831,
+    "total_trades": 30405,
+    "ann_turnover": 10.038123427456373,
+    "corr_bench": 0.9195959770080178,
     "n_folds": 8,
     "ok": true,
-    "val_alpha": 0.2035984932635483,
-    "val_ir": 2.4931934295872002,
-    "val_t": 3.2580182531771107,
+    "val_alpha": 0.1519389948066019,
+    "val_ir": 1.4943124310480762,
+    "val_t": 2.302206823832621,
     "val_sessions": 529,
-    "val_ic": 0.004938860416170532,
-    "val_ic_t": 0.4318695122950942,
-    "dsr": 0.0290509280919933,
-    "sr_ann_excess": 0.8650186427862083,
-    "sr_star_ann": 1.527828205601735,
-    "trials_total": 301240,
-    "trials_effective": 90043,
-    "independence": 0.2989073877847243,
-    "ic": 0.00985666528522234,
-    "ic_t": 2.034098428465862,
-    "ic_n": 2141,
-    "ic_ir": 0.11551931989264673,
-    "ic_hit": 0.5268566090611864,
-    "ic_bar": 4.7766185974998505,
-    "pbo": 0.0
+    "val_ic": 0.006160004063600153,
+    "val_ic_t": 1.1602586020267076,
+    "dsr": 0.2303427650587958,
+    "sr_ann_excess": 1.2384095782691154,
+    "sr_star_ann": 1.497867562864172,
+    "trials_total": 304888,
+    "trials_effective": 54982,
+    "independence": 0.1803360627109009,
+    "ic": 0.0021574034291767974,
+    "ic_t": 0.7998591785524685,
+    "ic_n": 2150,
+    "ic_ir": 0.017462449804853435,
+    "ic_hit": 0.4944186046511628,
+    "ic_bar": 4.672207430738051,
+    "pbo": 0.6571428571428571
    }
   },
   {
-   "fingerprint": "62cdfe0715bed880",
-   "canonical": "rank(f_fcf_yield)|k=10|rb=1|w=equal",
+   "fingerprint": "ad43ea2f14c98f10",
+   "canonical": "add(tsrank_63(-1.81), f_earnings_yield)|k=15|rb=10|w=equal",
+   "promoted": false,
+   "genome": {
+    "expr": {
+     "t": "bin",
+     "op": "add",
+     "left": {
+      "t": "un",
+      "op": "tsrank",
+      "window": 63,
+      "child": {
+       "t": "const",
+       "value": -1.8098
+      }
+     },
+     "right": {
+      "t": "feat",
+      "name": "f_earnings_yield"
+     }
+    },
+    "n_positions": 15,
+    "rebalance_days": 10,
+    "weighting": "equal",
+    "born": 2236,
+    "parents": [
+     "b28203a84e0c1287",
+     "e99c183e1df825e6"
+    ],
+    "operator": "hoist",
+    "meta": {},
+    "fingerprint": "ad43ea2f14c98f10",
+    "canonical": "add(tsrank_63(-1.81), f_earnings_yield)|k=15|rb=10|w=equal"
+   },
+   "cv": {
+    "frac_positive": 1.0,
+    "mean_alpha": 0.09864696166895875,
+    "median_alpha": 0.0532136793267602,
+    "mean_ir": 1.1991546224317249,
+    "worst_fold_alpha": 0.02818302481812141,
+    "alpha_tstat": 3.4019563190825775,
+    "total_trades": 3148,
+    "ann_turnover": 4.092599648322363,
+    "corr_bench": 0.9176517964028129,
+    "n_folds": 8,
+    "ok": true,
+    "val_alpha": 0.06104283802153782,
+    "val_ir": 0.4317189164911016,
+    "val_t": 0.9114116419352746,
+    "val_sessions": 529,
+    "val_ic": 0.02844705401979801,
+    "val_ic_t": 2.3783864637739303,
+    "dsr": 0.18524999750161103,
+    "sr_ann_excess": 1.1875048906738193,
+    "sr_star_ann": 1.5026807871888732,
+    "trials_total": 303948,
+    "trials_effective": 57706,
+    "independence": 0.18985628496532675,
+    "ic": 0.007761200200592342,
+    "ic_t": 1.0627721599474573,
+    "ic_n": 2140,
+    "ic_ir": 0.06017842774699647,
+    "ic_hit": 0.5313084112149533,
+    "ic_bar": 4.682545554124421,
+    "pbo": 0.5142857142857142
+   }
+  },
+  {
+   "fingerprint": "b28203a84e0c1287",
+   "canonical": "demean(zscore(add(tsrank_63(-1.81), f_earnings_yield)))|k=15|rb=10|w=equal",
    "promoted": false,
    "genome": {
     "expr": {
      "t": "un",
-     "op": "rank",
+     "op": "demean",
      "window": 0,
      "child": {
-      "t": "feat",
-      "name": "f_fcf_yield"
+      "t": "un",
+      "op": "zscore",
+      "window": 0,
+      "child": {
+       "t": "bin",
+       "op": "add",
+       "left": {
+        "t": "un",
+        "op": "tsrank",
+        "window": 63,
+        "child": {
+         "t": "const",
+         "value": -1.8098
+        }
+       },
+       "right": {
+        "t": "feat",
+        "name": "f_earnings_yield"
+       }
+      }
      }
     },
-    "n_positions": 10,
-    "rebalance_days": 1,
+    "n_positions": 15,
+    "rebalance_days": 10,
     "weighting": "equal",
-    "born": 2233,
+    "born": 2235,
     "parents": [],
     "operator": "init",
     "meta": {},
-    "fingerprint": "62cdfe0715bed880",
-    "canonical": "rank(f_fcf_yield)|k=10|rb=1|w=equal"
+    "fingerprint": "b28203a84e0c1287",
+    "canonical": "demean(zscore(add(tsrank_63(-1.81), f_earnings_yield)))|k=15|rb=10|w=equal"
    },
    "cv": {
-    "frac_positive": 0.625,
-    "mean_alpha": 0.025969720903815732,
-    "median_alpha": 0.038137772823187824,
-    "mean_ir": 0.548414830253565,
-    "worst_fold_alpha": -0.10833611867403746,
-    "alpha_tstat": 1.0842995922204983,
-    "total_trades": 20334,
-    "ann_turnover": 11.421121056463843,
-    "corr_bench": 0.8792380174757752,
-    "n_folds": 8,
-    "ok": true
-   }
-  },
-  {
-   "fingerprint": "b2752a8091f05a99",
-   "canonical": "rev_5|k=25|rb=21|w=score",
-   "promoted": false,
-   "genome": {
-    "expr": {
-     "t": "feat",
-     "name": "rev_5"
-    },
-    "n_positions": 25,
-    "rebalance_days": 21,
-    "weighting": "score",
-    "born": 2233,
-    "parents": [],
-    "operator": "init",
-    "meta": {},
-    "fingerprint": "b2752a8091f05a99",
-    "canonical": "rev_5|k=25|rb=21|w=score"
-   },
-   "cv": {
-    "frac_positive": 0.375,
-    "mean_alpha": 0.01138100985933502,
-    "median_alpha": -0.00469811192562192,
-    "mean_ir": 0.22517576990207125,
-    "worst_fold_alpha": -0.1587624036445939,
-    "alpha_tstat": -0.14544494161217886,
-    "total_trades": 4259,
-    "ann_turnover": 22.08479432010115,
-    "corr_bench": 0.7675638879815004,
+    "frac_positive": 1.0,
+    "mean_alpha": 0.09864696166895875,
+    "median_alpha": 0.0532136793267602,
+    "mean_ir": 1.1991546224317249,
+    "worst_fold_alpha": 0.02818302481812141,
+    "alpha_tstat": 3.4019563190825775,
+    "total_trades": 3148,
+    "ann_turnover": 4.092599648322363,
+    "corr_bench": 0.9176517964028129,
     "n_folds": 8,
     "ok": true
    }
