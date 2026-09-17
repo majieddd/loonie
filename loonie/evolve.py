@@ -381,6 +381,12 @@ class Evolver:
         # candidate.
         self._fwd: dict = {}
         self._val_fwd: dict = {}
+        # gate() needs the same score matrix evaluate() just built. Rebuilding
+        # it costs 0.55s against 0.23s for the IC itself -- 70% of the gate
+        # spent recomputing something we had. One entry, tagged with the
+        # fingerprint it belongs to, so a cache hit in evaluate() can never
+        # hand gate() another genome's scores.
+        self._last_score: tuple = (None, None)
 
         self.population: list = []
         self.hall_of_fame: list = []
@@ -407,6 +413,7 @@ class Evolver:
             return None
         if not np.isfinite(score).any():
             return None
+        self._last_score = (fp, score)
 
         res = cvmod.evaluate(self.panel, score, g, self.cfg,
                              bench_ret=self.bench, folds=self.folds)
@@ -664,7 +671,9 @@ class Evolver:
             h = max(1, int(ev.genome.rebalance_days))
             if h not in self._fwd:
                 self._fwd[h] = icmod.forward_returns(self.panel.close, h)
-            score = ev.genome.score(self.feats, self.panel.tradable)
+            fp_last, cached = self._last_score
+            score = (cached if fp_last == ev.genome.fingerprint
+                     else ev.genome.score(self.feats, self.panel.tradable))
             r = icmod.summarize(score, self._fwd[h], self.panel.tradable, h)
             ev.cv.update({k: r[k] for k in
                           ("ic", "ic_t", "ic_n", "ic_ir", "ic_hit")})

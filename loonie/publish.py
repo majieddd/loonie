@@ -206,6 +206,17 @@ def build_snapshot(cfg) -> dict:
             "stress_alpha": c.get("stress_alpha"),
             "null_pct": c.get("null_percentile"),
             "null_mean_ir": c.get("null_mean_ir"),
+            # The IC block is now the primary evidence: the portfolio alpha
+            # t-stat above cannot resolve a realistic edge on this span, and
+            # these numbers can. `ic_bar` moves with effective trials, so it
+            # travels with the value rather than being a constant the page
+            # could hard-code and get wrong later.
+            "ic": c.get("ic"),
+            "ic_t": c.get("ic_t"),
+            "ic_bar": c.get("ic_bar"),
+            "ic_hit": c.get("ic_hit"),
+            "val_ic": c.get("val_ic"),
+            "val_ic_t": c.get("val_ic_t"),
             "promoted": bool(entry.get("promoted")),
         }
 

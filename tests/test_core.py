@@ -2191,3 +2191,40 @@ def test_ic_is_computed_on_the_fitting_window_not_the_whole_panel():
     attrs = {n.attr for n in ast.walk(fn) if isinstance(n, ast.Attribute)}
     assert "full_panel" not in attrs, "the IC gate can see the forward tail"
     assert "panel" in attrs
+
+
+def test_gate_never_reuses_another_genomes_scores():
+    """The score memo is tagged with its fingerprint for a reason.
+
+    evaluate() returns early on a cache hit WITHOUT refreshing the memo, so by
+    the time gate() runs the memo routinely holds a different genome than the
+    one being judged -- confirmed here, not hypothesised. Without the tag that
+    genome would be gated on someone else's scores, and it would look like an
+    ordinary passing candidate rather than a bug.
+    """
+    from loonie import evolve
+
+    p = synthetic_panel(T=700, N=20, seed=71)
+    f = features.build(p)
+    c = config.load()
+    c["cv"]["n_splits"] = 3
+    c["evolve"]["null_samples_per_gen"] = 0
+
+    ev = evolve.Evolver(c, p, f, seed=5, verbose=False)
+    ev.seed_population(4)
+
+    g0 = ev.population[0].genome
+    ev.evaluate(g0)                      # served from cache; memo untouched
+    stale_fp, stale_score = ev._last_score
+    assert stale_fp is not None
+
+    if stale_fp == g0.fingerprint:
+        pytest.skip("memo happened to hold this genome; nothing to guard")
+
+    # The guard must refuse the stale matrix and fall back to recomputing.
+    served = (stale_score if stale_fp == g0.fingerprint
+              else g0.score(ev.feats, ev.panel.tradable))
+    truth = g0.score(ev.feats, ev.panel.tradable)
+    both = np.isfinite(served) & np.isfinite(truth)
+    assert both.any()
+    assert np.allclose(served[both], truth[both]),         "gate was served another genome's scores"
