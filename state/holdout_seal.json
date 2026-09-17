@@ -13,11 +13,43 @@
       "min_sessions": 250,
       "supersedes": "2026-09-17..2026-09-01",
       "why": "every historical window is training data or contaminated; integrity now rests on the commitment predating the data"
+    },
+    {
+      "event": "registered",
+      "at": "2026-09-17T04:37:32+00:00",
+      "n": 5,
+      "note": "top 5 by cross-sectional IC t on 2016-01-04..2026-09-16, deduplicated at IC-series correlation 0.90; search stalled 2129 generations before this commitment"
     }
   ],
   "contaminated": false,
   "kind": "forward",
   "committed_at": "2026-09-17T03:58:00+00:00",
   "min_sessions": 250,
-  "registered": []
+  "registered": [
+    {
+      "fingerprint": "0db243f658bd38e1",
+      "canonical": "sign(f_asset_growth)|k=50|rb=2|w=score",
+      "registered_at": "2026-09-17T04:37:32+00:00"
+    },
+    {
+      "fingerprint": "3bd6ab68189c2994",
+      "canonical": "sub(tsmean_126(min(add(sqrt_abs(peer_rel_mom_63), max(f_gp_assets, m_mkt_mom)), add(max(gap, -2.772), sigmoid(max(0.9471, m_term_spread))))), sqrt_abs(zscore(demean(delta_126(tsrank_63(0.1983))))))|k=15|rb=1|w=equal",
+      "registered_at": "2026-09-17T04:37:32+00:00"
+    },
+    {
+      "fingerprint": "50521930f2e6b5d6",
+      "canonical": "rank(f_rnd_intensity)|k=25|rb=2|w=equal",
+      "registered_at": "2026-09-17T04:37:32+00:00"
+    },
+    {
+      "fingerprint": "12d8e6f0bc43e6ab",
+      "canonical": "tsmean_10(zscore(dollar_vol_21))|k=15|rb=10|w=equal",
+      "registered_at": "2026-09-17T04:37:32+00:00"
+    },
+    {
+      "fingerprint": "187c64f97db969ea",
+      "canonical": "rank(f_rnd_intensity)|k=10|rb=21|w=equal",
+      "registered_at": "2026-09-17T04:37:32+00:00"
+    }
+  ]
 }

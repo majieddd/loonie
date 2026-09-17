@@ -2413,3 +2413,52 @@ def test_failed_publish_rebase_cleans_up_after_itself():
     assert aborts, "publish never aborts a failed rebase"
     assert "rebase --abort" in src, \
         "the operator-facing message should name the manual escape hatch"
+
+
+def test_preregistration_dedupes_one_idea_sized_two_ways():
+    """Registering the same hypothesis twice spends two of five slots on one
+    bet, and the IC-series check alone does not catch it.
+
+    Two copies of rank(f_rnd_intensity) at k=25/rb=2 and k=10/rb=21 produce IC
+    series measured against DIFFERENT forward horizons, so they correlate
+    weakly and both survived. That actually happened in the live commitment.
+    The expression core -- everything before the |k=..|rb=.. suffix -- is what
+    identifies the idea.
+    """
+    core = lambda s: str(s).split("|")[0]                      # noqa: E731
+
+    a = "rank(f_rnd_intensity)|k=25|rb=2|w=equal"
+    b = "rank(f_rnd_intensity)|k=10|rb=21|w=equal"
+    c = "rank(f_roe)|k=25|rb=2|w=equal"
+
+    assert core(a) == core(b), "same idea, different sizing, must collapse"
+    assert core(a) != core(c), "different ideas must stay distinct"
+
+    src = (Path(__file__).resolve().parent.parent / "scripts"
+           / "preregister.py").read_text(encoding="utf-8")
+    assert "def core(" in src, "preregister no longer dedupes by expression"
+
+
+def test_registered_candidates_cannot_be_silently_replaced(tmp_path,
+                                                           monkeypatch):
+    """Swapping in a better candidate after seeing the data is the search
+    again with a sample size of one, and it would not feel like cheating."""
+    from loonie import seal as S
+
+    monkeypatch.setattr(S, "resolve", lambda q: tmp_path / Path(q).name)
+    cfg = config.load()
+    s = S.Seal.create_forward(cfg, min_sessions=0, archive_existing=False)
+
+    class G:
+        def __init__(self, fp):
+            self.fingerprint = fp
+
+        def canonical(self):
+            return "expr_" + self.fingerprint
+
+    s.register([G("aaaa"), G("bbbb")])
+    assert len(s.registered) == 2
+
+    reloaded = S.Seal.load(object())
+    assert {r["fingerprint"] for r in reloaded.registered} == {"aaaa", "bbbb"}, \
+        "the commitment must survive a reload intact"
