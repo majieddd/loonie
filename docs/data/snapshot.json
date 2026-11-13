@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-11-13T01:07:25+00:00",
+ "generated_at": "2026-11-13T01:52:18+00:00",
  "workers": {
   "workers": [
    {
     "id": "trade",
     "kind": "trade",
     "label": "paper execution",
-    "started_at": "2026-11-13T01:07:11+00:00",
+    "started_at": "2026-11-13T01:52:04+00:00",
     "status": "running",
     "detail": "loading market data",
     "progress": null,
@@ -14,8 +14,8 @@
     "cycle": 0,
     "errors": 0,
     "last_error": "",
-    "heartbeat": "2026-11-13T01:07:11+00:00",
-    "heartbeat_epoch": 1794532031.9134157,
+    "heartbeat": "2026-11-13T01:52:04+00:00",
+    "heartbeat_epoch": 1794534724.9586048,
     "uptime_s": 0.0,
     "heartbeat_age_s": 13.4,
     "liveness": "live"
@@ -24,7 +24,7 @@
   "live": 1,
   "stale": 0,
   "dead": 0,
-  "updated": "2026-11-13T01:07:25+00:00"
+  "updated": "2026-11-13T01:52:18+00:00"
  },
  "experience": {
   "rows": 0
